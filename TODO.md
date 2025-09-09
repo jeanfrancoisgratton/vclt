@@ -1,0 +1,3 @@
+- [x] env is not reading AuthToken and KV mount
+- [ ] client login should store the auth token in the environment file for automated retrieval
+- [ ] create an environment file for a non-networked Vault server, for local debugging purposes
