@@ -25,7 +25,7 @@ ensure_permissions() {
 
 BRANCH=`git rev-parse --abbrev-ref HEAD`
 BRANCH=$(echo "$BRANCH" | tr '/' '_')
-BINARY=vclt2
+BINARY=vclt
 OUTPUT=/opt/bin
 CHECK_PERMS=0
 
