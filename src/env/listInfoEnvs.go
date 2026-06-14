@@ -7,13 +7,15 @@ package env
 
 import (
 	"fmt"
-	cerr "github.com/jeanfrancoisgratton/customError"
-	hf "github.com/jeanfrancoisgratton/helperFunctions"
-	"github.com/jedib0t/go-pretty/v6/table"
-	"github.com/jedib0t/go-pretty/v6/text"
 	"os"
 	"path/filepath"
 	"strings"
+
+	cerr "github.com/jeanfrancoisgratton/customError/v3"
+	hf "github.com/jeanfrancoisgratton/helperFunctions/v5"
+	hftx "github.com/jeanfrancoisgratton/helperFunctions/v5/terminalfx"
+	"github.com/jedib0t/go-pretty/v6/table"
+	"github.com/jedib0t/go-pretty/v6/text"
 )
 
 func ListEnvironments(envdir string) *cerr.CustomError {
@@ -29,6 +31,7 @@ func ListEnvironments(envdir string) *cerr.CustomError {
 		ce := &cerr.CustomError{Title: "Unable to open config directory", Message: err.Error()}
 		return ce
 	}
+	defer dirFH.Close()
 
 	if fileInfos, err = dirFH.Readdir(0); err != nil {
 		ce := &cerr.CustomError{Title: "Unable to read files in config directory", Message: err.Error()}
@@ -41,15 +44,15 @@ func ListEnvironments(envdir string) *cerr.CustomError {
 		}
 	}
 
-	fmt.Printf("Number of env files: %s\n", hf.Green(fmt.Sprintf("%d", len(finfo))))
+	fmt.Printf("Number of env files: %s\n", hftx.Green(fmt.Sprintf("%d", len(finfo))))
 
 	t := table.NewWriter()
 	t.SetOutputMirror(os.Stdout)
 	t.AppendHeader(table.Row{"Environment file", "File size", "Modification time"})
 
 	for _, fi := range finfo {
-		t.AppendRow([]interface{}{hf.Green(fi.Name()), hf.Green(hf.SI(uint64(fi.Size()))),
-			hf.Green(fmt.Sprintf("%v", fi.ModTime().Format("2006/01/02 15:04:05")))})
+		t.AppendRow([]interface{}{hftx.Green(fi.Name()), hftx.Green(hf.SI(uint64(fi.Size()))),
+			hftx.Green(fmt.Sprintf("%v", fi.ModTime().Format("2006/01/02 15:04:05")))})
 	}
 	t.SortBy([]table.SortBy{
 		{Name: "Environment file", Mode: table.Asc},
@@ -84,9 +87,9 @@ func ExplainEnvFile(envfiles []string) *cerr.CustomError {
 			if e.VaultToken != "" {
 				vt = "*ENCRYPTED*"
 			}
-			t.AppendRow([]interface{}{hf.Green(envfile), hf.Green(e.EnvironmentName), hf.Green(e.VaultAddress),
-				hf.Yellow(vt), hf.Green(e.VaultUsername), hf.Yellow("*ENCRYPTED*"),
-				hf.Green(e.KVEnginePath), hf.Green(e.Comments)})
+			t.AppendRow([]interface{}{hftx.Green(envfile), hftx.Green(e.EnvironmentName), hftx.Green(e.VaultAddress),
+				hftx.Yellow(vt), hftx.Green(e.VaultUsername), hftx.Yellow("*ENCRYPTED*"),
+				hftx.Green(e.KVEnginePath), hftx.Green(e.Comments)})
 		}
 
 	}

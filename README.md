@@ -1,3 +1,5 @@
-# vclt
+<img src="./images/vclt_banner.png" alt="vclt logo" />
 
-Put your description here. This is what will be shown on the repo main page.
+# vclt
+___
+A stripped down Hashicorp Vault client

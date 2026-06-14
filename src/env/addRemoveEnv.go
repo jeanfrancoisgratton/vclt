@@ -7,10 +7,11 @@ package env
 
 import (
 	"fmt"
-	cerr "github.com/jeanfrancoisgratton/customError"
 	"os"
 	"path/filepath"
 	"strings"
+
+	cerr "github.com/jeanfrancoisgratton/customError/v3"
 )
 
 func RemoveEnvFile(envfile string) *cerr.CustomError {

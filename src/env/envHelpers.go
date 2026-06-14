@@ -7,24 +7,13 @@ package env
 
 import (
 	"fmt"
-	cerr "github.com/jeanfrancoisgratton/customError"
-	hf "github.com/jeanfrancoisgratton/helperFunctions"
 	"os"
 	"strings"
+
+	cerr "github.com/jeanfrancoisgratton/customError/v3"
+	hf "github.com/jeanfrancoisgratton/helperFunctions/v5"
+	"vclt/shared"
 )
-
-var ConfigFile string
-var EnvName, VAddress, VUserName, VPassword, KVstorePath, EnvComments string
-
-type Config_s struct {
-	EnvironmentName string `json:"EnvironmentName"`
-	VaultAddress    string `json:"VaultAddress"`
-	VaultToken      string `json:"VaultToken,omitempty"`
-	VaultUsername   string `json:"VaultUsername"`
-	VaultPassword   string `json:"VaultPassword,omitempty"`
-	KVEnginePath    string `json:"KVEnginePath"`
-	Comments        string `json:"Comments,omitempty"`
-}
 
 // getEnvParams : Prompts for values to fill up the Environment structure
 func getEnvParams(cfgFile string) (Config_s, *cerr.CustomError) {
@@ -34,7 +23,7 @@ func getEnvParams(cfgFile string) (Config_s, *cerr.CustomError) {
 	cs.VaultAddress = hf.GetStringValFromPrompt("Enter the address of the Vault (ex: https://mydomain:1234) : ")
 	cs.VaultToken = hf.GetStringValFromPrompt("OPTIONAL: Please enter the user's auth token : ")
 	cs.VaultUsername = hf.GetStringValFromPrompt("Please enter the username using the Vault : ")
-	cs.VaultPassword = hf.GetPassword("Please enter that user's password (leaving this empty will get you prompted for it, later) : ")
+	cs.VaultPassword = hf.GetPassword("Please enter that user's password (leaving this empty will get you prompted for it, later) : ", shared.QuietOutput)
 	if cs.VaultPassword != "" {
 		cs.VaultPassword = hf.EncodeString(cs.VaultPassword, "")
 	}

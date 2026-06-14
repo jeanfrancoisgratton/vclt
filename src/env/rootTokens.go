@@ -8,17 +8,12 @@ package env
 import (
 	"encoding/json"
 	"fmt"
-	cerr "github.com/jeanfrancoisgratton/customError"
-	hf "github.com/jeanfrancoisgratton/helperFunctions"
 	"os"
 	"path/filepath"
-)
 
-type rootKeysFile struct {
-	ServerAddr string   `json:"ServerAddr"`
-	Comment    string   `json:"Comment,omitempty"`
-	Keypart    []string `json:"Keypart"`
-}
+	cerr "github.com/jeanfrancoisgratton/customError/v3"
+	hf "github.com/jeanfrancoisgratton/helperFunctions/v5"
+)
 
 func CreateRootKeys(mininmalNumberOfKeys int) *cerr.CustomError {
 	rk := rootKeysFile{}

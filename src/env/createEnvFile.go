@@ -1,8 +1,8 @@
 package env
 
 import (
-	cerr "github.com/jeanfrancoisgratton/customError"
-	hf "github.com/jeanfrancoisgratton/helperFunctions"
+	cerr "github.com/jeanfrancoisgratton/customError/v3"
+	hf "github.com/jeanfrancoisgratton/helperFunctions/v5"
 )
 
 func CreateEnvFile(fname string) *cerr.CustomError {

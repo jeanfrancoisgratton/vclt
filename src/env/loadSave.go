@@ -2,10 +2,11 @@ package env
 
 import (
 	"encoding/json"
-	cerr "github.com/jeanfrancoisgratton/customError"
 	"os"
 	"path/filepath"
 	"strings"
+
+	cerr "github.com/jeanfrancoisgratton/customError/v3"
 )
 
 // LoadEnvironmentFile : Load the JSON env file in the user's .config/JFG/vclt directory, and store it into a data type (struct)
@@ -38,9 +39,8 @@ func LoadEnvironmentFile() (Config_s, *cerr.CustomError) {
 	err = json.Unmarshal(jFile, &payload)
 	if err != nil {
 		return Config_s{}, &cerr.CustomError{Title: "Error unmarshalling JSON", Message: err.Error()}
-	} else {
-		return payload, nil
 	}
+	return payload, nil
 }
 
 // SaveEnvironmentFile : Save the above structure into a JSON file in the user's .config/JFG/vclt directory
