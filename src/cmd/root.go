@@ -4,11 +4,12 @@
 package cmd
 
 import (
+	"fmt"
 	"os"
 	"runtime"
 	"strings"
 
-	hftx "github.com/jeanfrancoisgratton/helperFunctions/v5/terminalfx"
+	hftfx "github.com/jeanfrancoisgratton/helperFunctions/v5/terminalfx"
 	"github.com/spf13/cobra"
 	"vclt/shared"
 
@@ -17,9 +18,16 @@ import (
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
-	Use:     "vclt",
-	Short:   "Hashicorp Vault client",
-	Version: hftx.White("DEV2.00.00 (2026.06.10), Go version = v" + strings.TrimPrefix(runtime.Version(), "go")),
+	Use:   "vclt",
+	Short: "Hashicorp Vault client",
+}
+
+var versionCmd = &cobra.Command{
+	Use:   "version",
+	Short: "Shows the software version",
+	Run: func(cmd *cobra.Command, args []string) {
+		fmt.Println(hftfx.White("DEV2.00.00 (2026.06.10), Go version = v" + strings.TrimPrefix(runtime.Version(), "go")))
+	},
 }
 
 func Execute() {
@@ -32,12 +40,17 @@ func Execute() {
 func init() {
 	rootCmd.DisableAutoGenTag = true
 	rootCmd.CompletionOptions.DisableDefaultCmd = true
+
+	rootCmd.AddCommand(versionCmd)
 	//rootCmd.AddCommand(envCmd, kvCmd, loginCmd, sysCmd)
 	//rootCmd.AddCommand(envCmd, loginCmd, sysCmd, kvCmd)
 
 	rootCmd.PersistentFlags().StringVarP(&env.ConfigFile, "env", "e", "defaultEnv.json", "Default env configuration file; this is a per-user setting")
 	rootCmd.PersistentFlags().BoolVarP(&shared.QuietOutput, "quiet", "q", false, "Display output to stdout")
 	rootCmd.PersistentFlags().BoolVarP(&shared.DebugMode, "debug", "d", false, "Debug mode")
+	rootCmd.PersistentFlags().StringVarP(&shared.VaultAuthToken, "token", "t", "", "Vault token (or use VAULT_TOKEN)")
+	rootCmd.PersistentFlags().StringVarP(&shared.VaultServerAddress, "vaultaddress", "a", "", "Vault server address (or use VAULT_ADDRESS)")
+	rootCmd.PersistentFlags().StringVarP(&shared.OutputFormat, "output", "o", "text", "Output format: text|json")
 
 	//rootCmd.PersistentFlags().BoolVarP(&sys.SysUseToken, "authtoken", "T", false, "Use the 'auth token' authentication method")
 }

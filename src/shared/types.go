@@ -7,3 +7,6 @@ package shared
 
 var QuietOutput bool
 var DebugMode bool
+var VaultAuthToken string
+var VaultServerAddress string
+var OutputFormat = "text"
