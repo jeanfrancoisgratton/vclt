@@ -1,8 +1,0 @@
-{
-  "EnvironmentName": "Vault VPS r/o",
-  "VaultAddress": "https://vault.famillegratton.net:8202",
-  "VaultUsername": "rouser",
-  "VaultPassword": "AcPZqLMF2z2BgvCNL7WMWlgRzfu_5pJ4",
-  "KeyValuePath": "kv",
-  "Comments": "Vault https"
-}
