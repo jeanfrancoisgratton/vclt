@@ -7,9 +7,10 @@ package cmd
 
 import (
 	"fmt"
-	cerr "github.com/jeanfrancoisgratton/customError"
-	"github.com/spf13/cobra"
 	"os"
+
+	cerr "github.com/jeanfrancoisgratton/customError/v3"
+	"github.com/spf13/cobra"
 	"vclt/env"
 	environment "vclt/env"
 )
@@ -33,7 +34,7 @@ var envListCmd = &cobra.Command{
 			argument = args[0]
 		}
 		if err := environment.ListEnvironments(argument); err != nil {
-			err.Error()
+			fmt.Println(err.Error())
 		}
 	},
 }
@@ -52,7 +53,7 @@ var envRmCmd = &cobra.Command{
 		}
 		var err *cerr.CustomError
 		if err = environment.RemoveEnvFile(fname); err != nil {
-			err.Error()
+			fmt.Println(err.Error())
 		}
 	},
 }
@@ -72,7 +73,7 @@ Will create a defaultEnv.json file, which is the application's default file.`,
 			fname = args[0]
 		}
 		if err := environment.AddEnvFile(fname); err != nil {
-			err.Error()
+			fmt.Println(err.Error())
 		}
 	},
 }
@@ -90,7 +91,7 @@ var envInfoCmd = &cobra.Command{
 		}
 		var err *cerr.CustomError
 		if err = environment.ExplainEnvFile(envfiles); err != nil {
-			err.Error()
+			fmt.Println(err.Error())
 		}
 	},
 }
@@ -108,7 +109,7 @@ The following parameters are mandatory (unless written otherwise),
 -t VaultToken : Auth token
 -u VaultUserName : the Vault username; that is, who will be connect to the vault
 -p VaultPassword : the Vault username password
--k KVstorePath : the kv engine path (name)
+-k KVstorePath : the secrets engine path (name)
 (optional) -c Comments: says it all.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		if len(args) == 0 {
@@ -117,7 +118,7 @@ The following parameters are mandatory (unless written otherwise),
 		}
 		var err *cerr.CustomError
 		if err = environment.CreateEnvFile(args[0]); err != nil {
-			fmt.Printf("%s", err.Error())
+			fmt.Println(err.Error())
 		}
 	},
 }
@@ -130,7 +131,7 @@ var envCreateRootKeysCmd = &cobra.Command{
 	Long:    `This file will be named rootkeys.json, in $HOME/.config/JFG/vclt. The entries will be encoded`,
 	Run: func(cmd *cobra.Command, args []string) {
 		if err := environment.CreateRootKeys(3); err != nil {
-			fmt.Printf("%s", err.Error())
+			fmt.Println(err.Error())
 		}
 	},
 }

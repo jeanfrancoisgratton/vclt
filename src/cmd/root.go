@@ -33,7 +33,7 @@ func init() {
 	rootCmd.DisableAutoGenTag = true
 	rootCmd.CompletionOptions.DisableDefaultCmd = true
 	//rootCmd.AddCommand(envCmd, kvCmd, loginCmd, sysCmd)
-	rootCmd.AddCommand(envCmd, loginCmd, sysCmd, kvCmd)
+	//rootCmd.AddCommand(envCmd, loginCmd, sysCmd, kvCmd)
 
 	rootCmd.PersistentFlags().StringVarP(&env.ConfigFile, "env", "e", "defaultEnv.json", "Default env configuration file; this is a per-user setting")
 	rootCmd.PersistentFlags().BoolVarP(&shared.QuietOutput, "quiet", "q", false, "Display output to stdout")

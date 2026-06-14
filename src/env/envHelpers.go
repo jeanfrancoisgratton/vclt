@@ -27,7 +27,7 @@ func getEnvParams(cfgFile string) (Config_s, *cerr.CustomError) {
 	if cs.VaultPassword != "" {
 		cs.VaultPassword = hf.EncodeString(cs.VaultPassword, "")
 	}
-	cs.KVEnginePath = hf.GetStringValFromPrompt("Please enter the kv store mount (no trailing/leading slash) : ")
+	cs.KVEnginePath = hf.GetStringValFromPrompt("Please enter the secrets store mount (no trailing/leading slash) : ")
 	cs.KVEnginePath = strings.TrimPrefix(cs.KVEnginePath, "/")
 	cs.KVEnginePath = strings.TrimSuffix(cs.KVEnginePath, "/")
 	if cs.KVEnginePath == "" {
