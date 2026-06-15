@@ -40,14 +40,10 @@ func init() {
 	rootCmd.CompletionOptions.DisableDefaultCmd = true
 
 	rootCmd.AddCommand(versionCmd)
-	//rootCmd.AddCommand(envCmd, kvCmd, loginCmd, sysCmd)
-	//rootCmd.AddCommand(envCmd, loginCmd, sysCmd, kvCmd)
 
 	rootCmd.PersistentFlags().BoolVarP(&shared.QuietOutput, "quiet", "q", false, "Display output to stdout")
 	rootCmd.PersistentFlags().BoolVarP(&shared.DebugMode, "debug", "d", false, "Debug mode")
 	rootCmd.PersistentFlags().StringVarP(&shared.VaultAuthToken, "token", "t", "", "Vault token (or use VAULT_TOKEN)")
-	rootCmd.PersistentFlags().StringVarP(&shared.VaultServerAddress, "vaultaddress", "a", "", "Vault server address (or use VAULT_ADDRESS)")
+	rootCmd.PersistentFlags().StringVarP(&shared.VaultServerAddress, "address", "a", "", "Vault server address (or use VAULT_ADDRESS)")
 	rootCmd.PersistentFlags().StringVarP(&shared.OutputFormat, "output", "o", "text", "Output format: text|json")
-
-	//rootCmd.PersistentFlags().BoolVarP(&sys.SysUseToken, "authtoken", "T", false, "Use the 'auth token' authentication method")
 }

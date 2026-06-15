@@ -5,14 +5,14 @@ go 1.26.4
 require (
 	github.com/jeanfrancoisgratton/customError/v3 v3.0.0
 	github.com/jeanfrancoisgratton/helperFunctions/v5 v5.2.1
-	github.com/jeanfrancoisgratton/vaultLib v1.3.0
+	github.com/jeanfrancoisgratton/vaultLib v1.4.1
 	github.com/jedib0t/go-pretty/v6 v6.8.1
 	github.com/spf13/cobra v1.10.2
 )
 
 require (
 	github.com/cenkalti/backoff/v4 v4.3.0 // indirect
-	github.com/clipperhouse/uax29/v2 v2.2.0 // indirect
+	github.com/clipperhouse/uax29/v2 v2.7.0 // indirect
 	github.com/go-jose/go-jose/v4 v4.1.4 // indirect
 	github.com/hashicorp/errwrap v1.1.0 // indirect
 	github.com/hashicorp/go-cleanhttp v0.5.2 // indirect
@@ -30,7 +30,6 @@ require (
 	github.com/mattn/go-runewidth v0.0.24 // indirect
 	github.com/mitchellh/go-homedir v1.1.0 // indirect
 	github.com/mitchellh/mapstructure v1.5.0 // indirect
-	github.com/rivo/uniseg v0.4.7 // indirect
 	github.com/ryanuber/go-glob v1.0.0 // indirect
 	github.com/spf13/pflag v1.0.10 // indirect
 	golang.org/x/crypto v0.53.0 // indirect

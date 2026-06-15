@@ -31,14 +31,14 @@ func ReadSecrets(kvengine, path string) *ce.CustomError {
 
 	// -f is empty, this means we grab the whole secret
 	if SecretField == "" {
-		return allSecrets(client, kvengine, path)
+		return allSecrets(client, path)
 	}
 
 	return singleFieldFromSecret(client, path)
 }
 
 // We fetch all the fields of a given secret, optionally rendering it in JSON
-func allSecrets(c *vlr.Client, kvengine, path string) *ce.CustomError {
+func allSecrets(c *vlr.Client, path string) *ce.CustomError {
 	var secret *vlr.Secret
 	var sErr error
 

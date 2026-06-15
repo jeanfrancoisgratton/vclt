@@ -44,12 +44,14 @@ var secretsWriteCmd = &cobra.Command{
 }
 
 var secretsLsCmd = &cobra.Command{
-	Use:     "list KV_ENGINE SECRET_PATH",
+	Use:     "list KV_ENGINE",
 	Aliases: []string{"ls", "show"},
-	Short:   "List the 'SECRET_PATH' secrets in the 'KV_ENGINE' secret engine",
+	Short:   "List the secrets in the 'KV_ENGINE' secret engine",
 	Args:    cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		os.Exit(1)
+		if _, err := secrets.ListSecrets(args[0], true); err != nil {
+			fmt.Println(hftfx.SkullBonesSign(err.Error()))
+		}
 	},
 }
 
@@ -60,4 +62,5 @@ func init() {
 	//secretsCmd.PersistentFlags().StringVarP(&secrets.SecretMountPath, "mount", "m", "", "KV v2 mount path (required)")
 	secretsCmd.PersistentFlags().IntVarP(&secrets.SecretVersion, "version", "v", 0, "Secret version (0 = latest available)")
 	secretsCmd.PersistentFlags().StringVarP(&secrets.SecretField, "field", "f", "", "Specific field to display")
+	secretsLsCmd.PersistentFlags().BoolVarP(&secrets.ExtendedSecretsList, "extended", "x", false, "Show extended info")
 }
