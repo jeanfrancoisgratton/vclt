@@ -1,4 +1,4 @@
-SPEC      := nxtools.spec
+SPEC      := vclt.spec
 NAME      := $(shell rpmspec -q --qf '%{name}\n'    $(SPEC) | head -1)
 VERSION   := $(shell rpmspec -q --qf '%{version}\n' $(SPEC) | head -1)
 RELEASE   := $(shell rpmspec -q --qf '%{release}\n' $(SPEC) | head -1)
@@ -31,7 +31,7 @@ upload:
 	nxtools upload -r $(NEXUSREPO) $(DEST)/$(NAME)-$(VERSION)-$(RELEASE).x86_64.rpm
 
 commitcl:
-	git add nxtools.spec
+	git add vclt.spec
 	git commit -m "chore: update changelog for $(VERSION)-$(RELEASE)"
 
 clean:
