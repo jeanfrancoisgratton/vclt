@@ -1,12 +1,12 @@
 # Maintainer: J.F.Gratton <jean-francois@famillegratton.net>
 # Packager: Package builder <builder@famillegratton.net>
 
-pkgname=nxtools
-pkgver=0.91.00_debug
+pkgname=vclt
+pkgver=2.00.00_debug
 pkgrel=4
-pkgdesc="Nexus Repository Manager CLI management tool"
+pkgdesc="Hashicorp Vault client"
 arch=('x86_64')
-url="https://git.famillegratton.net:3000/devops/nxtools.git"
+url="https://git.famillegratton.net:3000/devops/vclt.git"
 license=('GPL-2.0-only')
 
 makedepends=('go')
@@ -16,10 +16,10 @@ optdepends=('zsh: zsh completion support')
 
 options=('!debug')
 
-_binaryname='nxtools'
+_binaryname='vclt'
 _builddir="${pkgname}-${pkgver}"
 
-install=nxtools.install
+install=vclt.install
 
 prepare() {
   rm -rf "${srcdir:?}/${_builddir}"

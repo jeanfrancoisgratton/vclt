@@ -5,7 +5,7 @@
 %define _version 2.00.00
 %define _rel 0
 %define _arch x86_64
-%define _binaryname vclt2
+%define _binaryname vclt
 
 Name:       vclt
 Version:    %{_version}
@@ -43,10 +43,24 @@ exit 0
 install -Dpm 0755 %{_sourcedir}/%{_binaryname} %{buildroot}%{_bindir}/%{_binaryname}
 
 %post
+# Bash completion — always install
+/opt/bin/vclt completion bash > %{_bash_completionsdir}/vclt
+
+# Zsh completion — only if zsh is present
+if command -v zsh > /dev/null 2>&1; then
+    mkdir -p /usr/share/zsh/site-functions
+    /opt/bin/vclt completion zsh > /usr/share/zsh/site-functions/_vclt
+    zsh -c 'autoload -Uz compinit && compinit' 2>/dev/null || true
+fi
 
 %preun
 
 %postun
+if [ $1 -eq 0 ]; then
+    # $1 == 0 means this is a full uninstall, not an upgrade
+    rm -f %{_bash_completionsdir}/vclt
+    rm -f %{_zsh_completionsdir}/_vclt
+fi
 
 %files
 %defattr(-,root,root,-)
