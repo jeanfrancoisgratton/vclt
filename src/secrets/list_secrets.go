@@ -7,8 +7,10 @@ package secrets
 
 import (
 	"os"
+	"strconv"
 
 	ce "github.com/jeanfrancoisgratton/customError/v3"
+	hftx "github.com/jeanfrancoisgratton/helperFunctions/v5/terminalfx"
 	vlr "github.com/jeanfrancoisgratton/vaultLib/kv"
 	"github.com/jedib0t/go-pretty/v6/table"
 	"github.com/jedib0t/go-pretty/v6/text"
@@ -41,9 +43,9 @@ func ListSecrets(kvEngine string, displayOutput bool) ([]vlr.SecretInfo, *ce.Cus
 
 	t.AppendHeader(table.Row{"Secret path", "Version"})
 	for _, secret := range secretslist {
-		s := 0
+		s := hftx.Yellow("n/a")
 		if ExtendedSecretsList {
-			s = secret.Version
+			s = strconv.Itoa(secret.Version)
 		}
 		t.AppendRow(table.Row{secret.Path, s})
 	}
