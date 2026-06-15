@@ -6,7 +6,7 @@ echo;echo;echo "Done. Now installing the Go binaries"
 #/opt/bin/install_golang.sh $(grep ^go src/go.mod | awk '{print $2}') amd64
 
 
-export VER=`cat go.version`
+export VER=`cat ../go.version`
 export ARCH=${1:-"amd64"}
 
 echo "Fetching archive..."
