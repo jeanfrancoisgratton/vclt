@@ -69,7 +69,7 @@ func singleFieldFromSecret(c *vlr.Client, path string) *ce.CustomError {
 	if shared.QuietOutput {
 		fmt.Printf("%v\n", value)
 	} else {
-		fmt.Println(SecretField + " : " + hftx.Green(fmt.Sprintf("%v", value)))
+		fmt.Printf("%s : %v\n", hftx.Green(SecretField), value)
 	}
 	return nil
 }
