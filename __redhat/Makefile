@@ -31,7 +31,7 @@ upload:
 	nxtools upload -r $(NEXUSREPO) $(DEST)/$(NAME)-$(VERSION)-$(RELEASE).x86_64.rpm
 
 commitcl:
-	git add $(SPEC)
+	git add vclt.spec
 	git commit -m "chore: update changelog for $(VERSION)-$(RELEASE)"
 
 clean:

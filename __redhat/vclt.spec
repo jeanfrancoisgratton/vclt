@@ -2,9 +2,10 @@
 %define _build_id_links none
 %define _name vclt
 %define _prefix /opt
+%define _bash_completionsdir /usr/share/bash-completion/completions
+%define _zsh_completionsdir  /usr/share/zsh/site-functions
 %define _version 2.00.00
 %define _rel 0
-%define _arch x86_64
 %define _binaryname vclt
 
 Name:       vclt
@@ -12,15 +13,15 @@ Version:    %{_version}
 Release:    %{_rel}
 Summary:    Hashicorp Vault client
 
-Group:      CI/CD utils
+Group:      CI/CD
 License:    GPL2.0
-URL:        https://git.famillegratton.net:3000/devops/vclt
+URL:        https://git.famillegratton.net:3000/devops/vclt.git
 
 Source0:    %{name}-%{_version}.tar.gz
-BuildArchitectures: x86_64
+#BuildArchitectures: x86_64
 BuildRequires: gcc
-#Requires: sudo
-#Obsoletes: vmman1 > 1.140
+Recommends: zsh
+Requires: bash-completion
 
 %description
 Hashicorp Vault client
@@ -29,18 +30,16 @@ Hashicorp Vault client
 %autosetup
 
 %build
-cd %{_sourcedir}/%{_name}-%{_version}/src
-PATH=$PATH:/opt/go/bin go build -o %{_sourcedir}/%{_binaryname} .
-strip %{_sourcedir}/%{_binaryname}
+cd src
+go mod download
+PATH=$PATH:/opt/go/bin CGO_ENABLED=0 go build -trimpath -ldflags="-s -w -buildid=" -o %{_builddir}/%{_binaryname} .
 
 %clean
 rm -rf $RPM_BUILD_ROOT
 
 %pre
-exit 0
-
 %install
-install -Dpm 0755 %{_sourcedir}/%{_binaryname} %{buildroot}%{_bindir}/%{_binaryname}
+install -Dpm 0755 %{_builddir}/%{_binaryname} %{buildroot}%{_bindir}/%{_binaryname}
 
 %post
 # Bash completion — always install
@@ -48,9 +47,8 @@ install -Dpm 0755 %{_sourcedir}/%{_binaryname} %{buildroot}%{_bindir}/%{_binaryn
 
 # Zsh completion — only if zsh is present
 if command -v zsh > /dev/null 2>&1; then
-    mkdir -p /usr/share/zsh/site-functions
-    /opt/bin/vclt completion zsh > /usr/share/zsh/site-functions/_vclt
-    zsh -c 'autoload -Uz compinit && compinit' 2>/dev/null || true
+    mkdir -p %{_zsh_completionsdir}/zsh/site-functions
+    /opt/bin/vclt completion zsh > %{_zsh_completionsdir}/_vclt
 fi
 
 %preun
@@ -63,11 +61,24 @@ if [ $1 -eq 0 ]; then
 fi
 
 %files
-%defattr(-,root,root,-)
+%defattr(0755,root,root,-)
 %{_bindir}/%{_binaryname}
 
-
 %changelog
+* Mon Jun 15 2026 Binary package builder <builder@famillegratton.net> 2.00.00-0
+- build script fixes for rhel
+- changed paths in buildeps script
+- Fixed makefile
+- fixed all packaging scripts
+- fixed numeral outputting
+- -x needs fixing
+- removed left over files
+- removed ENV; secrets read needs testing
+- completed read subcommand
+- more cleanup before starting afresh
+- Stub commit
+- interim sync across workspaces
+
 * Wed Jul 03 2024 RPM Builder <builder@famillegratton.net> 1.01.00-1
 - Version bump as -v was not being correctly displayed (jean-
   francois@famillegratton.net)
