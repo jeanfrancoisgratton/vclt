@@ -1,3 +1,13 @@
-- [x] env is not reading AuthToken and KV mount
-- [ ] client login should store the auth token in the environment file for automated retrieval
-- [ ] create an environment file for a non-networked Vault server, for local debugging purposes
+# TODO LIST
+___
+
+| Task               | Slated for | Comments |
+|--------------------|------------|----------|
+| [ ] delete secret  | 2.00.00    |          |
+| [ ] destroy secret | 2.00.00    |          |
+| [ ] policy create  |            |          |
+| [ ] policy delete  |            |          |
+| [ ] policy edit    |            |          |
+| [ ] token create   |            |          |
+| [ ] token delete   |            |          |
+| [ ] token edit     |            |          |

@@ -1,0 +1,2 @@
+- [x] `secrets get KV_ENGINE SECRET -v` does not work, returns an error
+- 
