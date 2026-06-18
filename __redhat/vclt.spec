@@ -65,6 +65,27 @@ fi
 %{_bindir}/%{_binaryname}
 
 %changelog
+* Thu Jun 18 2026 Binary package builder <builder@famillegratton.net> 2.00.00~DEBUG3-0
+- Completed secrets rm and secrets destroy
+- chore: update changelog for 2.00.00~DEBUG2-0
+- completed secrets put
+- fixed archlinux erroneous revision number
+- chore: update changelog for 2.00.00~DEBUG-0
+- completed secrets write
+- rewrote specfile and Makefile
+- build script fixes for rhel
+- changed paths in buildeps script
+- Fixed makefile
+- fixed all packaging scripts
+- fixed numeral outputting
+- -x needs fixing
+- removed left over files
+- removed ENV; secrets read needs testing
+- completed read subcommand
+- more cleanup before starting afresh
+- Stub commit
+- interim sync across workspaces
+
 * Wed Jun 17 2026 Binary package builder <builder@famillegratton.net> 2.00.00~DEBUG2-0
 - completed secrets put
 - fixed archlinux erroneous revision number
