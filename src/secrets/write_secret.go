@@ -1,6 +1,6 @@
 // vclt
 // Written by J.F.Gratton <jean-francois@famillegratton.net>
-// Original filename: src/secrets/write_secrets.go
+// Original filename: src/secrets/write_secret.go
 // Original timestamp: 2026/06/16 06:49:44
 
 package secrets

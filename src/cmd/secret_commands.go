@@ -58,12 +58,36 @@ var secretsLsCmd = &cobra.Command{
 	},
 }
 
+var secretsRmCmd = &cobra.Command{
+	Use:     "rm KV_ENGINE SECRET_PATH",
+	Aliases: []string{"delete"},
+	Short:   "Delete a secret or a field in a secret",
+	Args:    cobra.ExactArgs(2),
+	Run: func(cmd *cobra.Command, args []string) {
+		if err := secrets.DeleteSecret(args[0], args[1]); err != nil {
+			fmt.Println(hftfx.SkullBonesSign(err.Error()))
+		}
+	},
+}
+
+var secretsDestroyCmd = &cobra.Command{
+	Use:   "destroy KV_ENGINE SECRET_PATH",
+	Short: "Destroy a secret",
+	Args:  cobra.ExactArgs(2),
+	Run: func(cmd *cobra.Command, args []string) {
+		if err := secrets.DestroySecret(args[0], args[1]); err != nil {
+			fmt.Println(hftfx.SkullBonesSign(err.Error()))
+		}
+	},
+}
+
 func init() {
 	rootCmd.AddCommand(secretsCmd)
-	secretsCmd.AddCommand(secretsLsCmd, secretsReadCmd, secretsWriteCmd)
+	secretsCmd.AddCommand(secretsLsCmd, secretsReadCmd, secretsWriteCmd, secretsRmCmd)
 
 	//secretsCmd.PersistentFlags().StringVarP(&secrets.SecretMountPath, "mount", "m", "", "KV v2 mount path (required)")
 	secretsCmd.PersistentFlags().IntVarP(&secrets.SecretVersion, "version", "v", 0, "Secret version (0 = latest available)")
 	secretsReadCmd.PersistentFlags().StringVarP(&secrets.SecretField, "field", "f", "", "Specific field to manage")
+	secretsRmCmd.PersistentFlags().StringVarP(&secrets.SecretField, "field", "f", "", "Specific field to manage")
 	secretsLsCmd.PersistentFlags().BoolVarP(&secrets.ExtendedSecretsList, "extended", "x", false, "Show extended info")
 }

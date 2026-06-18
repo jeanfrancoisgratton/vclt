@@ -46,6 +46,8 @@ github.com/jeanfrancoisgratton/vaultLib v1.4.2 h1:tvBfQcqI0qZP/dMlt0n3n+0siNis+K
 github.com/jeanfrancoisgratton/vaultLib v1.4.2/go.mod h1:S/+TejXmAe03X/uRiZoZWnfw4zEdYCoZTzwnGRSYwO4=
 github.com/jeanfrancoisgratton/vaultLib v1.4.3 h1:znfE/diZSbbneIMQmLcaGZIZTmzhE01okiQ4/HhWWKc=
 github.com/jeanfrancoisgratton/vaultLib v1.4.3/go.mod h1:S/+TejXmAe03X/uRiZoZWnfw4zEdYCoZTzwnGRSYwO4=
+github.com/jeanfrancoisgratton/vaultLib v1.5.0 h1:KxpwdcjInTWfAc0qLrE3blX08gaOl4gO1O5e5rhk5/s=
+github.com/jeanfrancoisgratton/vaultLib v1.5.0/go.mod h1:S/+TejXmAe03X/uRiZoZWnfw4zEdYCoZTzwnGRSYwO4=
 github.com/jedib0t/go-pretty/v6 v6.8.1 h1:0fkCNhjrX0zPpwkWaDYU5VMrygg41Tu197mWILIJoqQ=
 github.com/jedib0t/go-pretty/v6 v6.8.1/go.mod h1:YwC5CE4fJ1HFUDeivSV1r//AmANFHyqczZk+U6BDALU=
 github.com/jwalton/gchalk v1.3.0 h1:uTfAaNexN8r0I9bioRTksuT8VGjrPs9YIXR1PQbtX/Q=

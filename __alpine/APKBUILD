@@ -2,7 +2,7 @@
 # Packager: APK/DEB/RPM package builder <builder@famillegratton.net>
 pkgname=vclt
 pkgver=2.00.00_pre
-pkgrel=2
+pkgrel=3
 pkgdir=/data/packages
 builddir="$startdir/src/BUILD"
 pkgdesc="Hashicorp Vault client"
