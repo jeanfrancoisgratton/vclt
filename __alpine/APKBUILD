@@ -1,8 +1,8 @@
 # Maintainer: J.F. Gratton <jean-francois@famillegratton.net>
 # Packager: APK/DEB/RPM package builder <builder@famillegratton.net>
 pkgname=vclt
-pkgver=2.00.00_pre
-pkgrel=4
+pkgver=2.00.00
+pkgrel=0
 pkgdir=/data/packages
 builddir="$startdir/src/BUILD"
 pkgdesc="Hashicorp Vault client"
