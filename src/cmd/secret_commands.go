@@ -17,7 +17,7 @@ import (
 var secretsCmd = &cobra.Command{
 	Use:   "secrets",
 	Short: "secret management subcommands",
-	Long:  `Allowed commands are { read | write | list }`,
+	Long:  `Allowed commands are { read | write | list | delete | destroy }`,
 }
 
 var secretsReadCmd = &cobra.Command{
