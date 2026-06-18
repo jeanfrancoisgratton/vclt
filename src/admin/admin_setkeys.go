@@ -6,10 +6,8 @@
 package admin
 
 import (
-	"encoding/json"
 	"fmt"
-	"os"
-	"path/filepath"
+	"strings"
 
 	ce "github.com/jeanfrancoisgratton/customError/v3"
 	hf "github.com/jeanfrancoisgratton/helperFunctions/v5"
@@ -17,13 +15,19 @@ import (
 	"vclt/shared"
 )
 
-func SetRootKeys() *ce.CustomError {
-	vk := VaultRootKeysStruct{}
-
-	if err := getAddress(); err != nil {
+func SetRootKeys(rkfile string) *ce.CustomError {
+	if err := shared.SetVaultToken(); err != nil {
+		return err
+	}
+	if err := shared.SetServerAddress(); err != nil {
 		return err
 	}
 
+	if !strings.HasSuffix(rkfile, ".json") {
+		rkfile += ".json"
+	}
+
+	vk := VaultRootKeysStruct{}
 	cfg := admin.AdminConfig{Address: shared.VaultServerAddress}
 
 	status, err := admin.GetSealStatus(cfg)
@@ -46,17 +50,5 @@ func SetRootKeys() *ce.CustomError {
 		return &ce.CustomError{Title: "Unable to save the root keys",
 			Message: fmt.Sprintf("You have %d keys parts while the minimal number is %d", len(vk.Keys), vk.MinimumRequired)}
 	}
-	return saveRootKeys(vk)
-}
-
-func saveRootKeys(vk VaultRootKeysStruct) *ce.CustomError {
-	jStream, err := json.MarshalIndent(vk, "", "  ")
-	if err != nil {
-		return &ce.CustomError{Title: err.Error()}
-	}
-
-	if err := os.WriteFile(filepath.Join(os.Getenv("HOME"), ".config", "JFG", "vclt", "rootkeys.json"), jStream, 0600); err != nil {
-		return &ce.CustomError{Title: "Unable to write root keys json file", Message: err.Error()}
-	}
-	return nil
+	return vk.saveRootKeys(rkfile)
 }

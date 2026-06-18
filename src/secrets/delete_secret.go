@@ -16,7 +16,10 @@ import (
 
 func DeleteSecret(kvengine, path string) *ce.CustomError {
 	// Check for required globals
-	if err := setGlobals(); err != nil {
+	if err := shared.SetVaultToken(); err != nil {
+		return err
+	}
+	if err := shared.SetServerAddress(); err != nil {
 		return err
 	}
 

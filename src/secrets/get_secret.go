@@ -19,7 +19,10 @@ import (
 // ReadSecrets : Reads a secret fron the Vault secret path
 func ReadSecrets(kvengine, path string) *ce.CustomError {
 	// Check for required globals
-	if err := setGlobals(); err != nil {
+	if err := shared.SetVaultToken(); err != nil {
+		return err
+	}
+	if err := shared.SetServerAddress(); err != nil {
 		return err
 	}
 

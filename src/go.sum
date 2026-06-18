@@ -40,6 +40,8 @@ github.com/jeanfrancoisgratton/customError/v3 v3.0.0 h1:cZp3oioIPuqq+uvMdjgkURoG
 github.com/jeanfrancoisgratton/customError/v3 v3.0.0/go.mod h1:4DojV/C2wDStlOEnWtuNrvLBwkyZ9wGstdq3U+gCJP8=
 github.com/jeanfrancoisgratton/helperFunctions/v5 v5.2.1 h1:0Sw9/M7/2N+NTONafbjUztDehngcHuoLK70nnjWFid4=
 github.com/jeanfrancoisgratton/helperFunctions/v5 v5.2.1/go.mod h1:/Gqu5QjH1uRIc9FEnUivAlLcqoYmFimyfQy8nWs5Yfk=
+github.com/jeanfrancoisgratton/helperFunctions/v5 v5.2.2 h1:+s0Szb5eeOFW5Uz/oED/tLnhBpwdcoZV5vVN23/T1Go=
+github.com/jeanfrancoisgratton/helperFunctions/v5 v5.2.2/go.mod h1:/Gqu5QjH1uRIc9FEnUivAlLcqoYmFimyfQy8nWs5Yfk=
 github.com/jeanfrancoisgratton/vaultLib v1.4.1 h1:y/Gnvc4Kd8dbuNPPeG3BKxMq6XWdDfDM/Et5oUyZB5c=
 github.com/jeanfrancoisgratton/vaultLib v1.4.1/go.mod h1:S/+TejXmAe03X/uRiZoZWnfw4zEdYCoZTzwnGRSYwO4=
 github.com/jeanfrancoisgratton/vaultLib v1.4.2 h1:tvBfQcqI0qZP/dMlt0n3n+0siNis+KQT9EeBUmG6mzs=

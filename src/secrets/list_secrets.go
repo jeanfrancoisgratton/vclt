@@ -19,7 +19,10 @@ import (
 
 func ListSecrets(kvEngine string, displayOutput bool) ([]vlr.SecretInfo, *ce.CustomError) {
 	// Check for required globals
-	if err := setGlobals(); err != nil {
+	if err := shared.SetVaultToken(); err != nil {
+		return nil, err
+	}
+	if err := shared.SetServerAddress(); err != nil {
 		return nil, err
 	}
 
