@@ -3,7 +3,7 @@
 
 pkgname=vclt
 pkgver=2.00.00_debug
-pkgrel=3
+pkgrel=4
 pkgdesc="Hashicorp Vault client"
 arch=('x86_64')
 url="https://git.famillegratton.net:3000/devops/vclt.git"
