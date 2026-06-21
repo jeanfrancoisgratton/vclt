@@ -65,8 +65,20 @@ If none is provided, $HOME/.config/JFG/vclt/rootkeys.json will be used`,
 	},
 }
 
+var listMountsCmd = &cobra.Command{
+	Use:     "listmounts",
+	Aliases: []string{"mounts"},
+	Short:   "Lists all mounts (secret engines)",
+	Run: func(cmd *cobra.Command, args []string) {
+		if _, admErr := admin.ListMounts(true); admErr != nil {
+			fmt.Println(hftfx.SkullBonesSign(admErr.Error()))
+			os.Exit(1)
+		}
+	},
+}
+
 func init() {
 	rootCmd.AddCommand(adminCmd)
-	adminCmd.AddCommand(adminSetKeysCmd, adminSealCmd, adminUnsealCmd)
+	adminCmd.AddCommand(adminSetKeysCmd, adminSealCmd, adminUnsealCmd, listMountsCmd)
 
 }
