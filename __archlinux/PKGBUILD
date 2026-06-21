@@ -2,7 +2,7 @@
 # Packager: Package builder <builder@famillegratton.net>
 
 pkgname=vclt
-pkgver=2.00.00
+pkgver=2.05.00
 pkgrel=1
 pkgdesc="Hashicorp Vault client"
 arch=('x86_64')

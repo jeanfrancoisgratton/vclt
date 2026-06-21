@@ -10,6 +10,7 @@ ___
 | [x] admin.SetRootKeys()                        | 2.00.00-debug4 |          |
 | [x] admin.Seal()                               | 2.00.00-debug4 |          |
 | [x] admin.Unseal()                             | 2.00.00-debug4 |          |
+| [ ] policy list                                | 2.05.00        |          |
 | [ ] policy create                              |                |          |
 | [ ] policy delete                              |                |          |
 | [ ] policy edit                                |                |          |

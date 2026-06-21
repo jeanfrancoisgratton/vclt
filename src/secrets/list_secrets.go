@@ -11,13 +11,13 @@ import (
 
 	ce "github.com/jeanfrancoisgratton/customError/v3"
 	hftx "github.com/jeanfrancoisgratton/helperFunctions/v5/terminalfx"
-	vlr "github.com/jeanfrancoisgratton/vaultLib/kv"
+	vkvlib "github.com/jeanfrancoisgratton/vaultLib/kv"
 	"github.com/jedib0t/go-pretty/v6/table"
 	"github.com/jedib0t/go-pretty/v6/text"
 	"vclt/shared"
 )
 
-func ListSecrets(kvEngine string, displayOutput bool) ([]vlr.SecretInfo, *ce.CustomError) {
+func ListSecrets(kvEngine string, displayOutput bool) ([]vkvlib.SecretInfo, *ce.CustomError) {
 	// Check for required globals
 	if err := shared.SetVaultToken(); err != nil {
 		return nil, err
@@ -26,8 +26,8 @@ func ListSecrets(kvEngine string, displayOutput bool) ([]vlr.SecretInfo, *ce.Cus
 		return nil, err
 	}
 
-	cfg := vlr.Config{Address: shared.VaultServerAddress, Token: shared.VaultAuthToken, MountPath: kvEngine}
-	client, cvlrErr := vlr.NewClient(cfg)
+	cfg := vkvlib.Config{Address: shared.VaultServerAddress, Token: shared.VaultAuthToken, MountPath: kvEngine}
+	client, cvlrErr := vkvlib.NewClient(cfg)
 	if cvlrErr != nil {
 		return nil, &ce.CustomError{Title: "Error creating vault client", Message: cvlrErr.Error()}
 	}
