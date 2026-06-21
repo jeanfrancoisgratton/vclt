@@ -7,6 +7,7 @@ package cmd
 
 import (
 	"fmt"
+	"os"
 
 	hftfx "github.com/jeanfrancoisgratton/helperFunctions/v5/terminalfx"
 	"github.com/spf13/cobra"
@@ -25,10 +26,10 @@ var policiesReadCmd = &cobra.Command{
 	Short:   "Read the POLICY_NAME policies",
 	Args:    cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		//if polreadErr := policies.ReadPolicy(args[0]); polreadErr != nil {
-		//	fmt.Println(hftfx.SkullBonesSign(polreadErr.Error()))
-		//	os.Exit(1)
-		//}
+		if _, polreadErr := policies.ReadPolicy(args[0], true); polreadErr != nil {
+			fmt.Println(hftfx.SkullBonesSign(polreadErr.Error()))
+			os.Exit(1)
+		}
 	},
 }
 
