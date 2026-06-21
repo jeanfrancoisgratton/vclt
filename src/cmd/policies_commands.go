@@ -64,9 +64,9 @@ var policiesRmCmd = &cobra.Command{
 	Short:   "Delete one or many policies",
 	Args:    cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		//if err := policies.DeletePolicies(args); err != nil {
-		//	fmt.Println(hftfx.SkullBonesSign(err.Error()))
-		//}
+		if err := policies.DeletePolicies(args); err != nil {
+			fmt.Println(hftfx.SkullBonesSign(err.Error()))
+		}
 	},
 }
 

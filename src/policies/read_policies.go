@@ -6,10 +6,11 @@
 package policies
 
 import (
+	"encoding/json"
 	"fmt"
 
 	ce "github.com/jeanfrancoisgratton/customError/v3"
-	hftx "github.com/jeanfrancoisgratton/helperFunctions/v5/terminalfx"
+	hfjson "github.com/jeanfrancoisgratton/helperFunctions/v5/prettyjson"
 	vpol "github.com/jeanfrancoisgratton/vaultLib/policies"
 	"vclt/shared"
 )
@@ -34,19 +35,19 @@ func ReadPolicy(pname string, showOutput bool) (*vpol.Policy, *ce.CustomError) {
 		return nil, &ce.CustomError{Title: "Error reading the policy", Message: err.Error()}
 	}
 
-	//if shared.OutputFormat == "json" {
-	//	payload, err := json.MarshalIndent(policy, "", "  ")
-	//	if err != nil {
-	//		return nil, &ce.CustomError{Title: "Error serializing secret", Message: err.Error()}
-	//	}
-	//	if e := hfjson.Print(payload); e != nil {
-	//		return nil, &ce.CustomError{Title: "Unable to render secret's payload", Message: e.Error()}
-	//	}
-	//} else {
-	//	fmt.Println(policy.Rules)
-	//}
-	fmt.Printf("\nPolicy: %s\n\n", hftx.Green(policy.Name))
-	fmt.Println(policy.Rules)
+	if shared.OutputFormat == "json" {
+		payload, jerr := json.MarshalIndent(policy.RuleLines(), "", "  ")
+		if jerr != nil {
+			return nil, &ce.CustomError{Title: "Error serializing secret", Message: jerr.Error()}
+		}
+		if e := hfjson.Print(payload); e != nil {
+			return nil, &ce.CustomError{Title: "Unable to render secret's payload", Message: e.Error()}
+		}
+	} else {
+		fmt.Println(policy.Rules)
+	}
+	//fmt.Printf("\nPolicy: %s\n\n", hftx.Green(policy.Name))
+	//fmt.Println(policy.Rules)
 
 	return policy, nil
 }
