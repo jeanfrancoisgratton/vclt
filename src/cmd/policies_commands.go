@@ -39,10 +39,10 @@ var policiesWriteCmd = &cobra.Command{
 	Short:   "Write the POLICY_NAME policies from the POLICY_FILE file",
 	Args:    cobra.ExactArgs(2),
 	Run: func(cmd *cobra.Command, args []string) {
-		//if _, polwriteErr := policies.WritePolicy(args[0], args[1]); polwriteErr != nil {
-		//	fmt.Println(hftfx.SkullBonesSign(polwriteErr.Error()))
-		//	os.Exit(1)
-		//}
+		if polwriteErr := policies.WritePolicy(args[0], args[1]); polwriteErr != nil {
+			fmt.Println(hftfx.SkullBonesSign(polwriteErr.Error()))
+			os.Exit(1)
+		}
 	},
 }
 

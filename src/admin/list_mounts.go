@@ -28,10 +28,10 @@ func ListMounts(showOutput bool) ([]sys.MountInfo, *ce.CustomError) {
 	mounts, err := sys.ListMounts(cfg)
 	if err != nil {
 		return nil, &ce.CustomError{Title: "Unable to list mounts", Message: err.Error()}
-
-		if !showOutput {
-			return mounts, nil
-		}
+	}
+	
+	if !showOutput {
+		return mounts, nil
 	}
 
 	t := table.NewWriter()

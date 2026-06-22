@@ -11,6 +11,7 @@ import (
 
 	ce "github.com/jeanfrancoisgratton/customError/v3"
 	hfjson "github.com/jeanfrancoisgratton/helperFunctions/v5/prettyjson"
+	hftx "github.com/jeanfrancoisgratton/helperFunctions/v5/terminalfx"
 	vpol "github.com/jeanfrancoisgratton/vaultLib/policies"
 	"vclt/shared"
 )
@@ -44,10 +45,9 @@ func ReadPolicy(pname string, showOutput bool) (*vpol.Policy, *ce.CustomError) {
 			return nil, &ce.CustomError{Title: "Unable to render secret's payload", Message: e.Error()}
 		}
 	} else {
+		fmt.Printf("\nPolicy: %s\n\n", hftx.Green(policy.Name))
 		fmt.Println(policy.Rules)
 	}
-	//fmt.Printf("\nPolicy: %s\n\n", hftx.Green(policy.Name))
-	//fmt.Println(policy.Rules)
 
 	return policy, nil
 }
