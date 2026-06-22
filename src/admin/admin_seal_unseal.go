@@ -42,7 +42,7 @@ func Seal() *ce.CustomError {
 }
 
 func Unseal(rkfile string) *ce.CustomError {
-	var rootkeys []string
+	var keyparts []string
 	vk := VaultRootKeysStruct{}
 	if err := shared.SetServerAddress(); err != nil {
 		return err
@@ -54,13 +54,13 @@ func Unseal(rkfile string) *ce.CustomError {
 		return err
 	}
 
-	for _, key := range vk.Keys {
-		rootkeys = append(rootkeys, hf.DecodeString(key, ""))
+	for _, shard := range vk.Shards {
+		keyparts = append(keyparts, hf.DecodeString(shard, ""))
 	}
 
-	if len(rootkeys) < vk.MinimumRequired {
+	if len(keyparts) < vk.MinimumRequired {
 		return &ce.CustomError{Title: "Minimal number parts of root keys not met",
-			Message: fmt.Sprintf("Received %d parts, expected %d", len(rootkeys), vk.MinimumRequired)}
+			Message: fmt.Sprintf("Received %d parts, expected %d", len(keyparts), vk.MinimumRequired)}
 	}
 
 	c, err := vadm.NewClient(cfg)
@@ -69,7 +69,7 @@ func Unseal(rkfile string) *ce.CustomError {
 	}
 
 	// TODO : monitor progress and handle errors more gracefully
-	if _, err := c.Unseal(rootkeys[:vk.MinimumRequired]); err != nil {
+	if _, err := c.Unseal(keyparts[:vk.MinimumRequired]); err != nil {
 		return &ce.CustomError{Title: "Unable to unseal Vault", Message: err.Error()}
 	}
 

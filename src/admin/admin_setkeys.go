@@ -40,15 +40,18 @@ func SetRootKeys(rkfile string) *ce.CustomError {
 	for {
 		k := hf.GetPassword("Enter root key part, ENTER to quit : ", shared.DebugMode)
 		if k != "" {
-			vk.Keys = append(vk.Keys, hf.EncodeString(k, ""))
+			vk.Shards = append(vk.Shards, hf.EncodeString(k, ""))
 		} else {
 			break
 		}
 	}
 
-	if len(vk.Keys) < vk.MinimumRequired {
+	if len(vk.Shards) < vk.MinimumRequired {
 		return &ce.CustomError{Title: "Unable to save the root keys",
-			Message: fmt.Sprintf("You have %d keys parts while the minimal number is %d", len(vk.Keys), vk.MinimumRequired)}
+			Message: fmt.Sprintf("You have %d keys parts while the minimal number is %d", len(vk.Shards), vk.MinimumRequired)}
 	}
+
+	vk.InitialRootKey = hf.GetPassword("[OPTIONAL, BUT RECOMMENDED] Enter the initial root key : ", shared.DebugMode)
+	vk.Comments = hf.GetStringValFromPrompt("[OPTIONAL] Enter comments : ")
 	return vk.saveRootKeys(rkfile)
 }

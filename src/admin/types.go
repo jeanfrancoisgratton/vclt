@@ -7,5 +7,7 @@ package admin
 
 type VaultRootKeysStruct struct {
 	MinimumRequired int      `json:"minimumRequired,omitempty"`
-	Keys            []string `json:"keys"`
+	Shards          []string `json:"shards"`
+	InitialRootKey  string   `json:"initialRootKey,omitempty"`
+	Comments        string   `json:"comments,omitempty"`
 }
