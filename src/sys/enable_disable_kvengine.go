@@ -60,7 +60,7 @@ func DisableKVengine(kvEngine string) *ce.CustomError {
 	}
 
 	if !KVDisableConfirm {
-		fmt.Printf(hftx.WarningSign(" CAUTION. This operation is irreversible; are you sure you want to disable it (Y/N) ? "))
+		fmt.Print(hftx.WarningSign(" CAUTION. This operation is irreversible; are you sure you want to disable it (Y/N) ? "))
 		if yesno, err := AskYesNo(); err != nil {
 			return err
 		} else {
