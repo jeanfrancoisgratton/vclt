@@ -40,7 +40,7 @@ func SetRootKeys(rkfile string) *ce.CustomError {
 		vk.MinimumRequired = 0
 	}
 
-	fmt.Println("You will be prompted to enter the root keys. Press ENTER at the prompt when you're done")
+	fmt.Println("You will be prompted to enter the root key parts, one per prompt. Press ENTER at the prompt when you're done")
 
 	for {
 		k := hf.GetPassword("Enter root key part, ENTER to quit : ", shared.DebugMode)
