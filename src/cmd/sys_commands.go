@@ -33,6 +33,19 @@ var sysEnableKVCmd = &cobra.Command{
 	},
 }
 
+var sysDisableKVCmd = &cobra.Command{
+	Use:     "kvdisable KVENGINE_NAME [-y]",
+	Aliases: []string{"disablekv"},
+	Short:   "Disable a KV secret engine",
+	Args:    cobra.ExactArgs(1),
+	Run: func(cmd *cobra.Command, args []string) {
+		if kvDisableErr := sys.DisableKVengine(args[0]); kvDisableErr != nil {
+			fmt.Println(hftfx.SkullBonesSign(kvDisableErr.Error()))
+			os.Exit(1)
+		}
+	},
+}
+
 var listMountsCmd = &cobra.Command{
 	Use:     "listmounts",
 	Aliases: []string{"mounts"},
@@ -47,8 +60,9 @@ var listMountsCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(sysCmd)
-	sysCmd.AddCommand(sysEnableKVCmd, listMountsCmd)
+	sysCmd.AddCommand(sysEnableKVCmd, sysDisableKVCmd, listMountsCmd)
 
 	sysEnableKVCmd.Flags().IntVarP(&sys.KVEngineVersion, "version", "V", 2, "KV engine version")
 	sysEnableKVCmd.Flags().StringVarP(&sys.KVEngineDescription, "desc", "D", "", "KV engine description")
+	sysDisableKVCmd.Flags().BoolVarP(&sys.KVDisableConfirm, "yes", "y", false, "Disable confirmation (assume NO by default)")
 }

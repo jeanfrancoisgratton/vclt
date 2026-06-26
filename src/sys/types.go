@@ -5,5 +5,6 @@
 
 package sys
 
-var KVEngineVersion int = 2
+var KVEngineVersion = 2
 var KVEngineDescription string
+var KVDisableConfirm = false
