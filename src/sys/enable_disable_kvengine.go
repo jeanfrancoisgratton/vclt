@@ -38,6 +38,9 @@ func EnableKVengine(kvEngine string) *ce.CustomError {
 		return &ce.CustomError{Title: "Error enabling kv engine", Message: err.Error()}
 	}
 
+	if !shared.QuietOutput {
+		fmt.Printf("KV engine %s %s\n", kvEngine, hftx.Green("ENABLED"))
+	}
 	return nil
 }
 
@@ -56,13 +59,14 @@ func DisableKVengine(kvEngine string) *ce.CustomError {
 		return &ce.CustomError{Title: "Error creating vault client", Message: cvlrErr.Error()}
 	}
 
-	if KVDisableConfirm {
-		fmt.Println(hftx.WarningSign("CAUTION. This operation is irreversible; are you sure you want to disable it (Y/N) ?"))
+	if !KVDisableConfirm {
+		fmt.Printf(hftx.WarningSign(" CAUTION. This operation is irreversible; are you sure you want to disable it (Y/N) ? "))
 		if yesno, err := AskYesNo(); err != nil {
 			return err
 		} else {
+			fmt.Println()
 			if !yesno {
-				return &ce.CustomError{Fatality: ce.Continuable, Title: "Engine not disabled", Message: "User cancelled"}
+				return &ce.CustomError{Fatality: ce.Continuable, Title: " Engine not disabled", Message: "User cancelled"}
 			}
 		}
 	}
@@ -71,6 +75,9 @@ func DisableKVengine(kvEngine string) *ce.CustomError {
 		return &ce.CustomError{Title: "Error disabling kv engine", Message: err.Error()}
 	}
 
+	if !shared.QuietOutput {
+		fmt.Printf("KV engine %s %s\n", kvEngine, hftx.Red("DISABLED"))
+	}
 	return nil
 }
 
