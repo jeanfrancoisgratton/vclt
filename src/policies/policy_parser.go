@@ -8,6 +8,7 @@ package policies
 import (
 	"encoding/json"
 	"fmt"
+	"math"
 	"os"
 	"sort"
 	"strconv"
@@ -155,6 +156,10 @@ func validateTTL(s string) error {
 // by time.ParseDuration.
 func parseTTLDuration(s string) (time.Duration, error) {
 	if n, err := strconv.ParseUint(s, 10, 64); err == nil {
+		const maxDurationSeconds = uint64(math.MaxInt64) / uint64(time.Second)
+		if n > maxDurationSeconds {
+			return 0, fmt.Errorf("TTL %q exceeds maximum supported duration", s)
+		}
 		return time.Duration(n) * time.Second, nil
 	}
 	return time.ParseDuration(s)
