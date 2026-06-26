@@ -5,6 +5,8 @@
 
 package admin
 
+var OfflineMode = false
+
 type VaultRootKeysStruct struct {
 	MinimumRequired int      `json:"minimumRequired,omitempty"`
 	Shards          []string `json:"shards"`

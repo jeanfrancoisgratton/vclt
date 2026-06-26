@@ -19,3 +19,11 @@ ___
 | [ ] token delete                               |              |          |
 | [ ] token edit                                 |              |          |
 | [ ] better progress handling in admin.Unseal() |              |          |
+
+
+___
+# TASKS
+
+- [ ] Allow `admin setrootkeys` to work in offline mode : 
+  - bypass admin.GetSealStatus()
+  - the `MinimumRequired` member of `VaultRootKeysStruct` should be set to zero in the meantime

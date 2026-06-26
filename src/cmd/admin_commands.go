@@ -81,4 +81,5 @@ func init() {
 	rootCmd.AddCommand(adminCmd)
 	adminCmd.AddCommand(adminSetKeysCmd, adminSealCmd, adminUnsealCmd, listMountsCmd)
 
+	adminSetKeysCmd.Flags().BoolVarP(&admin.OfflineMode, "offline", "o", false, "Set root key parts in offline mode")
 }

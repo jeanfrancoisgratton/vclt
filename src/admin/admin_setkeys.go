@@ -30,11 +30,16 @@ func SetRootKeys(rkfile string) *ce.CustomError {
 	vk := VaultRootKeysStruct{}
 	cfg := admin.AdminConfig{Address: shared.VaultServerAddress}
 
-	status, err := admin.GetSealStatus(cfg)
-	if err != nil {
-		return &ce.CustomError{Title: "Unable to get the server's status", Message: err.Error()}
+	if !OfflineMode {
+		status, err := admin.GetSealStatus(cfg)
+		if err != nil {
+			return &ce.CustomError{Title: "Unable to get the server's status", Message: err.Error()}
+		}
+		vk.MinimumRequired = status.Threshold
+	} else {
+		vk.MinimumRequired = 0
 	}
-	vk.MinimumRequired = status.Threshold
+
 	fmt.Println("You will be prompted to enter the root keys. Press ENTER at the prompt when you're done")
 
 	for {
@@ -47,7 +52,7 @@ func SetRootKeys(rkfile string) *ce.CustomError {
 	}
 
 	if len(vk.Shards) < vk.MinimumRequired {
-		return &ce.CustomError{Title: "Unable to save the root keys",
+		return &ce.CustomError{Title: "Unable to save the root key shards",
 			Message: fmt.Sprintf("You have %d keys parts while the minimal number is %d", len(vk.Shards), vk.MinimumRequired)}
 	}
 
