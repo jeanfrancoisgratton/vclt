@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-PKGDIR="vclt-2.1.0-0_amd64"
+PKGDIR="vclt-2.2.0-0_amd64"
 
 mkdir -p ${PKGDIR}/opt/bin ${PKGDIR}/DEBIAN
 mkdir -p ${PKGDIR}/opt/bin ${PKGDIR}/DEBIAN
