@@ -65,6 +65,24 @@ fi
 %{_bindir}/%{_binaryname}
 
 %changelog
+* Fri Jun 26 2026 Binary package builder <builder@famillegratton.net> 2.2.0-0
+- version bump
+- Potential fix for code scanning alert no. 1: Incorrect conversion between integer types
+- fixed TUI when prompting for a disable confirmation
+- Completed KV engine enable/disable
+- moved secrets to kv, created new sys package
+- commit before major refactoring
+- admin setrootkeys can now work in offline mode
+- Added the initial root key field to rootkeys json
+- completed policy write and read
+- Version numbering scheme change to align with SemVer
+- added the list mounts command
+- added the list mounts command
+- completed policies rm
+- completed policies read
+- initial stub for policies
+- fixed binary name in DEBIAN build scripts
+
 * Thu Jun 18 2026 Binary package builder <builder@famillegratton.net> 2.00.00~DEBUG3-0
 - Completed secrets rm and secrets destroy
 - chore: update changelog for 2.00.00~DEBUG2-0
