@@ -1,9 +1,9 @@
 // vclt
 // Written by J.F.Gratton <jean-francois@famillegratton.net>
-// Original filename: src/secrets/delete_secret.go
+// Original filename: src/kv/delete_secret.go
 // Original timestamp: 2026/06/17 20:01:17
 
-package secrets
+package kv
 
 import (
 	"fmt"

@@ -131,8 +131,8 @@ Lists all secret paths available under the given KV v2 engine mount. Output is r
 
 **Example:**
 ```sh
-vclt secrets list mysecrets
-vclt secrets list mysecrets -x
+vclt kv list mysecrets
+vclt kv list mysecrets -x
 ```
 
 **Token required:** Yes  
@@ -165,10 +165,10 @@ Reads a secret from the KV v2 engine. Without `--field`, all key/value pairs in 
 
 **Examples:**
 ```sh
-vclt secrets read mysecrets db/credentials
-vclt secrets read mysecrets db/credentials -f password
-vclt secrets read mysecrets db/credentials -v 3
-vclt -o json secrets read mysecrets db/credentials
+vclt kv read mysecrets db/credentials
+vclt kv read mysecrets db/credentials -f password
+vclt kv read mysecrets db/credentials -v 3
+vclt -o json kv read mysecrets db/credentials
 ```
 
 **Token required:** Yes  
@@ -192,7 +192,7 @@ Writes a single key/value field to the secret at the given path. If the secret a
 
 **Example:**
 ```sh
-vclt secrets write mysecrets db/credentials password s3cr3t
+vclt kv write mysecrets db/credentials password s3cr3t
 ```
 
 **Token required:** Yes  
@@ -222,13 +222,13 @@ Soft-deletes a secret or a single field within a secret. A soft delete marks the
 **Examples:**
 ```sh
 # Soft-delete the entire secret (latest version)
-vclt secrets rm mysecrets db/credentials
+vclt kv rm mysecrets db/credentials
 
 # Soft-delete a specific version
-vclt secrets rm mysecrets db/credentials -v 2
+vclt kv rm mysecrets db/credentials -v 2
 
 # Remove a single field
-vclt secrets rm mysecrets db/credentials -f password
+vclt kv rm mysecrets db/credentials -f password
 ```
 
 **Token required:** Yes  
@@ -260,8 +260,8 @@ Permanently destroys a secret version. Unlike `rm`, a destroy is irreversible â€
 
 **Example:**
 ```sh
-vclt secrets destroy mysecrets db/old-credentials
-vclt secrets destroy mysecrets db/old-credentials -v 1
+vclt kv destroy mysecrets db/old-credentials
+vclt kv destroy mysecrets db/old-credentials -v 1
 ```
 
 **Token required:** Yes  

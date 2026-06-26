@@ -1,6 +1,6 @@
 // vclt
 // Written by J.F.Gratton <jean-francois@famillegratton.net>
-// Original filename: src/cmd/secret_commands.go
+// Original filename: src/cmd/kv_commands.go
 // Original timestamp: 2026/06/14 12:54:55
 
 package cmd
@@ -59,18 +59,6 @@ If none is provided, $HOME/.config/JFG/vclt/rootkeys.json will be used`,
 			rkfile = args[0]
 		}
 		if admErr := admin.Unseal(rkfile); admErr != nil {
-			fmt.Println(hftfx.SkullBonesSign(admErr.Error()))
-			os.Exit(1)
-		}
-	},
-}
-
-var listMountsCmd = &cobra.Command{
-	Use:     "listmounts",
-	Aliases: []string{"mounts"},
-	Short:   "Lists all mounts (secret engines)",
-	Run: func(cmd *cobra.Command, args []string) {
-		if _, admErr := admin.ListMounts(true); admErr != nil {
 			fmt.Println(hftfx.SkullBonesSign(admErr.Error()))
 			os.Exit(1)
 		}

@@ -1,9 +1,9 @@
 // vclt
 // Written by J.F.Gratton <jean-francois@famillegratton.net>
-// Original filename: src/secrets/get_secret.go
+// Original filename: src/kv/get_secret.go
 // Original timestamp: 2026/06/14 13:13:52
 
-package secrets
+package kv
 
 import (
 	"encoding/json"

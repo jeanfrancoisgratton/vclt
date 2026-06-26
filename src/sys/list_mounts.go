@@ -3,7 +3,7 @@
 // Original filename: src/admin/list_mounts.go
 // Original timestamp: 2026/06/21 19:08:12
 
-package admin
+package sys
 
 import (
 	"os"
@@ -29,7 +29,7 @@ func ListMounts(showOutput bool) ([]sys.MountInfo, *ce.CustomError) {
 	if err != nil {
 		return nil, &ce.CustomError{Title: "Unable to list mounts", Message: err.Error()}
 	}
-	
+
 	if !showOutput {
 		return mounts, nil
 	}

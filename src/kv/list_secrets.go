@@ -1,9 +1,9 @@
 // vclt
 // Written by J.F.Gratton <jean-francois@famillegratton.net>
-// Original filename: src/secrets/list_secrets.go
+// Original filename: src/kv/list_secrets.go
 // Original timestamp: 2026/06/15 12:43:29
 
-package secrets
+package kv
 
 import (
 	"os"
@@ -34,7 +34,7 @@ func ListSecrets(kvEngine string, displayOutput bool) ([]vkvlib.SecretInfo, *ce.
 
 	secretslist, err := client.ListSecrets(ExtendedSecretsList)
 	if err != nil {
-		return nil, &ce.CustomError{Title: "Error listing secrets", Message: err.Error()}
+		return nil, &ce.CustomError{Title: "Error listing kv", Message: err.Error()}
 	}
 
 	if !displayOutput {

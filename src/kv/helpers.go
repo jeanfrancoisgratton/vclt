@@ -1,9 +1,9 @@
 // vclt
 // Written by J.F.Gratton <jean-francois@famillegratton.net>
-// Original filename: src/secrets/helpers.go
+// Original filename: src/kv/helpers.go
 // Original timestamp: 2026/06/14 13:33:05
 
-package secrets
+package kv
 
 import (
 	"encoding/json"
