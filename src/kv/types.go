@@ -9,3 +9,4 @@ var SecretVersion int
 var SecretField string
 var SecretMountPath string
 var ExtendedSecretsList bool
+var Cleartext = false

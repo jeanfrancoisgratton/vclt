@@ -115,4 +115,6 @@ func init() {
 	kvReadCmd.PersistentFlags().StringVarP(&kv.SecretField, "field", "f", "", "Specific field to manage")
 	kvRmCmd.PersistentFlags().StringVarP(&kv.SecretField, "field", "f", "", "Specific field to manage")
 	kvLsCmd.PersistentFlags().BoolVarP(&kv.ExtendedSecretsList, "extended", "x", false, "Show extended info")
+	kvBackupCmd.PersistentFlags().BoolVarP(&kv.Cleartext, "cleartext", "c", false, "Backup cleartext (default: encrypted)")
+	kvRestoreCmd.PersistentFlags().BoolVarP(&kv.Cleartext, "cleartext", "c", false, "Restore cleartext (default: encrypted)")
 }

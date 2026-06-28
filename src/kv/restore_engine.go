@@ -7,9 +7,11 @@ package kv
 
 import (
 	"fmt"
+	"os"
 	"vclt/shared"
 
 	ce "github.com/jeanfrancoisgratton/customError/v3"
+	hf "github.com/jeanfrancoisgratton/helperFunctions/v5"
 	hftx "github.com/jeanfrancoisgratton/helperFunctions/v5/terminalfx"
 	vlr "github.com/jeanfrancoisgratton/vaultLib/kv"
 )
@@ -33,9 +35,25 @@ func RestoreEngine(kvengine, path string) *ce.CustomError {
 		return &ce.CustomError{Title: "Error restoring secrets", Message: beErr.Error()}
 	}
 
+	if !Cleartext {
+		if eerr := decodefile(path); eerr != nil {
+			return eerr
+		}
+	}
+
 	if !shared.QuietOutput {
 		fmt.Printf("%s %s to %s", hftx.EnabledSign("Succesfully dumped"),
 			hftx.Green(kvengine), hftx.Green(path))
+	}
+	return nil
+}
+
+func decodefile(path string) *ce.CustomError {
+	if renameErr := os.Rename(path, path+".enc"); renameErr != nil {
+		return &ce.CustomError{Title: "Error renaming file", Message: renameErr.Error()}
+	}
+	if derr := hf.DecodeFile(path+".enc", path, ""); derr != nil {
+		return &ce.CustomError{Title: "Error encoding file", Message: derr.Error()}
 	}
 	return nil
 }

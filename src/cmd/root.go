@@ -9,9 +9,10 @@ import (
 	"runtime"
 	"strings"
 
+	"vclt/shared"
+
 	hftfx "github.com/jeanfrancoisgratton/helperFunctions/v5/terminalfx"
 	"github.com/spf13/cobra"
-	"vclt/shared"
 )
 
 // rootCmd represents the base command when called without any subcommands
@@ -24,7 +25,7 @@ var versionCmd = &cobra.Command{
 	Use:   "version",
 	Short: "Shows the software version",
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println(hftfx.White("2.2.0 (2026.06.26), Go version = v" + strings.TrimPrefix(runtime.Version(), "go")))
+		fmt.Println(hftfx.White("2.3.1 (2026.06.28), Go version = v" + strings.TrimPrefix(runtime.Version(), "go")))
 	},
 }
 

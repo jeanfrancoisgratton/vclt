@@ -7,9 +7,11 @@ package kv
 
 import (
 	"fmt"
+	"os"
 	"vclt/shared"
 
 	ce "github.com/jeanfrancoisgratton/customError/v3"
+	hf "github.com/jeanfrancoisgratton/helperFunctions/v5"
 	hftx "github.com/jeanfrancoisgratton/helperFunctions/v5/terminalfx"
 	vlr "github.com/jeanfrancoisgratton/vaultLib/kv"
 )
@@ -33,9 +35,25 @@ func BackupEngine(kvengine, path string) *ce.CustomError {
 		return &ce.CustomError{Title: "Error dumping secrets", Message: beErr.Error()}
 	}
 
+	if !Cleartext {
+		if eerr := encodefile(path); eerr != nil {
+			return eerr
+		}
+	}
+
 	if !shared.QuietOutput {
-		fmt.Printf("%s %s to %s", hftx.EnabledSign("Succesfully dumped"),
+		fmt.Printf("%s %s to %s", hftx.EnabledSign("Successfully dumped"),
 			hftx.Green(kvengine), hftx.Green(path))
+	}
+	return nil
+}
+
+func encodefile(path string) *ce.CustomError {
+	if renameErr := os.Rename(path, path+".enc"); renameErr != nil {
+		return &ce.CustomError{Title: "Error renaming file", Message: renameErr.Error()}
+	}
+	if eerr := hf.EncodeFile(path+".enc", path, ""); eerr != nil {
+		return &ce.CustomError{Title: "Error encoding file", Message: eerr.Error()}
 	}
 	return nil
 }
