@@ -5,9 +5,10 @@ go 1.26.4
 require (
 	github.com/jeanfrancoisgratton/customError/v3 v3.0.0
 	github.com/jeanfrancoisgratton/helperFunctions/v5 v5.2.2
-	github.com/jeanfrancoisgratton/vaultLib v1.6.1
+	github.com/jeanfrancoisgratton/vaultLib v1.7.0
 	github.com/jedib0t/go-pretty/v6 v6.8.1
 	github.com/spf13/cobra v1.10.2
+	golang.org/x/term v0.44.0
 )
 
 require (
@@ -35,7 +36,6 @@ require (
 	golang.org/x/crypto v0.53.0 // indirect
 	golang.org/x/net v0.56.0 // indirect
 	golang.org/x/sys v0.46.0 // indirect
-	golang.org/x/term v0.44.0 // indirect
 	golang.org/x/text v0.38.0 // indirect
 	golang.org/x/time v0.15.0 // indirect
 )

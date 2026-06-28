@@ -9,15 +9,16 @@ import (
 	"fmt"
 	"os"
 
+	"vclt/kv"
+
 	hftfx "github.com/jeanfrancoisgratton/helperFunctions/v5/terminalfx"
 	"github.com/spf13/cobra"
-	"vclt/kv"
 )
 
 var kvCmd = &cobra.Command{
 	Use:   "kv",
 	Short: "kv secret management subcommands",
-	Long:  `Allowed commands are { read | write | list | delete | destroy }`,
+	Long:  `Allowed commands are { read | write | list | delete | destroy | backup | restore }`,
 }
 
 var kvReadCmd = &cobra.Command{
@@ -81,9 +82,33 @@ var kvDestroyCmd = &cobra.Command{
 	},
 }
 
+var kvBackupCmd = &cobra.Command{
+	Use:     "backup KV_ENGINE BACKUP_FILE[.json]",
+	Aliases: []string{"dump"},
+	Short:   "Backup a kv engine",
+	Args:    cobra.ExactArgs(2),
+	Run: func(cmd *cobra.Command, args []string) {
+		if err := kv.BackupEngine(args[0], args[1]); err != nil {
+			fmt.Println(hftfx.SkullBonesSign(err.Error()))
+		}
+	},
+}
+
+var kvRestoreCmd = &cobra.Command{
+	Use:     "restore KV_ENGINE BACKUP_FILE[.json]",
+	Aliases: []string{"import"},
+	Short:   "Restore a kv engine",
+	Args:    cobra.ExactArgs(2),
+	Run: func(cmd *cobra.Command, args []string) {
+		if err := kv.RestoreEngine(args[0], args[1]); err != nil {
+			fmt.Println(hftfx.SkullBonesSign(err.Error()))
+		}
+	},
+}
+
 func init() {
 	rootCmd.AddCommand(kvCmd)
-	kvCmd.AddCommand(kvLsCmd, kvReadCmd, kvWriteCmd, kvRmCmd, kvDestroyCmd)
+	kvCmd.AddCommand(kvLsCmd, kvReadCmd, kvWriteCmd, kvRmCmd, kvDestroyCmd, kvBackupCmd, kvRestoreCmd)
 
 	//secretsCmd.PersistentFlags().StringVarP(&kv.SecretMountPath, "mount", "m", "", "KV v2 mount path (required)")
 	kvCmd.PersistentFlags().IntVarP(&kv.SecretVersion, "version", "v", 0, "Secret version (0 = latest available)")

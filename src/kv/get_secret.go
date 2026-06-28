@@ -9,14 +9,16 @@ import (
 	"encoding/json"
 	"fmt"
 
+	"vclt/shared"
+
 	ce "github.com/jeanfrancoisgratton/customError/v3"
 	hfjson "github.com/jeanfrancoisgratton/helperFunctions/v5/prettyjson"
 	hftx "github.com/jeanfrancoisgratton/helperFunctions/v5/terminalfx"
 	vlr "github.com/jeanfrancoisgratton/vaultLib/kv"
-	"vclt/shared"
 )
 
-// ReadSecrets : Reads a secret fron the Vault secret path
+// ReadSecrets: Reads a secret from the Vault secret path
+
 func ReadSecrets(kvengine, path string) *ce.CustomError {
 	// Check for required globals
 	if err := shared.SetVaultToken(); err != nil {
@@ -32,7 +34,7 @@ func ReadSecrets(kvengine, path string) *ce.CustomError {
 		return &ce.CustomError{Title: "Error creating vault client", Message: cvlrErr.Error()}
 	}
 
-	// -f is empty, this means we grab the whole secret
+	// -f is empty; this means we grab the whole secret
 	if SecretField == "" {
 		return allSecrets(client, path)
 	}
