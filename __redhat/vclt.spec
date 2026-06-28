@@ -65,6 +65,13 @@ fi
 %{_bindir}/%{_binaryname}
 
 %changelog
+* Sun Jun 28 2026 Binary package builder <builder@famillegratton.net> 2.3.2-0
+- fixed issue where the temp files were left on the filesystem
+- chore: update changelog for 2.3.1-0
+- Backup and restored kv engines now encode their JSON files
+- fixed path to created binary in DEB building package
+- Fixed debian build script
+
 * Sun Jun 28 2026 Binary package builder <builder@famillegratton.net> 2.3.1-0
 - Backup and restored kv engines now encode their JSON files
 - fixed path to created binary in DEB building package
