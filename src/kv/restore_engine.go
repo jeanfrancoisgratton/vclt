@@ -42,7 +42,7 @@ func RestoreEngine(kvengine, path string) *ce.CustomError {
 	}
 
 	if !shared.QuietOutput {
-		fmt.Printf("%s %s to %s", hftx.EnabledSign("Succesfully dumped"),
+		fmt.Printf("%s %s to %s\n", hftx.EnabledSign("Successfully restored"),
 			hftx.Green(kvengine), hftx.Green(path))
 	}
 	return nil
@@ -54,6 +54,10 @@ func decodefile(path string) *ce.CustomError {
 	}
 	if derr := hf.DecodeFile(path+".enc", path, ""); derr != nil {
 		return &ce.CustomError{Title: "Error encoding file", Message: derr.Error()}
+	}
+
+	if rerr := os.Remove(path + ".enc"); rerr != nil {
+		return &ce.CustomError{Title: "Error removing temp file", Message: rerr.Error()}
 	}
 	return nil
 }

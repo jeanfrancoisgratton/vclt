@@ -42,7 +42,7 @@ func BackupEngine(kvengine, path string) *ce.CustomError {
 	}
 
 	if !shared.QuietOutput {
-		fmt.Printf("%s %s to %s", hftx.EnabledSign("Successfully dumped"),
+		fmt.Printf("%s %s to %s\n", hftx.EnabledSign("Successfully dumped"),
 			hftx.Green(kvengine), hftx.Green(path))
 	}
 	return nil
@@ -53,7 +53,11 @@ func encodefile(path string) *ce.CustomError {
 		return &ce.CustomError{Title: "Error renaming file", Message: renameErr.Error()}
 	}
 	if eerr := hf.EncodeFile(path+".enc", path, ""); eerr != nil {
-		return &ce.CustomError{Title: "Error encoding file", Message: eerr.Error()}
+		return &ce.CustomError{Title: "Error encoding temp file", Message: eerr.Error()}
+	}
+
+	if rerr := os.Remove(path + ".enc"); rerr != nil {
+		return &ce.CustomError{Title: "Error removing temp file", Message: rerr.Error()}
 	}
 	return nil
 }
