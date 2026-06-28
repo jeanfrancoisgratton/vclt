@@ -65,6 +65,11 @@ fi
 %{_bindir}/%{_binaryname}
 
 %changelog
+* Sun Jun 28 2026 Binary package builder <builder@famillegratton.net> 2.3.1-0
+- Backup and restored kv engines now encode their JSON files
+- fixed path to created binary in DEB building package
+- Fixed debian build script
+
 * Sat Jun 27 2026 Binary package builder <builder@famillegratton.net> 2.3.0-0
 - fixed debian build script
 - completed backup and restore
