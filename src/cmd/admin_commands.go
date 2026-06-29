@@ -9,9 +9,10 @@ import (
 	"fmt"
 	"os"
 
+	"vclt/admin"
+
 	hftfx "github.com/jeanfrancoisgratton/helperFunctions/v5/terminalfx"
 	"github.com/spf13/cobra"
-	"vclt/admin"
 )
 
 var adminCmd = &cobra.Command{
@@ -67,7 +68,7 @@ If none is provided, $HOME/.config/JFG/vclt/rootkeys.json will be used`,
 
 func init() {
 	rootCmd.AddCommand(adminCmd)
-	adminCmd.AddCommand(adminSetKeysCmd, adminSealCmd, adminUnsealCmd, listMountsCmd)
+	adminCmd.AddCommand(adminSetKeysCmd, adminSealCmd, adminUnsealCmd)
 
 	adminSetKeysCmd.Flags().BoolVarP(&admin.OfflineMode, "offline", "o", false, "Set root key parts in offline mode")
 }
