@@ -25,7 +25,7 @@ var versionCmd = &cobra.Command{
 	Use:   "version",
 	Short: "Shows the software version",
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println(hftfx.White("vclt 2.3.2 (2026.06.28), Go version = v" + strings.TrimPrefix(runtime.Version(), "go")))
+		fmt.Println(hftfx.White("vclt 2.4.0-PRE (2026.06.28), Go version = v" + strings.TrimPrefix(runtime.Version(), "go")))
 	},
 }
 

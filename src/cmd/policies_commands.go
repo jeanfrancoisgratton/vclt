@@ -9,15 +9,17 @@ import (
 	"fmt"
 	"os"
 
+	"vclt/policies"
+
 	hftfx "github.com/jeanfrancoisgratton/helperFunctions/v5/terminalfx"
 	"github.com/spf13/cobra"
-	"vclt/policies"
 )
 
 var policiesCmd = &cobra.Command{
-	Use:   "policies",
-	Short: "policies management subcommands",
-	Long:  `Allowed commands are { read | write | list | delete }`,
+	Use:     "policy",
+	Aliases: []string{"policies"},
+	Short:   "policies management subcommands",
+	Long:    `Allowed commands are { read | write | list | delete | sample }`,
 }
 
 var policiesReadCmd = &cobra.Command{
@@ -70,8 +72,22 @@ var policiesRmCmd = &cobra.Command{
 	},
 }
 
+var policiesGenerateCmd = &cobra.Command{
+	Use:     "generate FILENAME",
+	Aliases: []string{"gen", "sample"},
+	Short:   "Generate a sample policy file",
+	Long: `Generate a sample policy file in the FILENAME file that can be used as the basis for a new policy.
+This is quite useful to understand how to write a policy in JSON or HCL format. It will also do a syntax check on the file before submitting it to Vault.`,
+	Args: cobra.ExactArgs(1),
+	Run: func(cmd *cobra.Command, args []string) {
+		if err := policies.GenerateSamplePolicy(args[0]); err != nil {
+			fmt.Println(hftfx.SkullBonesSign(err.Error()))
+		}
+	},
+}
+
 func init() {
 	rootCmd.AddCommand(policiesCmd)
-	policiesCmd.AddCommand(policiesReadCmd, policiesWriteCmd, policiesLsCmd, policiesRmCmd)
+	policiesCmd.AddCommand(policiesReadCmd, policiesWriteCmd, policiesLsCmd, policiesRmCmd, policiesGenerateCmd)
 
 }

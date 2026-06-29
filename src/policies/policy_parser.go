@@ -10,25 +10,39 @@ import (
 	"fmt"
 	"math"
 	"os"
+	"path/filepath"
 	"sort"
 	"strconv"
+	"strings"
 	"time"
 )
 
-// ParseFile reads the file at path, validates it as a Vault JSON ACL
+// ParsePolicyFile dispatches to the correct parser based on the file
+// extension: .hcl → HCL parser, .json (or anything else) → JSON parser.
+// The returned string is ready to pass directly to policies.CreatePolicy.
+func ParsePolicyFile(path string) (string, error) {
+	switch strings.ToLower(filepath.Ext(path)) {
+	case ".hcl":
+		return ParseHCLFile(path)
+	default:
+		return ParseJSONFile(path)
+	}
+}
+
+// ParseJSONFile reads the file at path, validates it as a Vault JSON ACL
 // policy, and returns the canonical re-marshaled JSON text ready to pass
 // directly to policies.CreatePolicy as the rules argument.
-func ParseFile(path string) (string, error) {
+func ParseJSONFile(path string) (string, error) {
 	raw, err := os.ReadFile(path)
 	if err != nil {
 		return "", fmt.Errorf("reading policy file %s: %w", path, err)
 	}
-	return Parse(raw)
+	return ParseJSON(raw)
 }
 
-// Parse validates raw JSON bytes as a Vault ACL policy document and
+// ParseJSON validates raw JSON bytes as a Vault ACL policy document and
 // returns the canonical re-marshaled JSON text.
-func Parse(raw []byte) (string, error) {
+func ParseJSON(raw []byte) (string, error) {
 	var doc Document
 	if err := json.Unmarshal(raw, &doc); err != nil {
 		return "", fmt.Errorf("invalid policy JSON: %w", err)
