@@ -6,7 +6,7 @@ require (
 	github.com/jeanfrancoisgratton/customError/v3 v3.0.0
 	github.com/jeanfrancoisgratton/helperFunctions/v5 v5.3.0
 	github.com/jeanfrancoisgratton/vaultLib v1.7.0
-	github.com/jedib0t/go-pretty/v6 v6.8.1
+	github.com/jedib0t/go-pretty/v6 v6.8.2
 	github.com/spf13/cobra v1.10.2
 	golang.org/x/term v0.44.0
 )
