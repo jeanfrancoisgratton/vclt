@@ -8,10 +8,11 @@ package policies
 import (
 	"fmt"
 
+	"vclt/shared"
+
 	ce "github.com/jeanfrancoisgratton/customError/v3"
 	hftfx "github.com/jeanfrancoisgratton/helperFunctions/v5/terminalfx"
-	vpol "github.com/jeanfrancoisgratton/vaultLib/policies"
-	"vclt/shared"
+	vpol "github.com/jeanfrancoisgratton/vaultlib/v2/policies"
 )
 
 func DeletePolicies(policies []string) *ce.CustomError {

@@ -44,6 +44,10 @@ github.com/jeanfrancoisgratton/helperFunctions/v5 v5.3.0 h1:pfCMOyHAR4g2GkKO0VZo
 github.com/jeanfrancoisgratton/helperFunctions/v5 v5.3.0/go.mod h1:/Gqu5QjH1uRIc9FEnUivAlLcqoYmFimyfQy8nWs5Yfk=
 github.com/jeanfrancoisgratton/vaultLib v1.7.0 h1:AQHFxjIS1jlrCNy9jPbrqTOVy3vJ3N+ffurPrfQei0o=
 github.com/jeanfrancoisgratton/vaultLib v1.7.0/go.mod h1:S/+TejXmAe03X/uRiZoZWnfw4zEdYCoZTzwnGRSYwO4=
+github.com/jeanfrancoisgratton/vaultLib v1.7.1 h1:RwGGXUAa6VeCoYu01Sv9Q9Lqxvr2OdmlLZTmJEfOiXc=
+github.com/jeanfrancoisgratton/vaultLib v1.7.1/go.mod h1:tlVHks4EOUVxcouvqwp+PVJ8Q/N7KgbQzFR8c53KfWI=
+github.com/jeanfrancoisgratton/vaultlib/v2 v2.0.0 h1:4RqtzrfAFI3zigtw1SlgOvu1SOb9UfxMvMQIR3Uv6Nw=
+github.com/jeanfrancoisgratton/vaultlib/v2 v2.0.0/go.mod h1:sk6bRNMl4QWCLtszaUZMhGin3LuPcsI6Hw3G50IUASo=
 github.com/jedib0t/go-pretty/v6 v6.8.1 h1:0fkCNhjrX0zPpwkWaDYU5VMrygg41Tu197mWILIJoqQ=
 github.com/jedib0t/go-pretty/v6 v6.8.1/go.mod h1:YwC5CE4fJ1HFUDeivSV1r//AmANFHyqczZk+U6BDALU=
 github.com/jedib0t/go-pretty/v6 v6.8.2 h1:FmKNr1GOyot/zqNQplE8HLhFguJaeHJTCArntnI4uxE=

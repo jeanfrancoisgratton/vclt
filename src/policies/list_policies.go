@@ -8,11 +8,12 @@ package policies
 import (
 	"os"
 
+	"vclt/shared"
+
 	ce "github.com/jeanfrancoisgratton/customError/v3"
-	vpollib "github.com/jeanfrancoisgratton/vaultLib/policies"
+	vpollib "github.com/jeanfrancoisgratton/vaultlib/v2/policies"
 	"github.com/jedib0t/go-pretty/v6/table"
 	"github.com/jedib0t/go-pretty/v6/text"
-	"vclt/shared"
 )
 
 func List(showOutput bool) ([]string, *ce.CustomError) {

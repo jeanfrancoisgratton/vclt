@@ -9,12 +9,13 @@ import (
 	"os"
 	"strconv"
 
+	"vclt/shared"
+
 	ce "github.com/jeanfrancoisgratton/customError/v3"
 	hftx "github.com/jeanfrancoisgratton/helperFunctions/v5/terminalfx"
-	vkvlib "github.com/jeanfrancoisgratton/vaultLib/kv"
+	vkvlib "github.com/jeanfrancoisgratton/vaultlib/v2/kv"
 	"github.com/jedib0t/go-pretty/v6/table"
 	"github.com/jedib0t/go-pretty/v6/text"
-	"vclt/shared"
 )
 
 func ListSecrets(kvEngine string, displayOutput bool) ([]vkvlib.SecretInfo, *ce.CustomError) {

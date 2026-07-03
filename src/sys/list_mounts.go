@@ -8,11 +8,12 @@ package sys
 import (
 	"os"
 
+	"vclt/shared"
+
 	ce "github.com/jeanfrancoisgratton/customError/v3"
-	"github.com/jeanfrancoisgratton/vaultLib/sys"
+	"github.com/jeanfrancoisgratton/vaultlib/v2/sys"
 	"github.com/jedib0t/go-pretty/v6/table"
 	"github.com/jedib0t/go-pretty/v6/text"
-	"vclt/shared"
 )
 
 func ListMounts(showOutput bool) ([]sys.MountInfo, *ce.CustomError) {

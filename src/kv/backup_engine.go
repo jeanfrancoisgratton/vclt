@@ -13,7 +13,7 @@ import (
 	ce "github.com/jeanfrancoisgratton/customError/v3"
 	hf "github.com/jeanfrancoisgratton/helperFunctions/v5"
 	hftx "github.com/jeanfrancoisgratton/helperFunctions/v5/terminalfx"
-	vlr "github.com/jeanfrancoisgratton/vaultLib/kv"
+	vlr "github.com/jeanfrancoisgratton/vaultlib/v2/kv"
 )
 
 func BackupEngine(kvengine, path string) *ce.CustomError {

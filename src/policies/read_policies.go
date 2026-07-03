@@ -9,11 +9,12 @@ import (
 	"encoding/json"
 	"fmt"
 
+	"vclt/shared"
+
 	ce "github.com/jeanfrancoisgratton/customError/v3"
 	hfjson "github.com/jeanfrancoisgratton/helperFunctions/v5/prettyjson"
 	hftx "github.com/jeanfrancoisgratton/helperFunctions/v5/terminalfx"
-	vpol "github.com/jeanfrancoisgratton/vaultLib/policies"
-	"vclt/shared"
+	vpol "github.com/jeanfrancoisgratton/vaultlib/v2/policies"
 )
 
 func ReadPolicy(pname string, showOutput bool) (*vpol.Policy, *ce.CustomError) {

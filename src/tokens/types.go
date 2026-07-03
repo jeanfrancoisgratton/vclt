@@ -9,3 +9,4 @@ var TokenPolicies string
 var TokenTTL string
 var TokenOrphaned bool
 var TokenRenewable bool
+var SaveTokenToFile string

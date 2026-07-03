@@ -9,9 +9,10 @@ import (
 	"fmt"
 	"os"
 
-	hftfx "github.com/jeanfrancoisgratton/helperFunctions/v5/terminalfx"
-	"github.com/spf13/cobra"
 	"vclt/sys"
+
+	hftx "github.com/jeanfrancoisgratton/helperFunctions/v5/terminalfx"
+	"github.com/spf13/cobra"
 )
 
 var sysCmd = &cobra.Command{
@@ -27,7 +28,7 @@ var sysEnableKVCmd = &cobra.Command{
 	Args:    cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		if kvEnableErr := sys.EnableKVengine(args[0]); kvEnableErr != nil {
-			fmt.Println(hftfx.SkullBonesSign(kvEnableErr.Error()))
+			fmt.Println(hftx.SkullBonesSign(kvEnableErr.Error()))
 			os.Exit(1)
 		}
 	},
@@ -40,7 +41,7 @@ var sysDisableKVCmd = &cobra.Command{
 	Args:    cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		if kvDisableErr := sys.DisableKVengine(args[0]); kvDisableErr != nil {
-			fmt.Println(hftfx.SkullBonesSign(kvDisableErr.Error()))
+			fmt.Println(hftx.SkullBonesSign(kvDisableErr.Error()))
 			os.Exit(1)
 		}
 	},
@@ -52,7 +53,7 @@ var listMountsCmd = &cobra.Command{
 	Short:   "Lists all mounts (secret engines)",
 	Run: func(cmd *cobra.Command, args []string) {
 		if _, admErr := sys.ListMounts(true); admErr != nil {
-			fmt.Println(hftfx.SkullBonesSign(admErr.Error()))
+			fmt.Println(hftx.SkullBonesSign(admErr.Error()))
 			os.Exit(1)
 		}
 	},

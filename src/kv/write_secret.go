@@ -6,9 +6,10 @@
 package kv
 
 import (
-	ce "github.com/jeanfrancoisgratton/customError/v3"
-	vlr "github.com/jeanfrancoisgratton/vaultLib/kv"
 	"vclt/shared"
+
+	ce "github.com/jeanfrancoisgratton/customError/v3"
+	vlr "github.com/jeanfrancoisgratton/vaultlib/v2/kv"
 )
 
 func WriteSecrets(kvengine, path, key, value string) (*vlr.WriteResult, *ce.CustomError) {

@@ -11,7 +11,7 @@ import (
 
 	"vclt/admin"
 
-	hftfx "github.com/jeanfrancoisgratton/helperFunctions/v5/terminalfx"
+	hftx "github.com/jeanfrancoisgratton/helperFunctions/v5/terminalfx"
 	"github.com/spf13/cobra"
 )
 
@@ -32,7 +32,7 @@ If no filename is provided, $HOME/.config/JFG/vclt/rootkeys.json will be created
 			rkfile = args[0]
 		}
 		if admErr := admin.SetRootKeys(rkfile); admErr != nil {
-			fmt.Println(hftfx.SkullBonesSign(admErr.Error()))
+			fmt.Println(hftx.SkullBonesSign(admErr.Error()))
 			os.Exit(1)
 		}
 	},
@@ -43,7 +43,7 @@ var adminSealCmd = &cobra.Command{
 	Short: "Seal your Hashicorp Vault",
 	Run: func(cmd *cobra.Command, args []string) {
 		if admErr := admin.Seal(); admErr != nil {
-			fmt.Println(hftfx.SkullBonesSign(admErr.Error()))
+			fmt.Println(hftx.SkullBonesSign(admErr.Error()))
 			os.Exit(1)
 		}
 	},
@@ -60,7 +60,7 @@ If none is provided, $HOME/.config/JFG/vclt/rootkeys.json will be used`,
 			rkfile = args[0]
 		}
 		if admErr := admin.Unseal(rkfile); admErr != nil {
-			fmt.Println(hftfx.SkullBonesSign(admErr.Error()))
+			fmt.Println(hftx.SkullBonesSign(admErr.Error()))
 			os.Exit(1)
 		}
 	},

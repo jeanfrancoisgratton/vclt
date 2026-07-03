@@ -14,7 +14,7 @@ import (
 	ce "github.com/jeanfrancoisgratton/customError/v3"
 	hfjson "github.com/jeanfrancoisgratton/helperFunctions/v5/prettyjson"
 	hftx "github.com/jeanfrancoisgratton/helperFunctions/v5/terminalfx"
-	vlr "github.com/jeanfrancoisgratton/vaultLib/kv"
+	vlr "github.com/jeanfrancoisgratton/vaultlib/v2/kv"
 )
 
 // ReadSecrets: Reads a secret from the Vault secret path

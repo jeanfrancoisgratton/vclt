@@ -10,8 +10,8 @@ import (
 	"vclt/shared"
 
 	ce "github.com/jeanfrancoisgratton/customError/v3"
-	hftfx "github.com/jeanfrancoisgratton/helperFunctions/v5/terminalfx"
-	vpol "github.com/jeanfrancoisgratton/vaultLib/policies"
+	hftx "github.com/jeanfrancoisgratton/helperFunctions/v5/terminalfx"
+	vpol "github.com/jeanfrancoisgratton/vaultlib/v2/policies"
 )
 
 // WritePolicy reads a Vault ACL policy from a JSON or HCL file, validates
@@ -48,7 +48,7 @@ func WritePolicy(policyName, policyFile string) *ce.CustomError {
 	}
 
 	if !shared.QuietOutput {
-		fmt.Println(hftfx.EnabledSign("Created policy "+hftfx.Green(policyName)) + " from " + policyFile)
+		fmt.Println(hftx.EnabledSign("Created policy "+hftx.Green(policyName)) + " from " + policyFile)
 	}
 	return nil
 }

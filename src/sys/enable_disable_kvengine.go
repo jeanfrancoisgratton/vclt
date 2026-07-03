@@ -11,7 +11,7 @@ import (
 
 	ce "github.com/jeanfrancoisgratton/customError/v3"
 	hftx "github.com/jeanfrancoisgratton/helperFunctions/v5/terminalfx"
-	"github.com/jeanfrancoisgratton/vaultLib/sys"
+	"github.com/jeanfrancoisgratton/vaultlib/v2/sys"
 	"golang.org/x/term"
 
 	"vclt/shared"

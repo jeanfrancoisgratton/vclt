@@ -8,10 +8,11 @@ package kv
 import (
 	"fmt"
 
+	"vclt/shared"
+
 	ce "github.com/jeanfrancoisgratton/customError/v3"
 	hftx "github.com/jeanfrancoisgratton/helperFunctions/v5/terminalfx"
-	vlr "github.com/jeanfrancoisgratton/vaultLib/kv"
-	"vclt/shared"
+	vlr "github.com/jeanfrancoisgratton/vaultlib/v2/kv"
 )
 
 func DeleteSecret(kvengine, path string) *ce.CustomError {
