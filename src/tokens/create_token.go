@@ -6,7 +6,9 @@
 package tokens
 
 import (
+	"encoding/json"
 	"fmt"
+	"os"
 	"strconv"
 	"strings"
 	"time"
@@ -96,6 +98,17 @@ func splitPolicies(policies string) []string {
 	return strings.Split(policies, ",")
 }
 
-func saveTokenInfoToFile(SaveTokenToFile string, tkninfo *tkn.TokenAuth) *ce.CustomError {
+func saveTokenInfoToFile(TokenSavefile string, tkninfo *tkn.TokenAuth) *ce.CustomError {
+	jStream, err := json.MarshalIndent(tkninfo, "", "  ")
+	if err != nil {
+		return &ce.CustomError{Title: err.Error()}
+	}
+
+	if !strings.HasSuffix(strings.ToLower(TokenSavefile), ".json") {
+		TokenSavefile += ".json"
+	}
+	if err := os.WriteFile(TokenSavefile, jStream, 0600); err != nil {
+		return &ce.CustomError{Title: "Unable to write root keys json file", Message: err.Error()}
+	}
 	return nil
 }
