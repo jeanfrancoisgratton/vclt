@@ -1,4 +1,4 @@
-// dvol
+// vclt
 // Written by J.F. Gratton <jean-francois@famillegratton.net>
 // Original timestamp: 2025/09/15 08:35
 // Original filename: src/cmd/completion.go

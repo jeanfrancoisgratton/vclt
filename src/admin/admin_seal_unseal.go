@@ -11,7 +11,7 @@ import (
 	ce "github.com/jeanfrancoisgratton/customError/v3"
 	hf "github.com/jeanfrancoisgratton/helperFunctions/v5"
 	hftx "github.com/jeanfrancoisgratton/helperFunctions/v5/terminalfx"
-	vadm "github.com/jeanfrancoisgratton/vaultLib/admin"
+	vadm "github.com/jeanfrancoisgratton/vaultlib/v2/admin"
 	"vclt/shared"
 )
 

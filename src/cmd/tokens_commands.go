@@ -1,7 +1,7 @@
 // vclt
 // Written by J.F.Gratton <jean-francois@famillegratton.net>
-// Original filename: src/cmd/policies_commands.go
-// Original timestamp: 2026/06/20 20:16:25
+// Original filename: src/cmd/tokens_commands.go
+// Original timestamp: 2026/06/30 11:22:39
 
 package cmd
 
@@ -19,7 +19,7 @@ var tokensCmd = &cobra.Command{
 	Use:     "token",
 	Aliases: []string{"tokens"},
 	Short:   "tokens management subcommands",
-	Long:    `Allowed commands are { read | write | list | revoke | lookup | lookupself }`,
+	Long:    `Allowed commands are { create | revoke | renew | lookup | self | accessors }`,
 }
 
 var tokenCreateCmd = &cobra.Command{
@@ -52,7 +52,7 @@ var tokenRevokeCmd = &cobra.Command{
 
 var tokenRenewCmd = &cobra.Command{
 	Use:   "renew TOKEN_NAME",
-	Short: "Renew the token TOKEN_NAME. The -i flags sets the new lease duration",
+	Short: "Renew the token TOKEN_NAME. The -d flag sets the new lease duration",
 	Args:  cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		if tknErr := tokens.RenewToken(args[0]); tknErr != nil {
@@ -76,7 +76,7 @@ var tokenLookupCmd = &cobra.Command{
 
 var tokenLookupSelfCmd = &cobra.Command{
 	Use:   "self",
-	Short: "Renew the token TOKEN_NAME. The -i flags sets the new lease duration",
+	Short: "Displays the info about the token currently in use",
 	Run: func(cmd *cobra.Command, args []string) {
 		if _, tknErr := tokens.LookupSelf(true); tknErr != nil {
 			fmt.Println(hftfx.SkullBonesSign(tknErr.Error()))
@@ -98,10 +98,10 @@ var tokenListAccessorsCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(tokensCmd)
-	tokensCmd.AddCommand(tokenCreateCmd, tokenRevokeCmd, tokenLookupSelfCmd, tokenLookupCmd, tokenListAccessorsCmd)
+	tokensCmd.AddCommand(tokenCreateCmd, tokenRevokeCmd, tokenRenewCmd, tokenLookupSelfCmd, tokenLookupCmd, tokenListAccessorsCmd)
 
 	tokenCreateCmd.Flags().StringVarP(&tokens.TokenPolicies, "policies", "P", "", "comma-separated list of policies that should be used for the token")
-	tokenCreateCmd.Flags().StringVarP(&tokens.TokenTTL, "ttl", "T", "1h", "token TTL (defaults to 1hour")
+	tokenCreateCmd.Flags().StringVarP(&tokens.TokenTTL, "ttl", "T", "1h", "token TTL (defaults to 1h)")
 	tokenCreateCmd.Flags().BoolVarP(&tokens.TokenOrphaned, "orphaned", "o", true, "orphaned token")
 	tokenCreateCmd.Flags().BoolVarP(&tokens.TokenRenewable, "renewable", "r", true, "renewable token")
 	tokenCreateCmd.Flags().StringVarP(&tokens.TokenSavefile, "file", "f", "", "save token info to file")

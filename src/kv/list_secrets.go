@@ -54,7 +54,7 @@ func ListSecrets(kvEngine string, displayOutput bool) ([]vkvlib.SecretInfo, *ce.
 		t.AppendRow(table.Row{secret.Path, s})
 	}
 	t.SortBy([]table.SortBy{
-		{Name: "Name", Mode: table.Asc},
+		{Name: "Secret path", Mode: table.Asc},
 	})
 	//t.SetStyle(table.StyleColoredBlueWhiteOnBlack)
 	t.SetStyle(table.StyleColoredYellowWhiteOnBlack)

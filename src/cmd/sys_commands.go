@@ -1,7 +1,7 @@
 // vclt
 // Written by J.F.Gratton <jean-francois@famillegratton.net>
-// Original filename: src/cmd/kv_commands.go
-// Original timestamp: 2026/06/14 12:54:55
+// Original filename: src/cmd/sys_commands.go
+// Original timestamp: 2026/06/25 20:47:29
 
 package cmd
 
@@ -18,7 +18,7 @@ import (
 var sysCmd = &cobra.Command{
 	Use:   "sys",
 	Short: "system management subcommands",
-	Long:  `Allowed commands are { kvenable | kvdisable | listmounts | delete | destroy }`,
+	Long:  `Allowed commands are { kvenable | kvdisable | listmounts }`,
 }
 
 var sysEnableKVCmd = &cobra.Command{

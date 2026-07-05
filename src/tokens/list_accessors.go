@@ -1,13 +1,12 @@
 // vclt
 // Written by J.F.Gratton <jean-francois@famillegratton.net>
-// Original filename: src/tokens/tist_accessors.go
+// Original filename: src/tokens/list_accessors.go
 // Original timestamp: 2026/07/04 21:21:36
 
 package tokens
 
 import (
 	"fmt"
-	"log"
 	"vclt/shared"
 
 	ce "github.com/jeanfrancoisgratton/customError/v3"
@@ -32,7 +31,7 @@ func ListAccessors() *ce.CustomError {
 
 	accessors, err := client.ListAccessors()
 	if err != nil {
-		log.Fatal(err)
+		return &ce.CustomError{Title: "Error listing token accessors", Message: err.Error()}
 	}
 
 	fmt.Println(hftx.Green("Current accessors:"))

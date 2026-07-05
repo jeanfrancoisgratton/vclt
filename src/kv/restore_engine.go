@@ -8,6 +8,7 @@ package kv
 import (
 	"fmt"
 	"os"
+	"path/filepath"
 	"vclt/shared"
 
 	ce "github.com/jeanfrancoisgratton/customError/v3"
@@ -31,33 +32,40 @@ func RestoreEngine(kvengine, path string) *ce.CustomError {
 		return &ce.CustomError{Title: "Error creating vault client", Message: cvlrErr.Error()}
 	}
 
-	if beErr := c.BackupEngine(path); beErr != nil {
-		return &ce.CustomError{Title: "Error restoring secrets", Message: beErr.Error()}
+	// An encoded backup must be decoded before it can be fed to the restore
+	// endpoint. We decode into a temp file and leave the original untouched.
+	restorePath := path
+	if !Cleartext {
+		decoded, derr := decode2temp(path)
+		if derr != nil {
+			return derr
+		}
+		defer os.Remove(decoded)
+		restorePath = decoded
 	}
 
-	if !Cleartext {
-		if eerr := decodefile(path); eerr != nil {
-			return eerr
-		}
+	if reErr := c.RestoreEngine(restorePath); reErr != nil {
+		return &ce.CustomError{Title: "Error restoring secrets", Message: reErr.Error()}
 	}
 
 	if !shared.QuietOutput {
-		fmt.Printf("%s %s to %s\n", hftx.EnabledSign("Successfully restored"),
+		fmt.Printf("%s %s from %s\n", hftx.EnabledSign("Successfully restored"),
 			hftx.Green(kvengine), hftx.Green(path))
 	}
 	return nil
 }
 
-func decodefile(path string) *ce.CustomError {
-	if renameErr := os.Rename(path, path+".enc"); renameErr != nil {
-		return &ce.CustomError{Title: "Error renaming file", Message: renameErr.Error()}
+func decode2temp(path string) (string, *ce.CustomError) {
+	tmp, err := os.CreateTemp(filepath.Dir(path), filepath.Base(path)+".dec-*")
+	if err != nil {
+		return "", &ce.CustomError{Title: "Error creating temp file", Message: err.Error()}
 	}
-	if derr := hf.DecodeFile(path+".enc", path, ""); derr != nil {
-		return &ce.CustomError{Title: "Error encoding file", Message: derr.Error()}
-	}
+	tmpPath := tmp.Name()
+	tmp.Close()
 
-	if rerr := os.Remove(path + ".enc"); rerr != nil {
-		return &ce.CustomError{Title: "Error removing temp file", Message: rerr.Error()}
+	if derr := hf.DecodeFile(path, tmpPath, ""); derr != nil {
+		os.Remove(tmpPath)
+		return "", &ce.CustomError{Title: "Error decoding backup file", Message: derr.Error()}
 	}
-	return nil
+	return tmpPath, nil
 }

@@ -45,6 +45,6 @@ func init() {
 	rootCmd.PersistentFlags().BoolVarP(&shared.QuietOutput, "quiet", "q", false, "Display output to stdout")
 	rootCmd.PersistentFlags().BoolVarP(&shared.DebugMode, "debug", "d", false, "Debug mode")
 	rootCmd.PersistentFlags().StringVarP(&shared.VaultAuthToken, "token", "t", "", "Vault token (or use VAULT_TOKEN)")
-	rootCmd.PersistentFlags().StringVarP(&shared.VaultServerAddress, "address", "a", "", "Vault server address (or use VAULT_ADDRESS)")
+	rootCmd.PersistentFlags().StringVarP(&shared.VaultServerAddress, "address", "a", "", "Vault server address (or use VAULT_ADDR)")
 	//rootCmd.PersistentFlags().StringVarP(&shared.OutputFormat, "output", "o", "text", "Output format: text|json")
 }

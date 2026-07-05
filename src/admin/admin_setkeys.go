@@ -11,7 +11,7 @@ import (
 
 	ce "github.com/jeanfrancoisgratton/customError/v3"
 	hf "github.com/jeanfrancoisgratton/helperFunctions/v5"
-	"github.com/jeanfrancoisgratton/vaultLib/admin"
+	vadm "github.com/jeanfrancoisgratton/vaultlib/v2/admin"
 	"vclt/shared"
 )
 
@@ -28,10 +28,10 @@ func SetRootKeys(rkfile string) *ce.CustomError {
 	}
 
 	vk := VaultRootKeysStruct{}
-	cfg := admin.AdminConfig{Address: shared.VaultServerAddress}
+	cfg := vadm.AdminConfig{Address: shared.VaultServerAddress}
 
 	if !OfflineMode {
-		status, err := admin.GetSealStatus(cfg)
+		status, err := vadm.GetSealStatus(cfg)
 		if err != nil {
 			return &ce.CustomError{Title: "Unable to get the server's status", Message: err.Error()}
 		}

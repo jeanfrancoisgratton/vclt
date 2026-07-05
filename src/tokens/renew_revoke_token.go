@@ -41,7 +41,7 @@ func RevokeToken(tokenName string) *ce.CustomError {
 	return nil
 }
 
-// RenewToken: renew the given token. If the -i flag is unset, a lease will be set to 1h
+// RenewToken: renew the given token. If the -d flag is unset, a lease will be set to 1h
 
 func RenewToken(tokenName string) *ce.CustomError {
 	// Check for required globals

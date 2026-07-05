@@ -35,30 +35,28 @@ func LookupSelf(displayOutput bool) (*tkn.TokenInfo, *ce.CustomError) {
 		return nil, &ce.CustomError{Title: "Error creating vault client", Message: cvlrErr.Error()}
 	}
 
-	if self, err := client.LookupSelf(); err != nil {
+	self, err := client.LookupSelf()
+	if err != nil {
 		return nil, &ce.CustomError{Title: "Error looking up token", Message: err.Error()}
-	} else {
-		if shared.OutputFormat == "json" {
-			payload, jerr := json.MarshalIndent(self, "", "  ")
-			if jerr != nil {
-				return nil, &ce.CustomError{Title: "Error serializing payload", Message: jerr.Error()}
-			}
-			if e := hfjson.Print(payload); e != nil {
-				return nil, &ce.CustomError{Title: "Unable to render token's payload", Message: e.Error()}
-			}
-		} else {
-			if displayOutput {
-				displayTokenInformation("self", self)
-			}
+	}
+	if shared.OutputFormat == "json" {
+		payload, jerr := json.MarshalIndent(self, "", "  ")
+		if jerr != nil {
+			return nil, &ce.CustomError{Title: "Error serializing payload", Message: jerr.Error()}
 		}
-		if TokenSavefile != "" {
-			if err := saveTokenInfo2file(TokenSavefile, self); err != nil {
-				return self, err
-			}
+		if e := hfjson.Print(payload); e != nil {
+			return nil, &ce.CustomError{Title: "Unable to render token's payload", Message: e.Error()}
+		}
+	} else if displayOutput {
+		displayTokenInformation("self", self)
+	}
+	if TokenSavefile != "" {
+		if err := saveTokenInfo2file(TokenSavefile, self); err != nil {
+			return self, err
 		}
 	}
 
-	return nil, nil
+	return self, nil
 }
 
 func LookupToken(tokenName string, displayoutput bool) (*tkn.TokenInfo, *ce.CustomError) {
@@ -76,35 +74,33 @@ func LookupToken(tokenName string, displayoutput bool) (*tkn.TokenInfo, *ce.Cust
 		return nil, &ce.CustomError{Title: "Error creating vault client", Message: cvlrErr.Error()}
 	}
 
-	if tok, err := client.LookupToken(tokenName); err != nil {
+	tok, err := client.LookupToken(tokenName)
+	if err != nil {
 		return nil, &ce.CustomError{Title: "Error looking up token", Message: err.Error()}
-	} else {
-		if shared.OutputFormat == "json" {
-			payload, jerr := json.MarshalIndent(tok, "", "  ")
-			if jerr != nil {
-				return nil, &ce.CustomError{Title: "Error serializing payload", Message: jerr.Error()}
-			}
-			if e := hfjson.Print(payload); e != nil {
-				return nil, &ce.CustomError{Title: "Unable to render token's payload", Message: e.Error()}
-			}
-		} else {
-			if displayoutput {
-				displayTokenInformation(tokenName, tok)
-			}
+	}
+	if shared.OutputFormat == "json" {
+		payload, jerr := json.MarshalIndent(tok, "", "  ")
+		if jerr != nil {
+			return nil, &ce.CustomError{Title: "Error serializing payload", Message: jerr.Error()}
 		}
-		if TokenSavefile != "" {
-			if err := saveTokenInfo2file(TokenSavefile, tok); err != nil {
-				return tok, err
-			}
+		if e := hfjson.Print(payload); e != nil {
+			return nil, &ce.CustomError{Title: "Unable to render token's payload", Message: e.Error()}
+		}
+	} else if displayoutput {
+		displayTokenInformation(tokenName, tok)
+	}
+	if TokenSavefile != "" {
+		if err := saveTokenInfo2file(TokenSavefile, tok); err != nil {
+			return tok, err
 		}
 	}
 
-	return nil, nil
+	return tok, nil
 }
 
 // small helper function to dump the token to the TTY
 func displayTokenInformation(tokenName string, tkn *tkn.TokenInfo) {
-	fmt.Printf("\nToken: %s\n\n", hftx.Green("tokenName"))
+	fmt.Printf("\nToken: %s\n\n", hftx.Green(tokenName))
 	fmt.Println(hftx.Green("ID: "), tkn.ID)
 	fmt.Println(hftx.Green("Display name: "), tkn.DisplayName)
 	fmt.Println(hftx.Green("Token accessor: "), tkn.Accessor)
