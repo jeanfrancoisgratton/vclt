@@ -9,9 +9,9 @@ REPOROOT  := $(shell git rev-parse --show-toplevel)
 NEXUSREPO := dnfLocal
 TAG       := v$(VERSION)
 
-.PHONY: tarball rpm rpmcl clean upload changelog commitcl check-tags
+.PHONY: tag release tarball check-tags changelog rpm rpmcl upload commitcl clean
 
-# Intended workflow: make rpm → make upload → make commitcl
+# Intended workflow: make release
 
 tarball:
 	git -C $(REPOROOT) archive --prefix=$(NAME)-$(VERSION)/ HEAD \
@@ -48,9 +48,20 @@ upload:
 	nxtools upload -r $(NEXUSREPO) $(DEST)/$(NAME)-$(VERSION)-$(RELEASE).x86_64.rpm
 
 commitcl:
-	git add vclt.spec
+	git add ${SPEC}
 	git commit -m "chore: update changelog for $(VERSION)-$(RELEASE)"
 
 clean:
 	rm -f  $(SOURCES)/$(NAME)-$(VERSION).tar.gz
 	rm -rf $(HOME)/rpmbuild/BUILD/$(NAME)-$(VERSION)
+
+tag:
+	git tag -a v${VERSION} -m 'v${VERSION}'
+	git push origin v${VERSION}
+
+release:
+	${MAKE} rpmcl
+	${MAKE} commitcl
+	git push
+	${MAKE} upload
+	${MAKE} tag
