@@ -917,26 +917,41 @@ All package formats are built inside dedicated Docker containers. The following 
 
 The `__redhat/` directory contains a `Makefile` that drives the full RPM workflow.
 
+**Key principle:** the spec file (`%define _version` / `%define _rel`) is the single source of truth for the version, and a release is **tagged last** — after it has been built. A git tag marks that a version exists; a *release* means that version was actually built into a package inside the `rpmbuilder` container. Tagging before building would leave the `%changelog` range empty.
+
+The end-to-end flow has two phases:
+
 ```sh
-cd __redhat
+# --- On the dev box: finalize and publish the code (no tag yet) ---
+# 1. Bump %define _version / %define _rel in vclt.spec
+# 2. Commit and push the completed code
+git commit -am "vX.Y.Z: <what changed>"
+git push
 
-# Create the source tarball (git archive of HEAD)
-make tarball
-
-# Build the RPM (includes tarball step)
-make rpm
-
-# Build the RPM and update the %changelog from git log
-make rpmcl
-
-# Upload the built RPM to the configured Nexus repository
-make upload
-
-# Commit the updated spec file (after changelog update)
-make commitcl
+# --- In the rpmbuilder container: build, release, and tag ---
+cd /projects/vclt/__redhat
+git pull
+make release
 ```
 
-The changelog can also be updated standalone via `__redhat/updateChangelog.sh`.
+`make release` runs the whole sequence in order: build the RPM and write the `%changelog` (`rpmcl`) → commit the updated spec (`commitcl`) → push it → upload to Nexus → tag the released commit and push the tag.
+
+Individual targets are also available:
+
+| Target | Purpose |
+|---|---|
+| `make tarball` | Create the source tarball (`git archive` of HEAD) |
+| `make check-tags` | Warn if HEAD is already tagged; error on local/remote tag divergence |
+| `make changelog` | Update the `%changelog` from `git log` (runs `check-tags` first) |
+| `make rpm` | Build the RPM only (no changelog update) |
+| `make rpmcl` | Build the RPM **and** update the `%changelog` |
+| `make upload` | Upload the built RPM to the configured Nexus repository |
+| `make commitcl` | Commit the updated spec file |
+| `make tag` | Tag the current commit `vX.Y.Z` and push the tag |
+| `make release` | Full release: `rpmcl` → `commitcl` → push → `upload` → `tag` |
+| `make clean` | Remove the tarball and build tree |
+
+The changelog can also be updated standalone via `__redhat/updateChangelog.sh`. It derives entries from `<last tag>..HEAD`; if HEAD is already tagged it falls back to the previous tag so the range is never empty.
 
 ### Debian
 
