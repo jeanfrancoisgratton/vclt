@@ -4,11 +4,7 @@
     <option name="autoReloadType" value="ALL" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="162a2d2a-c31a-4b0b-883b-b16b5b5da762" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/claudeCodeEditorTabs.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/__redhat/Makefile" beforeDir="false" afterPath="$PROJECT_DIR$/__redhat/Makefile" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/__redhat/updateChangelog.sh" beforeDir="false" afterPath="$PROJECT_DIR$/__redhat/updateChangelog.sh" afterDir="false" />
-    </list>
+    <list default="true" id="162a2d2a-c31a-4b0b-883b-b16b5b5da762" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
