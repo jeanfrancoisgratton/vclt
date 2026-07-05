@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-PKGDIR="vclt-2.3.2-0_amd64"
+PKGDIR="vclt-2.4.0-0_amd64"
 BINARYNAME=vclt
 
 mkdir -p ${PKGDIR}/opt/bin ${PKGDIR}/DEBIAN
