@@ -16,3 +16,5 @@
 ._*
 *.swp
 sample*
+
+.idea/claudeCodeEditorTabs.xml

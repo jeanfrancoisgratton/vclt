@@ -7,8 +7,9 @@ RPMS      := $(HOME)/rpmbuild/RPMS
 DEST      := /data
 REPOROOT  := $(shell git rev-parse --show-toplevel)
 NEXUSREPO := dnfLocal
+TAG       := v$(VERSION)
 
-.PHONY: tarball rpm rpmcl clean upload changelog commitcl
+.PHONY: tarball rpm rpmcl clean upload changelog commitcl check-tags
 
 # Intended workflow: make rpm → make upload → make commitcl
 
@@ -16,7 +17,23 @@ tarball:
 	git -C $(REPOROOT) archive --prefix=$(NAME)-$(VERSION)/ HEAD \
 	  | gzip > $(SOURCES)/$(NAME)-$(VERSION).tar.gz
 
-changelog: tarball
+check-tags:
+	@# 1. The condition that silently breaks changelog generation:
+	@if git describe --exact-match --tags HEAD >/dev/null 2>&1; then \
+	  echo "WARNING: HEAD is already tagged $$(git describe --exact-match --tags HEAD)."; \
+	  echo "         updateChangelog.sh will fall back to the previous tag for the range."; \
+	fi
+	@# 2. Local/remote tag agreement:
+	@local=$$(git rev-parse -q --verify "refs/tags/$(TAG)" 2>/dev/null); \
+	 remote=$$(git ls-remote --tags origin "refs/tags/$(TAG)" 2>/dev/null | cut -f1); \
+	 if   [ -n "$$local" ] && [ -z "$$remote" ]; then echo "NOTE: $(TAG) exists locally but is not pushed."; \
+	 elif [ -z "$$local" ] && [ -n "$$remote" ]; then echo "NOTE: $(TAG) is on origin but not local (run: git fetch --tags)."; \
+	 elif [ -n "$$local" ] && [ "$$local" != "$$remote" ]; then \
+	   echo "ERROR: $(TAG) points to different commits locally ($$local) and on origin ($$remote)."; \
+	   exit 1; \
+	 fi
+
+changelog: check-tags tarball
 	$(REPOROOT)/__redhat/updateChangelog.sh
 
 rpm: tarball
