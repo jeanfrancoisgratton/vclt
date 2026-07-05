@@ -55,8 +55,8 @@ func CreateToken(tknName string, displayOutput bool) *ce.CustomError {
 			fmt.Println("Token is renewable: ", hftx.Green(fmt.Sprintf("%t", t.Renewable)))
 			fmt.Println("Token is orphaned: ", hftx.Green(fmt.Sprintf("%t", t.Orphan)))
 		}
-		if SaveTokenToFile != "" {
-			return saveTokenInfoToFile(SaveTokenToFile, t)
+		if TokenSavefile != "" {
+			return saveTokenInfoToFile(TokenSavefile, t)
 		}
 	}
 
@@ -108,7 +108,7 @@ func saveTokenInfoToFile(TokenSavefile string, tkninfo *tkn.TokenAuth) *ce.Custo
 		TokenSavefile += ".json"
 	}
 	if err := os.WriteFile(TokenSavefile, jStream, 0600); err != nil {
-		return &ce.CustomError{Title: "Unable to write root keys json file", Message: err.Error()}
+		return &ce.CustomError{Title: "Unable to save the json file", Message: err.Error()}
 	}
 	return nil
 }

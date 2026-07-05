@@ -4,3 +4,136 @@
 // Original timestamp: 2026/07/03 21:20:42
 
 package tokens
+
+import (
+	"encoding/json"
+	"fmt"
+	"os"
+	"strings"
+	"vclt/shared"
+
+	ce "github.com/jeanfrancoisgratton/customError/v3"
+	hfjson "github.com/jeanfrancoisgratton/helperFunctions/v5/prettyjson"
+	hftx "github.com/jeanfrancoisgratton/helperFunctions/v5/terminalfx"
+	tkn "github.com/jeanfrancoisgratton/vaultlib/v2/tokens"
+)
+
+// LookupSelf : gives info about the current token (the one the user is currently uses)
+
+func LookupSelf(displayOutput bool) (*tkn.TokenInfo, *ce.CustomError) {
+	// Check for required globals
+	if err := shared.SetVaultToken(); err != nil {
+		return nil, err
+	}
+	if err := shared.SetServerAddress(); err != nil {
+		return nil, err
+	}
+
+	cfg := tkn.Config{Address: shared.VaultServerAddress, Token: shared.VaultAuthToken}
+	client, cvlrErr := tkn.NewClient(cfg)
+	if cvlrErr != nil {
+		return nil, &ce.CustomError{Title: "Error creating vault client", Message: cvlrErr.Error()}
+	}
+
+	if self, err := client.LookupSelf(); err != nil {
+		return nil, &ce.CustomError{Title: "Error looking up token", Message: err.Error()}
+	} else {
+		if shared.OutputFormat == "json" {
+			payload, jerr := json.MarshalIndent(self, "", "  ")
+			if jerr != nil {
+				return nil, &ce.CustomError{Title: "Error serializing payload", Message: jerr.Error()}
+			}
+			if e := hfjson.Print(payload); e != nil {
+				return nil, &ce.CustomError{Title: "Unable to render token's payload", Message: e.Error()}
+			}
+		} else {
+			if displayOutput {
+				displayTokenInformation("self", self)
+			}
+		}
+		if TokenSavefile != "" {
+			if err := saveTokenInfo2file(TokenSavefile, self); err != nil {
+				return self, err
+			}
+		}
+	}
+
+	return nil, nil
+}
+
+func LookupToken(tokenName string, displayoutput bool) (*tkn.TokenInfo, *ce.CustomError) {
+	// Check for required globals
+	if err := shared.SetVaultToken(); err != nil {
+		return nil, err
+	}
+	if err := shared.SetServerAddress(); err != nil {
+		return nil, err
+	}
+
+	cfg := tkn.Config{Address: shared.VaultServerAddress, Token: shared.VaultAuthToken}
+	client, cvlrErr := tkn.NewClient(cfg)
+	if cvlrErr != nil {
+		return nil, &ce.CustomError{Title: "Error creating vault client", Message: cvlrErr.Error()}
+	}
+
+	if tok, err := client.LookupToken(tokenName); err != nil {
+		return nil, &ce.CustomError{Title: "Error looking up token", Message: err.Error()}
+	} else {
+		if shared.OutputFormat == "json" {
+			payload, jerr := json.MarshalIndent(tok, "", "  ")
+			if jerr != nil {
+				return nil, &ce.CustomError{Title: "Error serializing payload", Message: jerr.Error()}
+			}
+			if e := hfjson.Print(payload); e != nil {
+				return nil, &ce.CustomError{Title: "Unable to render token's payload", Message: e.Error()}
+			}
+		} else {
+			if displayoutput {
+				displayTokenInformation(tokenName, tok)
+			}
+		}
+		if TokenSavefile != "" {
+			if err := saveTokenInfo2file(TokenSavefile, tok); err != nil {
+				return tok, err
+			}
+		}
+	}
+
+	return nil, nil
+}
+
+// small helper function to dump the token to the TTY
+func displayTokenInformation(tokenName string, tkn *tkn.TokenInfo) {
+	fmt.Printf("\nToken: %s\n\n", hftx.Green("tokenName"))
+	fmt.Println(hftx.Green("ID: "), tkn.ID)
+	fmt.Println(hftx.Green("Display name: "), tkn.DisplayName)
+	fmt.Println(hftx.Green("Token accessor: "), tkn.Accessor)
+	fmt.Println(hftx.Green("Creation time: "), tkn.CreationTime)
+	fmt.Println(hftx.Green("Expire time: "), tkn.ExpireTime)
+	fmt.Println(hftx.Green("Token TTL: "), tkn.TTL)
+	fmt.Println(hftx.Green("Creation TTL: "), tkn.CreationTTL)
+	fmt.Println(hftx.Green("Token max TTL: "), tkn.ExplicitMaxTTL)
+	fmt.Println(hftx.Green("Number of uses: "), tkn.NumUses)
+	fmt.Println(hftx.Green("Orphaned token: "), tkn.Orphan)
+	fmt.Println(hftx.Green("Renewable token: "), tkn.Renewable)
+	fmt.Println(hftx.Green("Token path: "), tkn.Path)
+	fmt.Println(hftx.Green("Token policies: "), tkn.Policies)
+	fmt.Println(hftx.Green("Token type: "), tkn.Type)
+	fmt.Println(hftx.Green("Token metadata: "), tkn.Meta)
+	fmt.Println(hftx.Green("Entity ID: "), tkn.EntityID)
+}
+
+func saveTokenInfo2file(TokenSavefile string, tkninfo *tkn.TokenInfo) *ce.CustomError {
+	jStream, err := json.MarshalIndent(tkninfo, "", "  ")
+	if err != nil {
+		return &ce.CustomError{Title: err.Error()}
+	}
+
+	if !strings.HasSuffix(strings.ToLower(TokenSavefile), ".json") {
+		TokenSavefile += ".json"
+	}
+	if err := os.WriteFile(TokenSavefile, jStream, 0600); err != nil {
+		return &ce.CustomError{Title: "Unable to save the json file", Message: err.Error()}
+	}
+	return nil
+}
