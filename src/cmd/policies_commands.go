@@ -28,7 +28,12 @@ var policiesReadCmd = &cobra.Command{
 	Short:   "Read the POLICY_NAME policies",
 	Args:    cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		if _, polreadErr := policies.ReadPolicy(args[0], true); polreadErr != nil {
+		c, err := policies.NewClient()
+		if err != nil {
+			fmt.Println(hftfx.SkullBonesSign(err.Error()))
+			os.Exit(1)
+		}
+		if _, polreadErr := c.Read(args[0], true); polreadErr != nil {
 			fmt.Println(hftfx.SkullBonesSign(polreadErr.Error()))
 			os.Exit(1)
 		}
@@ -41,7 +46,12 @@ var policiesWriteCmd = &cobra.Command{
 	Short:   "Write the POLICY_NAME policies from the POLICY_FILE file",
 	Args:    cobra.ExactArgs(2),
 	Run: func(cmd *cobra.Command, args []string) {
-		if polwriteErr := policies.WritePolicy(args[0], args[1]); polwriteErr != nil {
+		c, err := policies.NewClient()
+		if err != nil {
+			fmt.Println(hftfx.SkullBonesSign(err.Error()))
+			os.Exit(1)
+		}
+		if polwriteErr := c.Write(args[0], args[1]); polwriteErr != nil {
 			fmt.Println(hftfx.SkullBonesSign(polwriteErr.Error()))
 			os.Exit(1)
 		}
@@ -54,7 +64,12 @@ var policiesLsCmd = &cobra.Command{
 	Short:   "List the policies",
 	Args:    cobra.ExactArgs(0),
 	Run: func(cmd *cobra.Command, args []string) {
-		if _, err := policies.List(true); err != nil {
+		c, err := policies.NewClient()
+		if err != nil {
+			fmt.Println(hftfx.SkullBonesSign(err.Error()))
+			os.Exit(1)
+		}
+		if _, err := c.List(true); err != nil {
 			fmt.Println(hftfx.SkullBonesSign(err.Error()))
 		}
 	},
@@ -66,7 +81,12 @@ var policiesRmCmd = &cobra.Command{
 	Short:   "Delete one or many policies",
 	Args:    cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		if err := policies.DeletePolicies(args); err != nil {
+		c, err := policies.NewClient()
+		if err != nil {
+			fmt.Println(hftfx.SkullBonesSign(err.Error()))
+			os.Exit(1)
+		}
+		if err := c.Delete(args); err != nil {
 			fmt.Println(hftfx.SkullBonesSign(err.Error()))
 		}
 	},

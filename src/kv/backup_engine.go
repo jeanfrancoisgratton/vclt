@@ -8,30 +8,16 @@ package kv
 import (
 	"fmt"
 	"os"
+
 	"vclt/shared"
 
 	ce "github.com/jeanfrancoisgratton/customError/v3"
 	hf "github.com/jeanfrancoisgratton/helperFunctions/v5"
 	hftx "github.com/jeanfrancoisgratton/helperFunctions/v5/terminalfx"
-	vlr "github.com/jeanfrancoisgratton/vaultlib/v2/kv"
 )
 
-func BackupEngine(kvengine, path string) *ce.CustomError {
-	// Check for required globals
-	if err := shared.SetVaultToken(); err != nil {
-		return err
-	}
-	if err := shared.SetServerAddress(); err != nil {
-		return err
-	}
-
-	cfg := vlr.Config{Address: shared.VaultServerAddress, Token: shared.VaultAuthToken, MountPath: kvengine}
-	c, cvlrErr := vlr.NewClient(cfg)
-	if cvlrErr != nil {
-		return &ce.CustomError{Title: "Error creating vault client", Message: cvlrErr.Error()}
-	}
-
-	if beErr := c.BackupEngine(path); beErr != nil {
+func (c *Client) Backup(path string) *ce.CustomError {
+	if beErr := c.vc.BackupEngine(path); beErr != nil {
 		return &ce.CustomError{Title: "Error dumping secrets", Message: beErr.Error()}
 	}
 
@@ -43,7 +29,7 @@ func BackupEngine(kvengine, path string) *ce.CustomError {
 
 	if !shared.QuietOutput {
 		fmt.Printf("%s %s to %s\n", hftx.EnabledSign("Successfully dumped"),
-			hftx.Green(kvengine), hftx.Green(path))
+			hftx.Green(c.engine), hftx.Green(path))
 	}
 	return nil
 }

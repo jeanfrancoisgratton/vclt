@@ -28,7 +28,12 @@ var kvReadCmd = &cobra.Command{
 	Short:   "Read the 'SECRET_PATH' secret from the 'KV_ENGINE' secret engine",
 	Args:    cobra.ExactArgs(2),
 	Run: func(cmd *cobra.Command, args []string) {
-		if kvreadErr := kv.ReadSecrets(args[0], args[1]); kvreadErr != nil {
+		c, err := kv.NewClient(args[0])
+		if err != nil {
+			fmt.Println(hftx.SkullBonesSign(err.Error()))
+			os.Exit(1)
+		}
+		if kvreadErr := c.Read(args[1]); kvreadErr != nil {
 			fmt.Println(hftx.SkullBonesSign(kvreadErr.Error()))
 			os.Exit(1)
 		}
@@ -41,7 +46,12 @@ var kvWriteCmd = &cobra.Command{
 	Short:   "Write the KEY:VALUE pair SECRET in the 'SECRET_PATH' of the 'KV_ENGINE' secret engine",
 	Args:    cobra.ExactArgs(4),
 	Run: func(cmd *cobra.Command, args []string) {
-		if _, kvwriteErr := kv.WriteSecrets(args[0], args[1], args[2], args[3]); kvwriteErr != nil {
+		c, err := kv.NewClient(args[0])
+		if err != nil {
+			fmt.Println(hftx.SkullBonesSign(err.Error()))
+			os.Exit(1)
+		}
+		if _, kvwriteErr := c.Write(args[1], args[2], args[3]); kvwriteErr != nil {
 			fmt.Println(hftx.SkullBonesSign(kvwriteErr.Error()))
 			os.Exit(1)
 		}
@@ -54,7 +64,12 @@ var kvLsCmd = &cobra.Command{
 	Short:   "List the kv in the 'KV_ENGINE' secret engine",
 	Args:    cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		if _, err := kv.ListSecrets(args[0], true); err != nil {
+		c, err := kv.NewClient(args[0])
+		if err != nil {
+			fmt.Println(hftx.SkullBonesSign(err.Error()))
+			return
+		}
+		if _, err := c.List(true); err != nil {
 			fmt.Println(hftx.SkullBonesSign(err.Error()))
 		}
 	},
@@ -66,7 +81,12 @@ var kvRmCmd = &cobra.Command{
 	Short:   "Delete a secret or a field in a secret",
 	Args:    cobra.ExactArgs(2),
 	Run: func(cmd *cobra.Command, args []string) {
-		if err := kv.DeleteSecret(args[0], args[1]); err != nil {
+		c, err := kv.NewClient(args[0])
+		if err != nil {
+			fmt.Println(hftx.SkullBonesSign(err.Error()))
+			return
+		}
+		if err := c.Delete(args[1]); err != nil {
 			fmt.Println(hftx.SkullBonesSign(err.Error()))
 		}
 	},
@@ -77,7 +97,12 @@ var kvDestroyCmd = &cobra.Command{
 	Short: "Destroy a secret",
 	Args:  cobra.ExactArgs(2),
 	Run: func(cmd *cobra.Command, args []string) {
-		if err := kv.DestroySecret(args[0], args[1]); err != nil {
+		c, err := kv.NewClient(args[0])
+		if err != nil {
+			fmt.Println(hftx.SkullBonesSign(err.Error()))
+			return
+		}
+		if err := c.Destroy(args[1]); err != nil {
 			fmt.Println(hftx.SkullBonesSign(err.Error()))
 		}
 	},
@@ -89,7 +114,12 @@ var kvBackupCmd = &cobra.Command{
 	Short:   "Backup a kv engine",
 	Args:    cobra.ExactArgs(2),
 	Run: func(cmd *cobra.Command, args []string) {
-		if err := kv.BackupEngine(args[0], args[1]); err != nil {
+		c, err := kv.NewClient(args[0])
+		if err != nil {
+			fmt.Println(hftx.SkullBonesSign(err.Error()))
+			return
+		}
+		if err := c.Backup(args[1]); err != nil {
 			fmt.Println(hftx.SkullBonesSign(err.Error()))
 		}
 	},
@@ -101,7 +131,12 @@ var kvRestoreCmd = &cobra.Command{
 	Short:   "Restore a kv engine",
 	Args:    cobra.ExactArgs(2),
 	Run: func(cmd *cobra.Command, args []string) {
-		if err := kv.RestoreEngine(args[0], args[1]); err != nil {
+		c, err := kv.NewClient(args[0])
+		if err != nil {
+			fmt.Println(hftx.SkullBonesSign(err.Error()))
+			return
+		}
+		if err := c.Restore(args[1]); err != nil {
 			fmt.Println(hftx.SkullBonesSign(err.Error()))
 		}
 	},

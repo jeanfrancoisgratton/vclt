@@ -12,26 +12,11 @@ import (
 
 	ce "github.com/jeanfrancoisgratton/customError/v3"
 	hftfx "github.com/jeanfrancoisgratton/helperFunctions/v5/terminalfx"
-	vpol "github.com/jeanfrancoisgratton/vaultlib/v2/policies"
 )
 
-func DeletePolicies(policies []string) *ce.CustomError {
-	// Check for required globals
-	if err := shared.SetVaultToken(); err != nil {
-		return err
-	}
-	if err := shared.SetServerAddress(); err != nil {
-		return err
-	}
-
-	cfg := vpol.Config{Address: shared.VaultServerAddress, Token: shared.VaultAuthToken}
-	c, cvlrErr := vpol.NewClient(cfg)
-	if cvlrErr != nil {
-		return &ce.CustomError{Title: "Error creating vault client", Message: cvlrErr.Error()}
-	}
-
-	for _, policy := range policies {
-		if err := c.DeletePolicy(policy); err != nil {
+func (c *Client) Delete(names []string) *ce.CustomError {
+	for _, policy := range names {
+		if err := c.vc.DeletePolicy(policy); err != nil {
 			return &ce.CustomError{Title: "Error deleting policy", Message: err.Error()}
 		}
 		if !shared.QuietOutput {

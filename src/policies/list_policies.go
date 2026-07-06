@@ -8,30 +8,13 @@ package policies
 import (
 	"os"
 
-	"vclt/shared"
-
 	ce "github.com/jeanfrancoisgratton/customError/v3"
-	vpollib "github.com/jeanfrancoisgratton/vaultlib/v2/policies"
 	"github.com/jedib0t/go-pretty/v6/table"
 	"github.com/jedib0t/go-pretty/v6/text"
 )
 
-func List(showOutput bool) ([]string, *ce.CustomError) {
-	// Check for required globals
-	if err := shared.SetVaultToken(); err != nil {
-		return nil, err
-	}
-	if err := shared.SetServerAddress(); err != nil {
-		return nil, err
-	}
-
-	cfg := vpollib.Config{Address: shared.VaultServerAddress, Token: shared.VaultAuthToken}
-	c, cvlrErr := vpollib.NewClient(cfg)
-	if cvlrErr != nil {
-		return nil, &ce.CustomError{Title: "Error creating vault client", Message: cvlrErr.Error()}
-	}
-
-	polList, err := c.ListPolicies()
+func (c *Client) List(showOutput bool) ([]string, *ce.CustomError) {
+	polList, err := c.vc.ListPolicies()
 	if err != nil {
 		return nil, &ce.CustomError{Title: "Error listing policies", Message: err.Error()}
 	}

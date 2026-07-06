@@ -27,7 +27,12 @@ var sysEnableKVCmd = &cobra.Command{
 	Short:   "Enable a KV secret engine",
 	Args:    cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		if kvEnableErr := sys.EnableKVengine(args[0]); kvEnableErr != nil {
+		c, err := sys.NewClient()
+		if err != nil {
+			fmt.Println(hftx.SkullBonesSign(err.Error()))
+			os.Exit(1)
+		}
+		if kvEnableErr := c.EnableKVengine(args[0]); kvEnableErr != nil {
 			fmt.Println(hftx.SkullBonesSign(kvEnableErr.Error()))
 			os.Exit(1)
 		}
@@ -40,7 +45,12 @@ var sysDisableKVCmd = &cobra.Command{
 	Short:   "Disable a KV secret engine",
 	Args:    cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		if kvDisableErr := sys.DisableKVengine(args[0]); kvDisableErr != nil {
+		c, err := sys.NewClient()
+		if err != nil {
+			fmt.Println(hftx.SkullBonesSign(err.Error()))
+			os.Exit(1)
+		}
+		if kvDisableErr := c.DisableKVengine(args[0]); kvDisableErr != nil {
 			fmt.Println(hftx.SkullBonesSign(kvDisableErr.Error()))
 			os.Exit(1)
 		}
@@ -52,7 +62,12 @@ var listMountsCmd = &cobra.Command{
 	Aliases: []string{"mounts"},
 	Short:   "Lists all mounts (secret engines)",
 	Run: func(cmd *cobra.Command, args []string) {
-		if _, admErr := sys.ListMounts(true); admErr != nil {
+		c, err := sys.NewClient()
+		if err != nil {
+			fmt.Println(hftx.SkullBonesSign(err.Error()))
+			os.Exit(1)
+		}
+		if _, admErr := c.ListMounts(true); admErr != nil {
 			fmt.Println(hftx.SkullBonesSign(admErr.Error()))
 			os.Exit(1)
 		}

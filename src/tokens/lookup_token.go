@@ -10,6 +10,7 @@ import (
 	"fmt"
 	"os"
 	"strings"
+
 	"vclt/shared"
 
 	ce "github.com/jeanfrancoisgratton/customError/v3"
@@ -19,23 +20,8 @@ import (
 )
 
 // LookupSelf : gives info about the current token (the one the user is currently uses)
-
-func LookupSelf(displayOutput bool) (*tkn.TokenInfo, *ce.CustomError) {
-	// Check for required globals
-	if err := shared.SetVaultToken(); err != nil {
-		return nil, err
-	}
-	if err := shared.SetServerAddress(); err != nil {
-		return nil, err
-	}
-
-	cfg := tkn.Config{Address: shared.VaultServerAddress, Token: shared.VaultAuthToken}
-	client, cvlrErr := tkn.NewClient(cfg)
-	if cvlrErr != nil {
-		return nil, &ce.CustomError{Title: "Error creating vault client", Message: cvlrErr.Error()}
-	}
-
-	self, err := client.LookupSelf()
+func (c *Client) LookupSelf(displayOutput bool) (*tkn.TokenInfo, *ce.CustomError) {
+	self, err := c.vc.LookupSelf()
 	if err != nil {
 		return nil, &ce.CustomError{Title: "Error looking up token", Message: err.Error()}
 	}
@@ -59,22 +45,8 @@ func LookupSelf(displayOutput bool) (*tkn.TokenInfo, *ce.CustomError) {
 	return self, nil
 }
 
-func LookupToken(tokenName string, displayoutput bool) (*tkn.TokenInfo, *ce.CustomError) {
-	// Check for required globals
-	if err := shared.SetVaultToken(); err != nil {
-		return nil, err
-	}
-	if err := shared.SetServerAddress(); err != nil {
-		return nil, err
-	}
-
-	cfg := tkn.Config{Address: shared.VaultServerAddress, Token: shared.VaultAuthToken}
-	client, cvlrErr := tkn.NewClient(cfg)
-	if cvlrErr != nil {
-		return nil, &ce.CustomError{Title: "Error creating vault client", Message: cvlrErr.Error()}
-	}
-
-	tok, err := client.LookupToken(tokenName)
+func (c *Client) LookupToken(tokenName string, displayoutput bool) (*tkn.TokenInfo, *ce.CustomError) {
+	tok, err := c.vc.LookupToken(tokenName)
 	if err != nil {
 		return nil, &ce.CustomError{Title: "Error looking up token", Message: err.Error()}
 	}

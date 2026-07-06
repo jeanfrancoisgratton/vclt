@@ -17,22 +17,8 @@ import (
 	vpol "github.com/jeanfrancoisgratton/vaultlib/v2/policies"
 )
 
-func ReadPolicy(pname string, showOutput bool) (*vpol.Policy, *ce.CustomError) {
-	// Check for required globals
-	if err := shared.SetVaultToken(); err != nil {
-		return nil, err
-	}
-	if err := shared.SetServerAddress(); err != nil {
-		return nil, err
-	}
-
-	cfg := vpol.Config{Address: shared.VaultServerAddress, Token: shared.VaultAuthToken}
-	c, cvlrErr := vpol.NewClient(cfg)
-	if cvlrErr != nil {
-		return nil, &ce.CustomError{Title: "Error creating vault client", Message: cvlrErr.Error()}
-	}
-
-	policy, err := c.ReadPolicy(pname)
+func (c *Client) Read(pname string, showOutput bool) (*vpol.Policy, *ce.CustomError) {
+	policy, err := c.vc.ReadPolicy(pname)
 	if err != nil {
 		return nil, &ce.CustomError{Title: "Error reading the policy", Message: err.Error()}
 	}

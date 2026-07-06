@@ -30,7 +30,12 @@ var tokenCreateCmd = &cobra.Command{
 If no policies are specified the token will be bound to the default policy`,
 	Args: cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		if tknErr := tokens.CreateToken(args[0], true); tknErr != nil {
+		c, err := tokens.NewClient()
+		if err != nil {
+			fmt.Println(hftfx.SkullBonesSign(err.Error()))
+			os.Exit(1)
+		}
+		if tknErr := c.Create(args[0], true); tknErr != nil {
 			fmt.Println(hftfx.SkullBonesSign(tknErr.Error()))
 			os.Exit(1)
 		}
@@ -43,7 +48,12 @@ var tokenRevokeCmd = &cobra.Command{
 	Short:   "Permanently revoke a token and its children (if any)",
 	Args:    cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		if tknErr := tokens.RevokeToken(args[0]); tknErr != nil {
+		c, err := tokens.NewClient()
+		if err != nil {
+			fmt.Println(hftfx.SkullBonesSign(err.Error()))
+			os.Exit(1)
+		}
+		if tknErr := c.Revoke(args[0]); tknErr != nil {
 			fmt.Println(hftfx.SkullBonesSign(tknErr.Error()))
 			os.Exit(1)
 		}
@@ -55,7 +65,12 @@ var tokenRenewCmd = &cobra.Command{
 	Short: "Renew the token TOKEN_NAME. The -d flag sets the new lease duration",
 	Args:  cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		if tknErr := tokens.RenewToken(args[0]); tknErr != nil {
+		c, err := tokens.NewClient()
+		if err != nil {
+			fmt.Println(hftfx.SkullBonesSign(err.Error()))
+			os.Exit(1)
+		}
+		if tknErr := c.Renew(args[0]); tknErr != nil {
 			fmt.Println(hftfx.SkullBonesSign(tknErr.Error()))
 			os.Exit(1)
 		}
@@ -67,7 +82,12 @@ var tokenLookupCmd = &cobra.Command{
 	Short: "Displays the info about the named token",
 	Args:  cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		if _, tknErr := tokens.LookupToken(args[0], true); tknErr != nil {
+		c, err := tokens.NewClient()
+		if err != nil {
+			fmt.Println(hftfx.SkullBonesSign(err.Error()))
+			os.Exit(1)
+		}
+		if _, tknErr := c.LookupToken(args[0], true); tknErr != nil {
 			fmt.Println(hftfx.SkullBonesSign(tknErr.Error()))
 			os.Exit(1)
 		}
@@ -78,7 +98,12 @@ var tokenLookupSelfCmd = &cobra.Command{
 	Use:   "self",
 	Short: "Displays the info about the token currently in use",
 	Run: func(cmd *cobra.Command, args []string) {
-		if _, tknErr := tokens.LookupSelf(true); tknErr != nil {
+		c, err := tokens.NewClient()
+		if err != nil {
+			fmt.Println(hftfx.SkullBonesSign(err.Error()))
+			os.Exit(1)
+		}
+		if _, tknErr := c.LookupSelf(true); tknErr != nil {
 			fmt.Println(hftfx.SkullBonesSign(tknErr.Error()))
 			os.Exit(1)
 		}
@@ -89,7 +114,12 @@ var tokenListAccessorsCmd = &cobra.Command{
 	Use:   "accessors",
 	Short: "List all token accessors",
 	Run: func(cmd *cobra.Command, args []string) {
-		if tknErr := tokens.ListAccessors(); tknErr != nil {
+		c, err := tokens.NewClient()
+		if err != nil {
+			fmt.Println(hftfx.SkullBonesSign(err.Error()))
+			os.Exit(1)
+		}
+		if tknErr := c.ListAccessors(); tknErr != nil {
 			fmt.Println(hftfx.SkullBonesSign(tknErr.Error()))
 			os.Exit(1)
 		}

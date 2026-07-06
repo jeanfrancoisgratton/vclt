@@ -15,22 +15,8 @@ import (
 	vlr "github.com/jeanfrancoisgratton/vaultlib/v2/kv"
 )
 
-func DestroySecret(kvengine, path string) *ce.CustomError {
-	// Check for required globals
-	if err := shared.SetVaultToken(); err != nil {
-		return err
-	}
-	if err := shared.SetServerAddress(); err != nil {
-		return err
-	}
-
-	cfg := vlr.Config{Address: shared.VaultServerAddress, Token: shared.VaultAuthToken, MountPath: kvengine}
-	c, cvlrErr := vlr.NewClient(cfg)
-	if cvlrErr != nil {
-		return &ce.CustomError{Title: "Error creating vault client", Message: cvlrErr.Error()}
-	}
-
-	if e := c.DestroySecret(path, vlr.DestroyOptions{Version: SecretVersion}); e != nil {
+func (c *Client) Destroy(path string) *ce.CustomError {
+	if e := c.vc.DestroySecret(path, vlr.DestroyOptions{Version: SecretVersion}); e != nil {
 		return &ce.CustomError{Title: "Error destroying the secret", Message: e.Error()}
 	}
 

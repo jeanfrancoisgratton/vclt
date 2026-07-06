@@ -7,29 +7,13 @@ package tokens
 
 import (
 	"fmt"
-	"vclt/shared"
 
 	ce "github.com/jeanfrancoisgratton/customError/v3"
 	hftx "github.com/jeanfrancoisgratton/helperFunctions/v5/terminalfx"
-	tkn "github.com/jeanfrancoisgratton/vaultlib/v2/tokens"
 )
 
-func ListAccessors() *ce.CustomError {
-	// Check for required globals
-	if err := shared.SetVaultToken(); err != nil {
-		return err
-	}
-	if err := shared.SetServerAddress(); err != nil {
-		return err
-	}
-
-	cfg := tkn.Config{Address: shared.VaultServerAddress, Token: shared.VaultAuthToken}
-	client, cvlrErr := tkn.NewClient(cfg)
-	if cvlrErr != nil {
-		return &ce.CustomError{Title: "Error creating vault client", Message: cvlrErr.Error()}
-	}
-
-	accessors, err := client.ListAccessors()
+func (c *Client) ListAccessors() *ce.CustomError {
+	accessors, err := c.vc.ListAccessors()
 	if err != nil {
 		return &ce.CustomError{Title: "Error listing token accessors", Message: err.Error()}
 	}

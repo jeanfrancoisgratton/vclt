@@ -9,29 +9,15 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+
 	"vclt/shared"
 
 	ce "github.com/jeanfrancoisgratton/customError/v3"
 	hf "github.com/jeanfrancoisgratton/helperFunctions/v5"
 	hftx "github.com/jeanfrancoisgratton/helperFunctions/v5/terminalfx"
-	vlr "github.com/jeanfrancoisgratton/vaultlib/v2/kv"
 )
 
-func RestoreEngine(kvengine, path string) *ce.CustomError {
-	// Check for required globals
-	if err := shared.SetVaultToken(); err != nil {
-		return err
-	}
-	if err := shared.SetServerAddress(); err != nil {
-		return err
-	}
-
-	cfg := vlr.Config{Address: shared.VaultServerAddress, Token: shared.VaultAuthToken, MountPath: kvengine}
-	c, cvlrErr := vlr.NewClient(cfg)
-	if cvlrErr != nil {
-		return &ce.CustomError{Title: "Error creating vault client", Message: cvlrErr.Error()}
-	}
-
+func (c *Client) Restore(path string) *ce.CustomError {
 	// An encoded backup must be decoded before it can be fed to the restore
 	// endpoint. We decode into a temp file and leave the original untouched.
 	restorePath := path
@@ -44,13 +30,13 @@ func RestoreEngine(kvengine, path string) *ce.CustomError {
 		restorePath = decoded
 	}
 
-	if reErr := c.RestoreEngine(restorePath); reErr != nil {
+	if reErr := c.vc.RestoreEngine(restorePath); reErr != nil {
 		return &ce.CustomError{Title: "Error restoring secrets", Message: reErr.Error()}
 	}
 
 	if !shared.QuietOutput {
 		fmt.Printf("%s %s from %s\n", hftx.EnabledSign("Successfully restored"),
-			hftx.Green(kvengine), hftx.Green(path))
+			hftx.Green(c.engine), hftx.Green(path))
 	}
 	return nil
 }

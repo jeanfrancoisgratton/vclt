@@ -12,35 +12,20 @@ import (
 	"strconv"
 	"strings"
 	"time"
-	"vclt/shared"
 
 	ce "github.com/jeanfrancoisgratton/customError/v3"
 	hftx "github.com/jeanfrancoisgratton/helperFunctions/v5/terminalfx"
 	tkn "github.com/jeanfrancoisgratton/vaultlib/v2/tokens"
 )
 
-func CreateToken(tknName string, displayOutput bool) *ce.CustomError {
+func (c *Client) Create(tknName string, displayOutput bool) *ce.CustomError {
 	// Validate the TTL before doing anything else
 	if err := validateTTL(TokenTTL); err != nil {
 		return err
 	}
 
-	// Check for required globals
-	if err := shared.SetVaultToken(); err != nil {
-		return err
-	}
-	if err := shared.SetServerAddress(); err != nil {
-		return err
-	}
-
-	cfg := tkn.Config{Address: shared.VaultServerAddress, Token: shared.VaultAuthToken}
-	client, cvlrErr := tkn.NewClient(cfg)
-	if cvlrErr != nil {
-		return &ce.CustomError{Title: "Error creating vault client", Message: cvlrErr.Error()}
-	}
-
 	boundPolicies := splitPolicies(TokenPolicies)
-	if t, e := client.CreateToken(tkn.CreateOptions{DisplayName: tknName, TTL: TokenTTL, Orphan: TokenOrphaned,
+	if t, e := c.vc.CreateToken(tkn.CreateOptions{DisplayName: tknName, TTL: TokenTTL, Orphan: TokenOrphaned,
 		Policies: boundPolicies, Renewable: &TokenRenewable}); e != nil {
 		return &ce.CustomError{Title: "Error creating token", Message: e.Error()}
 	} else {

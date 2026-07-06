@@ -17,22 +17,8 @@ import (
 	"vclt/shared"
 )
 
-func EnableKVengine(kvEngine string) *ce.CustomError {
-	// Check for required globals
-	if err := shared.SetVaultToken(); err != nil {
-		return err
-	}
-	if err := shared.SetServerAddress(); err != nil {
-		return err
-	}
-
-	cfg := sys.Config{Address: shared.VaultServerAddress, Token: shared.VaultAuthToken}
-	client, cvlrErr := sys.NewClient(cfg)
-	if cvlrErr != nil {
-		return &ce.CustomError{Title: "Error creating vault client", Message: cvlrErr.Error()}
-	}
-
-	err := client.EnableKVEngine(kvEngine, sys.EnableKVOptions{
+func (c *Client) EnableKVengine(kvEngine string) *ce.CustomError {
+	err := c.vc.EnableKVEngine(kvEngine, sys.EnableKVOptions{
 		Version: KVEngineVersion, Description: KVEngineDescription})
 	if err != nil {
 		return &ce.CustomError{Title: "Error enabling kv engine", Message: err.Error()}
@@ -44,21 +30,7 @@ func EnableKVengine(kvEngine string) *ce.CustomError {
 	return nil
 }
 
-func DisableKVengine(kvEngine string) *ce.CustomError {
-	// Check for required globals
-	if err := shared.SetVaultToken(); err != nil {
-		return err
-	}
-	if err := shared.SetServerAddress(); err != nil {
-		return err
-	}
-
-	cfg := sys.Config{Address: shared.VaultServerAddress, Token: shared.VaultAuthToken}
-	client, cvlrErr := sys.NewClient(cfg)
-	if cvlrErr != nil {
-		return &ce.CustomError{Title: "Error creating vault client", Message: cvlrErr.Error()}
-	}
-
+func (c *Client) DisableKVengine(kvEngine string) *ce.CustomError {
 	if !KVDisableConfirm {
 		fmt.Print(hftx.WarningSign(" CAUTION. This operation is irreversible; are you sure you want to disable it (Y/N) ? "))
 		if yesno, err := AskYesNo(); err != nil {
@@ -70,7 +42,7 @@ func DisableKVengine(kvEngine string) *ce.CustomError {
 			}
 		}
 	}
-	err := client.DisableKVEngine(kvEngine)
+	err := c.vc.DisableKVEngine(kvEngine)
 	if err != nil {
 		return &ce.CustomError{Title: "Error disabling kv engine", Message: err.Error()}
 	}

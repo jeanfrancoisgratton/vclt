@@ -9,8 +9,6 @@ import (
 	"os"
 	"strconv"
 
-	"vclt/shared"
-
 	ce "github.com/jeanfrancoisgratton/customError/v3"
 	hftx "github.com/jeanfrancoisgratton/helperFunctions/v5/terminalfx"
 	vkvlib "github.com/jeanfrancoisgratton/vaultlib/v2/kv"
@@ -18,22 +16,8 @@ import (
 	"github.com/jedib0t/go-pretty/v6/text"
 )
 
-func ListSecrets(kvEngine string, displayOutput bool) ([]vkvlib.SecretInfo, *ce.CustomError) {
-	// Check for required globals
-	if err := shared.SetVaultToken(); err != nil {
-		return nil, err
-	}
-	if err := shared.SetServerAddress(); err != nil {
-		return nil, err
-	}
-
-	cfg := vkvlib.Config{Address: shared.VaultServerAddress, Token: shared.VaultAuthToken, MountPath: kvEngine}
-	client, cvlrErr := vkvlib.NewClient(cfg)
-	if cvlrErr != nil {
-		return nil, &ce.CustomError{Title: "Error creating vault client", Message: cvlrErr.Error()}
-	}
-
-	secretslist, err := client.ListSecrets(ExtendedSecretsList)
+func (c *Client) List(displayOutput bool) ([]vkvlib.SecretInfo, *ce.CustomError) {
+	secretslist, err := c.vc.ListSecrets(ExtendedSecretsList)
 	if err != nil {
 		return nil, &ce.CustomError{Title: "Error listing kv", Message: err.Error()}
 	}

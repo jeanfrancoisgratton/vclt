@@ -17,37 +17,22 @@ import (
 	vlr "github.com/jeanfrancoisgratton/vaultlib/v2/kv"
 )
 
-// ReadSecrets: Reads a secret from the Vault secret path
-
-func ReadSecrets(kvengine, path string) *ce.CustomError {
-	// Check for required globals
-	if err := shared.SetVaultToken(); err != nil {
-		return err
-	}
-	if err := shared.SetServerAddress(); err != nil {
-		return err
-	}
-
-	cfg := vlr.Config{Address: shared.VaultServerAddress, Token: shared.VaultAuthToken, MountPath: kvengine}
-	client, cvlrErr := vlr.NewClient(cfg)
-	if cvlrErr != nil {
-		return &ce.CustomError{Title: "Error creating vault client", Message: cvlrErr.Error()}
-	}
-
+// Read reads a secret from the Vault secret path.
+func (c *Client) Read(path string) *ce.CustomError {
 	// -f is empty; this means we grab the whole secret
 	if SecretField == "" {
-		return allSecrets(client, path)
+		return c.allSecrets(path)
 	}
 
-	return singleFieldFromSecret(client, path)
+	return c.singleFieldFromSecret(path)
 }
 
 // We fetch all the fields of a given secret, optionally rendering it in JSON
-func allSecrets(c *vlr.Client, path string) *ce.CustomError {
+func (c *Client) allSecrets(path string) *ce.CustomError {
 	var secret *vlr.Secret
 	var sErr error
 
-	if secret, sErr = c.ReadSecret(path,
+	if secret, sErr = c.vc.ReadSecret(path,
 		vlr.ReadOptions{Version: SecretVersion, FallbackToLatestAvailable: true}); sErr != nil {
 		return &ce.CustomError{Title: "Error reading secret", Message: sErr.Error()}
 	}
@@ -65,8 +50,8 @@ func allSecrets(c *vlr.Client, path string) *ce.CustomError {
 	return outputData(secret.Data, shared.QuietOutput)
 }
 
-func singleFieldFromSecret(c *vlr.Client, path string) *ce.CustomError {
-	value, err := c.ReadSecretField(path, SecretField, SecretVersion)
+func (c *Client) singleFieldFromSecret(path string) *ce.CustomError {
+	value, err := c.vc.ReadSecretField(path, SecretField, SecretVersion)
 	if err != nil {
 		return &ce.CustomError{Title: "Error reading secret", Message: err.Error()}
 	}

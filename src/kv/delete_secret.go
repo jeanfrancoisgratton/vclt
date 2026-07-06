@@ -15,31 +15,17 @@ import (
 	vlr "github.com/jeanfrancoisgratton/vaultlib/v2/kv"
 )
 
-func DeleteSecret(kvengine, path string) *ce.CustomError {
-	// Check for required globals
-	if err := shared.SetVaultToken(); err != nil {
-		return err
-	}
-	if err := shared.SetServerAddress(); err != nil {
-		return err
-	}
-
-	cfg := vlr.Config{Address: shared.VaultServerAddress, Token: shared.VaultAuthToken, MountPath: kvengine}
-	client, cvlrErr := vlr.NewClient(cfg)
-	if cvlrErr != nil {
-		return &ce.CustomError{Title: "Error creating vault client", Message: cvlrErr.Error()}
-	}
-
+func (c *Client) Delete(path string) *ce.CustomError {
 	// -f is empty, this means we grab the whole secret
 	if SecretField != "" {
-		return deleteFieldFromSecret(client, path)
+		return c.deleteFieldFromSecret(path)
 	}
 
-	return deleteWholeSecret(client, path)
+	return c.deleteWholeSecret(path)
 }
 
-func deleteFieldFromSecret(c *vlr.Client, path string) *ce.CustomError {
-	if _, e := c.DeleteSecretField(path, SecretField); e != nil {
+func (c *Client) deleteFieldFromSecret(path string) *ce.CustomError {
+	if _, e := c.vc.DeleteSecretField(path, SecretField); e != nil {
 		return &ce.CustomError{Title: "Error deleting the field", Message: e.Error()}
 	}
 
@@ -49,8 +35,8 @@ func deleteFieldFromSecret(c *vlr.Client, path string) *ce.CustomError {
 	return nil
 }
 
-func deleteWholeSecret(c *vlr.Client, path string) *ce.CustomError {
-	if e := c.SoftDeleteSecret(path, vlr.DeleteOptions{Versions: []int{SecretVersion}}); e != nil {
+func (c *Client) deleteWholeSecret(path string) *ce.CustomError {
+	if e := c.vc.SoftDeleteSecret(path, vlr.DeleteOptions{Versions: []int{SecretVersion}}); e != nil {
 		return &ce.CustomError{Title: "Error deleting the secret", Message: e.Error()}
 	}
 
