@@ -65,6 +65,16 @@ fi
 %{_bindir}/%{_binaryname}
 
 %changelog
+* Mon Jul 06 2026 Binary package builder <builder@famillegratton.net> 2.4.1-0
+- Completed a major refactoring, version bump
+- refactoring phase 5
+- commit phases 1-2-3-4
+- fixed gitignore
+- Doc update
+- rpmbuilder workflow changes
+- ide settings tweak in gitignore
+- chore: update changelog for 2.4.0-0
+
 * Sun Jul 05 2026 Binary package builder <builder@famillegratton.net> 2.4.0-0
 - fixed rpmbuild workflow
 - added go test files, updated doc, fixed typos, fixed major bug in the restore function
