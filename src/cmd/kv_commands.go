@@ -33,8 +33,8 @@ var kvReadCmd = &cobra.Command{
 			fmt.Println(hftx.SkullBonesSign(err.Error()))
 			os.Exit(1)
 		}
-		if kvreadErr := c.Read(args[1]); kvreadErr != nil {
-			fmt.Println(hftx.SkullBonesSign(kvreadErr.Error()))
+		if kvErr := c.Read(args[1]); kvErr != nil {
+			fmt.Println(hftx.SkullBonesSign(kvErr.Error()))
 			os.Exit(1)
 		}
 	},
@@ -51,8 +51,8 @@ var kvWriteCmd = &cobra.Command{
 			fmt.Println(hftx.SkullBonesSign(err.Error()))
 			os.Exit(1)
 		}
-		if _, kvwriteErr := c.Write(args[1], args[2], args[3]); kvwriteErr != nil {
-			fmt.Println(hftx.SkullBonesSign(kvwriteErr.Error()))
+		if _, kvErr := c.Write(args[1], args[2], args[3]); kvErr != nil {
+			fmt.Println(hftx.SkullBonesSign(kvErr.Error()))
 			os.Exit(1)
 		}
 	},
@@ -69,7 +69,7 @@ var kvLsCmd = &cobra.Command{
 			fmt.Println(hftx.SkullBonesSign(err.Error()))
 			return
 		}
-		if _, err := c.List(true); err != nil {
+		if _, kvErr := c.List(true); kvErr != nil {
 			fmt.Println(hftx.SkullBonesSign(err.Error()))
 		}
 	},
@@ -86,8 +86,8 @@ var kvRmCmd = &cobra.Command{
 			fmt.Println(hftx.SkullBonesSign(err.Error()))
 			return
 		}
-		if err := c.Delete(args[1]); err != nil {
-			fmt.Println(hftx.SkullBonesSign(err.Error()))
+		if kvErr := c.Delete(args[1]); kvErr != nil {
+			fmt.Println(hftx.SkullBonesSign(kvErr.Error()))
 		}
 	},
 }
@@ -102,8 +102,8 @@ var kvDestroyCmd = &cobra.Command{
 			fmt.Println(hftx.SkullBonesSign(err.Error()))
 			return
 		}
-		if err := c.Destroy(args[1]); err != nil {
-			fmt.Println(hftx.SkullBonesSign(err.Error()))
+		if kvErr := c.Destroy(args[1]); kvErr != nil {
+			fmt.Println(hftx.SkullBonesSign(kvErr.Error()))
 		}
 	},
 }
@@ -119,8 +119,8 @@ var kvBackupCmd = &cobra.Command{
 			fmt.Println(hftx.SkullBonesSign(err.Error()))
 			return
 		}
-		if err := c.Backup(args[1]); err != nil {
-			fmt.Println(hftx.SkullBonesSign(err.Error()))
+		if kvErr := c.Backup(args[1]); kvErr != nil {
+			fmt.Println(hftx.SkullBonesSign(kvErr.Error()))
 		}
 	},
 }
@@ -136,8 +136,8 @@ var kvRestoreCmd = &cobra.Command{
 			fmt.Println(hftx.SkullBonesSign(err.Error()))
 			return
 		}
-		if err := c.Restore(args[1]); err != nil {
-			fmt.Println(hftx.SkullBonesSign(err.Error()))
+		if kvErr := c.Restore(args[1]); kvErr != nil {
+			fmt.Println(hftx.SkullBonesSign(kvErr.Error()))
 		}
 	},
 }

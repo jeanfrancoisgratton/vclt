@@ -33,8 +33,8 @@ var policiesReadCmd = &cobra.Command{
 			fmt.Println(hftfx.SkullBonesSign(err.Error()))
 			os.Exit(1)
 		}
-		if _, polreadErr := c.Read(args[0], true); polreadErr != nil {
-			fmt.Println(hftfx.SkullBonesSign(polreadErr.Error()))
+		if _, polErr := c.Read(args[0], true); polErr != nil {
+			fmt.Println(hftfx.SkullBonesSign(polErr.Error()))
 			os.Exit(1)
 		}
 	},
@@ -51,8 +51,8 @@ var policiesWriteCmd = &cobra.Command{
 			fmt.Println(hftfx.SkullBonesSign(err.Error()))
 			os.Exit(1)
 		}
-		if polwriteErr := c.Write(args[0], args[1]); polwriteErr != nil {
-			fmt.Println(hftfx.SkullBonesSign(polwriteErr.Error()))
+		if polErr := c.Write(args[0], args[1]); polErr != nil {
+			fmt.Println(hftfx.SkullBonesSign(polErr.Error()))
 			os.Exit(1)
 		}
 	},
@@ -69,8 +69,8 @@ var policiesLsCmd = &cobra.Command{
 			fmt.Println(hftfx.SkullBonesSign(err.Error()))
 			os.Exit(1)
 		}
-		if _, err := c.List(true); err != nil {
-			fmt.Println(hftfx.SkullBonesSign(err.Error()))
+		if _, polErr := c.List(true); polErr != nil {
+			fmt.Println(hftfx.SkullBonesSign(polErr.Error()))
 		}
 	},
 }
@@ -86,8 +86,8 @@ var policiesRmCmd = &cobra.Command{
 			fmt.Println(hftfx.SkullBonesSign(err.Error()))
 			os.Exit(1)
 		}
-		if err := c.Delete(args); err != nil {
-			fmt.Println(hftfx.SkullBonesSign(err.Error()))
+		if polErr := c.Delete(args); polErr != nil {
+			fmt.Println(hftfx.SkullBonesSign(polErr.Error()))
 		}
 	},
 }
@@ -100,8 +100,8 @@ var policiesGenerateCmd = &cobra.Command{
 This is quite useful to understand how to write a policy in JSON or HCL format. It will also do a syntax check on the file before submitting it to Vault.`,
 	Args: cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		if err := policies.GenerateSamplePolicy(args[0]); err != nil {
-			fmt.Println(hftfx.SkullBonesSign(err.Error()))
+		if polErr := policies.GenerateSamplePolicy(args[0]); polErr != nil {
+			fmt.Println(hftfx.SkullBonesSign(polErr.Error()))
 		}
 	},
 }

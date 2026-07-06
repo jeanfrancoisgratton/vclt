@@ -42,7 +42,12 @@ var adminSealCmd = &cobra.Command{
 	Use:   "seal",
 	Short: "Seal your Hashicorp Vault",
 	Run: func(cmd *cobra.Command, args []string) {
-		if admErr := admin.Seal(); admErr != nil {
+		c, err := admin.NewClient()
+		if err != nil {
+			fmt.Println(hftx.SkullBonesSign(err.Error()))
+			os.Exit(1)
+		}
+		if admErr := c.Seal(); admErr != nil {
 			fmt.Println(hftx.SkullBonesSign(admErr.Error()))
 			os.Exit(1)
 		}
@@ -59,7 +64,12 @@ If none is provided, $HOME/.config/JFG/vclt/rootkeys.json will be used`,
 		if len(args) > 0 {
 			rkfile = args[0]
 		}
-		if admErr := admin.Unseal(rkfile); admErr != nil {
+		c, err := admin.NewUnsealClient()
+		if err != nil {
+			fmt.Println(hftx.SkullBonesSign(err.Error()))
+			os.Exit(1)
+		}
+		if admErr := c.Unseal(rkfile); admErr != nil {
 			fmt.Println(hftx.SkullBonesSign(admErr.Error()))
 			os.Exit(1)
 		}

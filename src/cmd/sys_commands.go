@@ -32,8 +32,8 @@ var sysEnableKVCmd = &cobra.Command{
 			fmt.Println(hftx.SkullBonesSign(err.Error()))
 			os.Exit(1)
 		}
-		if kvEnableErr := c.EnableKVengine(args[0]); kvEnableErr != nil {
-			fmt.Println(hftx.SkullBonesSign(kvEnableErr.Error()))
+		if sysErr := c.EnableKVengine(args[0]); sysErr != nil {
+			fmt.Println(hftx.SkullBonesSign(sysErr.Error()))
 			os.Exit(1)
 		}
 	},
@@ -50,8 +50,8 @@ var sysDisableKVCmd = &cobra.Command{
 			fmt.Println(hftx.SkullBonesSign(err.Error()))
 			os.Exit(1)
 		}
-		if kvDisableErr := c.DisableKVengine(args[0]); kvDisableErr != nil {
-			fmt.Println(hftx.SkullBonesSign(kvDisableErr.Error()))
+		if sysErr := c.DisableKVengine(args[0]); sysErr != nil {
+			fmt.Println(hftx.SkullBonesSign(sysErr.Error()))
 			os.Exit(1)
 		}
 	},
@@ -67,8 +67,8 @@ var listMountsCmd = &cobra.Command{
 			fmt.Println(hftx.SkullBonesSign(err.Error()))
 			os.Exit(1)
 		}
-		if _, admErr := c.ListMounts(true); admErr != nil {
-			fmt.Println(hftx.SkullBonesSign(admErr.Error()))
+		if _, sysErr := c.ListMounts(true); sysErr != nil {
+			fmt.Println(hftx.SkullBonesSign(sysErr.Error()))
 			os.Exit(1)
 		}
 	},
