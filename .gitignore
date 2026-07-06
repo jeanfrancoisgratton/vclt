@@ -17,5 +17,5 @@
 *.swp
 sample*
 
-.idea/claudeCodeEditorTabs.xml
-.idea/workspace.xml
+.idea/
+
