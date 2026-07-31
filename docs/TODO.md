@@ -27,3 +27,4 @@ ___
 - [ ] Allow `admin setrootkeys` to work in offline mode : 
   - bypass admin.GetSealStatus()
   - the `MinimumRequired` member of `VaultRootKeysStruct` should be set to zero in the meantime
+- [x] verbosity in `kv write`
