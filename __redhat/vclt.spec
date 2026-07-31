@@ -52,6 +52,23 @@ install -Dpm 0755 %{_builddir}/%{_binaryname} %{buildroot}%{_bindir}/%{_binaryna
 %{_bindir}/%{_binaryname}
 
 %changelog
+* Fri Jul 31 2026 Binary package builder <builder@famillegratton.net> 2.4.1-3
+- Merge remote-tracking branch 'refs/remotes/origin/main'
+- changelog update
+- Hardcoded GO PATH in builders scripts
+- missing import added
+- another missing Makefile
+- APKBUILD: added missing Makefile
+- more verbosity to kv write
+- removed shell completion dependencies from code as it is outside of the tool's core functionalities
+
+* Fri Jul 31 2026 Binary package builder <builder@famillegratton.net> 2.4.1-2
+- missing import added
+- another missing Makefile
+- APKBUILD: added missing Makefile
+- more verbosity to kv write
+- removed shell completion dependencies from code as it is outside of the tool's core functionalities
+
 * Mon Jul 06 2026 Binary package builder <builder@famillegratton.net> 2.4.1-0
 - Completed a major refactoring, version bump
 - refactoring phase 5
