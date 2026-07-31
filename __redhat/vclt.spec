@@ -5,7 +5,7 @@
 %define _bash_completionsdir /usr/share/bash-completion/completions
 %define _zsh_completionsdir  /usr/share/zsh/site-functions
 %define _version 2.4.1
-%define _rel 0
+%define _rel 2
 %define _binaryname vclt
 
 Name:       vclt
@@ -42,23 +42,10 @@ rm -rf $RPM_BUILD_ROOT
 install -Dpm 0755 %{_builddir}/%{_binaryname} %{buildroot}%{_bindir}/%{_binaryname}
 
 %post
-# Bash completion — always install
-/opt/bin/vclt completion bash > %{_bash_completionsdir}/vclt
-
-# Zsh completion — only if zsh is present
-if command -v zsh > /dev/null 2>&1; then
-    mkdir -p %{_zsh_completionsdir}/zsh/site-functions
-    /opt/bin/vclt completion zsh > %{_zsh_completionsdir}/_vclt
-fi
 
 %preun
 
 %postun
-if [ $1 -eq 0 ]; then
-    # $1 == 0 means this is a full uninstall, not an upgrade
-    rm -f %{_bash_completionsdir}/vclt
-    rm -f %{_zsh_completionsdir}/_vclt
-fi
 
 %files
 %defattr(0755,root,root,-)

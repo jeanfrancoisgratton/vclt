@@ -3,16 +3,16 @@
 
 pkgname=vclt
 pkgver=2.4.1
-pkgrel=1
+pkgrel=2
 pkgdesc="Hashicorp Vault client"
 arch=('x86_64')
 url="https://git.famillegratton.net:3000/devops/vclt.git"
 license=('GPL-2.0-only')
 
 makedepends=('go')
-depends=('bash-completion')
+#depends=('bash-completion')
 
-optdepends=('zsh: zsh completion support')
+#optdepends=('zsh: zsh completion support')
 
 options=('!debug')
 
