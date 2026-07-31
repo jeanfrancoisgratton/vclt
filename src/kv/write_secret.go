@@ -6,7 +6,10 @@
 package kv
 
 import (
+	"fmt"
+
 	ce "github.com/jeanfrancoisgratton/customError/v3"
+	hftx "github.com/jeanfrancoisgratton/helperFunctions/v5/terminalfx"
 	vlr "github.com/jeanfrancoisgratton/vaultlib/v2/kv"
 )
 
@@ -14,6 +17,10 @@ func (c *Client) Write(path, key, value string) (*vlr.WriteResult, *ce.CustomErr
 	if wRes, kvWriteError := c.vc.WriteSecretField(path, key, value); kvWriteError != nil {
 		return wRes, &ce.CustomError{Title: "Error writing secret", Message: kvWriteError.Error()}
 	} else {
+
+		if !shared.QuietOutput {
+			fmt.Println(hftx.EnabledSign("Wrote secret to" + path))
+		}
 		return wRes, nil
 	}
 }
