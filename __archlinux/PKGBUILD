@@ -3,7 +3,7 @@
 
 pkgname=vclt
 pkgver=2.4.1
-pkgrel=2
+pkgrel=3
 pkgdesc="Hashicorp Vault client"
 arch=('x86_64')
 url="https://git.famillegratton.net:3000/devops/vclt.git"
@@ -35,12 +35,12 @@ build() {
   export GOPATH="${srcdir}/gopath"
   export GOMODCACHE="${GOPATH}/pkg/mod"
 
-  go build -trimpath -mod=readonly -modcacherw -ldflags="-s -w -buildid=" -o "${_binaryname}" .
+  /opt/go/bin/go build -trimpath -mod=readonly -modcacherw -ldflags="-s -w -buildid=" -o "${_binaryname}" .
 }
 
 check() {
   cd "${srcdir}/${_builddir}"
-  go test -modcacherw ./...
+  /opt/go/bin/go test -modcacherw ./...
 }
 
 package() {
