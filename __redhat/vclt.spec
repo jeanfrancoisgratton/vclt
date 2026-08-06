@@ -4,8 +4,8 @@
 %define _prefix /opt
 %define _bash_completionsdir /usr/share/bash-completion/completions
 %define _zsh_completionsdir  /usr/share/zsh/site-functions
-%define _version 2.4.1
-%define _rel 3
+%define _version 2.4.2
+%define _rel 1
 %define _binaryname vclt
 
 Name:       vclt

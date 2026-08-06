@@ -2,8 +2,8 @@
 # Packager: Package builder <builder@famillegratton.net>
 
 pkgname=vclt
-pkgver=2.4.1
-pkgrel=3
+pkgver=2.4.2
+pkgrel=1
 pkgdesc="Hashicorp Vault client"
 arch=('x86_64')
 url="https://git.famillegratton.net:3000/devops/vclt.git"

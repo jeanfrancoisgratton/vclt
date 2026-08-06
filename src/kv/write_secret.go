@@ -20,7 +20,7 @@ func (c *Client) Write(path, key, value string) (*vlr.WriteResult, *ce.CustomErr
 	} else {
 
 		if !shared.QuietOutput {
-			fmt.Println(hftx.EnabledSign("Wrote secret to" + path))
+			fmt.Println(hftx.EnabledSign("Wrote secret to " + path))
 		}
 		return wRes, nil
 	}
