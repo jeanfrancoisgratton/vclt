@@ -12,13 +12,13 @@ func main() {
 	currentWorkingDir := ""
 	// Whatever happens, we need to preserve the current pwd, and restore it on exit, however the software exits
 	if currentWorkingDir, err = os.Getwd(); err != nil {
-		fmt.Println(err)
+		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
 
 	// First, we need to create a configuration directory. This is a per-user config dir
 	if err = os.MkdirAll(filepath.Join(os.Getenv("HOME"), ".config", "JFG", "vclt"), os.ModePerm); err != nil {
-		fmt.Println(err)
+		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
 

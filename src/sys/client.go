@@ -34,7 +34,7 @@ func NewClient() (*Client, *ce.CustomError) {
 	cfg := sys.Config{Address: shared.VaultServerAddress, Token: shared.VaultAuthToken}
 	vc, err := sys.NewClient(cfg)
 	if err != nil {
-		return nil, &ce.CustomError{Title: "Error creating vault client", Message: err.Error()}
+		return nil, &ce.CustomError{Title: "Error creating vault client", Message: err.Error(), Code: shared.ErrVaultInit}
 	}
 	return &Client{vc: vc, cfg: cfg}, nil
 }

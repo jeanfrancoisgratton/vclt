@@ -6,13 +6,10 @@
 package cmd
 
 import (
-	"fmt"
-	"os"
 	"vclt/shared"
 
 	"vclt/kv"
 
-	hftx "github.com/jeanfrancoisgratton/helperFunctions/v5/terminalfx"
 	"github.com/spf13/cobra"
 )
 
@@ -30,12 +27,10 @@ var kvReadCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		c, err := kv.NewClient(args[0])
 		if err != nil {
-			fmt.Println(hftx.SkullBonesSign(err.Error()))
-			os.Exit(1)
+			err.Die()
 		}
 		if kvErr := c.Read(args[1]); kvErr != nil {
-			fmt.Println(hftx.SkullBonesSign(kvErr.Error()))
-			os.Exit(1)
+			kvErr.Die()
 		}
 	},
 }
@@ -48,12 +43,10 @@ var kvWriteCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		c, err := kv.NewClient(args[0])
 		if err != nil {
-			fmt.Println(hftx.SkullBonesSign(err.Error()))
-			os.Exit(1)
+			err.Die()
 		}
 		if _, kvErr := c.Write(args[1], args[2], args[3]); kvErr != nil {
-			fmt.Println(hftx.SkullBonesSign(kvErr.Error()))
-			os.Exit(1)
+			kvErr.Die()
 		}
 	},
 }
@@ -66,11 +59,10 @@ var kvLsCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		c, err := kv.NewClient(args[0])
 		if err != nil {
-			fmt.Println(hftx.SkullBonesSign(err.Error()))
-			return
+			err.Die()
 		}
 		if _, kvErr := c.List(true); kvErr != nil {
-			fmt.Println(hftx.SkullBonesSign(err.Error()))
+			kvErr.Die()
 		}
 	},
 }
@@ -83,11 +75,10 @@ var kvRmCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		c, err := kv.NewClient(args[0])
 		if err != nil {
-			fmt.Println(hftx.SkullBonesSign(err.Error()))
-			return
+			err.Die()
 		}
 		if kvErr := c.Delete(args[1]); kvErr != nil {
-			fmt.Println(hftx.SkullBonesSign(kvErr.Error()))
+			kvErr.Die()
 		}
 	},
 }
@@ -99,11 +90,10 @@ var kvDestroyCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		c, err := kv.NewClient(args[0])
 		if err != nil {
-			fmt.Println(hftx.SkullBonesSign(err.Error()))
-			return
+			err.Die()
 		}
 		if kvErr := c.Destroy(args[1]); kvErr != nil {
-			fmt.Println(hftx.SkullBonesSign(kvErr.Error()))
+			kvErr.Die()
 		}
 	},
 }
@@ -116,11 +106,10 @@ var kvBackupCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		c, err := kv.NewClient(args[0])
 		if err != nil {
-			fmt.Println(hftx.SkullBonesSign(err.Error()))
-			return
+			err.Die()
 		}
 		if kvErr := c.Backup(args[1]); kvErr != nil {
-			fmt.Println(hftx.SkullBonesSign(kvErr.Error()))
+			kvErr.Die()
 		}
 	},
 }
@@ -133,11 +122,10 @@ var kvRestoreCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		c, err := kv.NewClient(args[0])
 		if err != nil {
-			fmt.Println(hftx.SkullBonesSign(err.Error()))
-			return
+			err.Die()
 		}
 		if kvErr := c.Restore(args[1]); kvErr != nil {
-			fmt.Println(hftx.SkullBonesSign(kvErr.Error()))
+			kvErr.Die()
 		}
 	},
 }

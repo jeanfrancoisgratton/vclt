@@ -34,7 +34,7 @@ func NewClient(kvengine string) (*Client, *ce.CustomError) {
 	cfg := vlr.Config{Address: shared.VaultServerAddress, Token: shared.VaultAuthToken, MountPath: kvengine}
 	vc, err := vlr.NewClient(cfg)
 	if err != nil {
-		return nil, &ce.CustomError{Title: "Error creating vault client", Message: err.Error()}
+		return nil, &ce.CustomError{Title: "Error creating vault client", Message: err.Error(), Code: shared.ErrVaultInit}
 	}
 	return &Client{vc: vc, engine: kvengine}, nil
 }

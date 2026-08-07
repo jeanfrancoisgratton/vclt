@@ -6,12 +6,8 @@
 package cmd
 
 import (
-	"fmt"
-	"os"
-
 	"vclt/policies"
 
-	hftfx "github.com/jeanfrancoisgratton/helperFunctions/v5/terminalfx"
 	"github.com/spf13/cobra"
 )
 
@@ -30,12 +26,10 @@ var policiesReadCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		c, err := policies.NewClient()
 		if err != nil {
-			fmt.Println(hftfx.SkullBonesSign(err.Error()))
-			os.Exit(1)
+			err.Die()
 		}
 		if _, polErr := c.Read(args[0], true); polErr != nil {
-			fmt.Println(hftfx.SkullBonesSign(polErr.Error()))
-			os.Exit(1)
+			polErr.Die()
 		}
 	},
 }
@@ -48,12 +42,10 @@ var policiesWriteCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		c, err := policies.NewClient()
 		if err != nil {
-			fmt.Println(hftfx.SkullBonesSign(err.Error()))
-			os.Exit(1)
+			err.Die()
 		}
 		if polErr := c.Write(args[0], args[1]); polErr != nil {
-			fmt.Println(hftfx.SkullBonesSign(polErr.Error()))
-			os.Exit(1)
+			polErr.Die()
 		}
 	},
 }
@@ -66,11 +58,10 @@ var policiesLsCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		c, err := policies.NewClient()
 		if err != nil {
-			fmt.Println(hftfx.SkullBonesSign(err.Error()))
-			os.Exit(1)
+			err.Die()
 		}
 		if _, polErr := c.List(true); polErr != nil {
-			fmt.Println(hftfx.SkullBonesSign(polErr.Error()))
+			polErr.Die()
 		}
 	},
 }
@@ -83,11 +74,10 @@ var policiesRmCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		c, err := policies.NewClient()
 		if err != nil {
-			fmt.Println(hftfx.SkullBonesSign(err.Error()))
-			os.Exit(1)
+			err.Die()
 		}
 		if polErr := c.Delete(args); polErr != nil {
-			fmt.Println(hftfx.SkullBonesSign(polErr.Error()))
+			polErr.Die()
 		}
 	},
 }
@@ -101,7 +91,7 @@ This is quite useful to understand how to write a policy in JSON or HCL format. 
 	Args: cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		if polErr := policies.GenerateSamplePolicy(args[0]); polErr != nil {
-			fmt.Println(hftfx.SkullBonesSign(polErr.Error()))
+			polErr.Die()
 		}
 	},
 }
