@@ -6,12 +6,9 @@
 package cmd
 
 import (
-	"fmt"
-	"os"
 	"vclt/shared"
 	"vclt/tokens"
 
-	hftfx "github.com/jeanfrancoisgratton/helperFunctions/v5/terminalfx"
 	"github.com/spf13/cobra"
 )
 
@@ -32,12 +29,10 @@ If no policies are specified the token will be bound to the default policy`,
 	Run: func(cmd *cobra.Command, args []string) {
 		c, err := tokens.NewClient()
 		if err != nil {
-			fmt.Println(hftfx.SkullBonesSign(err.Error()))
-			os.Exit(1)
+			err.Die()
 		}
 		if tknErr := c.Create(args[0], true); tknErr != nil {
-			fmt.Println(hftfx.SkullBonesSign(tknErr.Error()))
-			os.Exit(1)
+			tknErr.Die()
 		}
 	},
 }
@@ -50,12 +45,10 @@ var tokenRevokeCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		c, err := tokens.NewClient()
 		if err != nil {
-			fmt.Println(hftfx.SkullBonesSign(err.Error()))
-			os.Exit(1)
+			err.Die()
 		}
 		if tknErr := c.Revoke(args[0]); tknErr != nil {
-			fmt.Println(hftfx.SkullBonesSign(tknErr.Error()))
-			os.Exit(1)
+			tknErr.Die()
 		}
 	},
 }
@@ -67,12 +60,10 @@ var tokenRenewCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		c, err := tokens.NewClient()
 		if err != nil {
-			fmt.Println(hftfx.SkullBonesSign(err.Error()))
-			os.Exit(1)
+			err.Die()
 		}
 		if tknErr := c.Renew(args[0]); tknErr != nil {
-			fmt.Println(hftfx.SkullBonesSign(tknErr.Error()))
-			os.Exit(1)
+			tknErr.Die()
 		}
 	},
 }
@@ -84,12 +75,10 @@ var tokenLookupCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		c, err := tokens.NewClient()
 		if err != nil {
-			fmt.Println(hftfx.SkullBonesSign(err.Error()))
-			os.Exit(1)
+			err.Die()
 		}
 		if _, tknErr := c.LookupToken(args[0], true); tknErr != nil {
-			fmt.Println(hftfx.SkullBonesSign(tknErr.Error()))
-			os.Exit(1)
+			tknErr.Die()
 		}
 	},
 }
@@ -100,12 +89,10 @@ var tokenLookupSelfCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		c, err := tokens.NewClient()
 		if err != nil {
-			fmt.Println(hftfx.SkullBonesSign(err.Error()))
-			os.Exit(1)
+			err.Die()
 		}
 		if _, tknErr := c.LookupSelf(true); tknErr != nil {
-			fmt.Println(hftfx.SkullBonesSign(tknErr.Error()))
-			os.Exit(1)
+			tknErr.Die()
 		}
 	},
 }
@@ -116,12 +103,10 @@ var tokenListAccessorsCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		c, err := tokens.NewClient()
 		if err != nil {
-			fmt.Println(hftfx.SkullBonesSign(err.Error()))
-			os.Exit(1)
+			err.Die()
 		}
 		if tknErr := c.ListAccessors(); tknErr != nil {
-			fmt.Println(hftfx.SkullBonesSign(tknErr.Error()))
-			os.Exit(1)
+			tknErr.Die()
 		}
 	},
 }

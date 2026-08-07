@@ -47,7 +47,7 @@ func newClient() (*Client, *ce.CustomError) {
 	cfg := vadm.AdminConfig{Address: shared.VaultServerAddress, Token: shared.VaultAuthToken}
 	vc, err := vadm.NewClient(cfg)
 	if err != nil {
-		return nil, &ce.CustomError{Title: "Unable to create Vault client", Message: err.Error()}
+		return nil, &ce.CustomError{Title: "Unable to create Vault client", Message: err.Error(), Code: shared.ErrVaultInit}
 	}
 	return &Client{vc: vc, cfg: cfg}, nil
 }

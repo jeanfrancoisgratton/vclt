@@ -9,6 +9,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+	"strings"
 
 	ce "github.com/jeanfrancoisgratton/customError/v3"
 	hftx "github.com/jeanfrancoisgratton/helperFunctions/v5/terminalfx"
@@ -21,11 +22,7 @@ func outputData(data map[string]interface{}, suppress bool) *ce.CustomError {
 		if !found {
 			title := "ReadSecret error"
 			message := fmt.Sprintf("Field %s not found", SecretField)
-			code := shared.ErrFieldNotFound
-			if !shared.QuietOutput {
-				fmt.Println(hftx.SkullBonesSign(title + " " + message))
-			}
-			return &ce.CustomError{Title: title, Message: message, Code: code}
+			return &ce.CustomError{Title: title, Message: message, Code: shared.ErrFieldNotFound}
 		}
 		if suppress {
 			return nil
@@ -47,13 +44,7 @@ func outputData(data map[string]interface{}, suppress bool) *ce.CustomError {
 		enc := json.NewEncoder(os.Stdout)
 		enc.SetIndent("", "  ")
 		if err := enc.Encode(data); err != nil {
-			title := "JSON encoding error"
-			message := err.Error()
-			code := shared.ErrExtractData
-			if !shared.QuietOutput {
-				fmt.Println(hftx.SkullBonesSign(title + " " + message))
-			}
-			return &ce.CustomError{Title: title, Message: message, Code: code}
+			return &ce.CustomError{Title: "JSON encoding error", Message: err.Error(), Code: shared.ErrExtractData}
 		}
 	} else {
 		for k, v := range data {
@@ -61,6 +52,34 @@ func outputData(data map[string]interface{}, suppress bool) *ce.CustomError {
 		}
 	}
 	return nil
+}
+
+// classifyReadError maps an error returned by vaultlib's KV read path onto a
+// CustomError carrying the matching vclt error code, so that Die() can translate
+// it into a meaningful, POSIX-safe exit status (e.g. a sealed vault exits with
+// ErrVaultSealed rather than an indistinguishable generic 1).
+//
+// vaultlib normalises its failures into recognisable wrapped strings; we match
+// on those. Order matters: the sealed case must be tested before the more
+// general "unavailable" one, since vaultlib reports "sealed or unavailable".
+func classifyReadError(err error) *ce.CustomError {
+	msg := err.Error()
+	var code int
+	switch {
+	case strings.Contains(msg, "sealed"):
+		code = shared.ErrVaultSealed
+	case strings.Contains(msg, "unavailable"), strings.Contains(msg, "connection refused"),
+		strings.Contains(msg, "no such host"):
+		code = shared.ErrVaultUnavailable
+	case strings.Contains(msg, "unauthorized"), strings.Contains(msg, "invalid Vault token"),
+		strings.Contains(msg, "permission denied"):
+		code = shared.ErrVaultInvalidAuth
+	case strings.Contains(msg, "does not exist"):
+		code = shared.ErrInvalidPath
+	default:
+		code = shared.ErrReadSecret
+	}
+	return &ce.CustomError{Title: shared.ErrorMessages[code].Msg, Message: msg, Code: code}
 }
 
 // findLatestAvailableVersion :

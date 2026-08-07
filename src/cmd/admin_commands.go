@@ -6,12 +6,8 @@
 package cmd
 
 import (
-	"fmt"
-	"os"
-
 	"vclt/admin"
 
-	hftx "github.com/jeanfrancoisgratton/helperFunctions/v5/terminalfx"
 	"github.com/spf13/cobra"
 )
 
@@ -32,8 +28,7 @@ If no filename is provided, $HOME/.config/JFG/vclt/rootkeys.json will be created
 			rkfile = args[0]
 		}
 		if admErr := admin.SetRootKeys(rkfile); admErr != nil {
-			fmt.Println(hftx.SkullBonesSign(admErr.Error()))
-			os.Exit(1)
+			admErr.Die()
 		}
 	},
 }
@@ -44,12 +39,10 @@ var adminSealCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		c, err := admin.NewClient()
 		if err != nil {
-			fmt.Println(hftx.SkullBonesSign(err.Error()))
-			os.Exit(1)
+			err.Die()
 		}
 		if admErr := c.Seal(); admErr != nil {
-			fmt.Println(hftx.SkullBonesSign(admErr.Error()))
-			os.Exit(1)
+			admErr.Die()
 		}
 	},
 }
@@ -66,12 +59,10 @@ If none is provided, $HOME/.config/JFG/vclt/rootkeys.json will be used`,
 		}
 		c, err := admin.NewUnsealClient()
 		if err != nil {
-			fmt.Println(hftx.SkullBonesSign(err.Error()))
-			os.Exit(1)
+			err.Die()
 		}
 		if admErr := c.Unseal(rkfile); admErr != nil {
-			fmt.Println(hftx.SkullBonesSign(admErr.Error()))
-			os.Exit(1)
+			admErr.Die()
 		}
 	},
 }

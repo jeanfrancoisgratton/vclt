@@ -34,16 +34,16 @@ func (c *Client) allSecrets(path string) *ce.CustomError {
 
 	if secret, sErr = c.vc.ReadSecret(path,
 		vlr.ReadOptions{Version: SecretVersion, FallbackToLatestAvailable: true}); sErr != nil {
-		return &ce.CustomError{Title: "Error reading secret", Message: sErr.Error()}
+		return classifyReadError(sErr)
 	}
 
 	if shared.OutputFormat == "json" {
 		payload, err := json.MarshalIndent(secret.Data, "", "  ")
 		if err != nil {
-			return &ce.CustomError{Title: "Error serializing secret", Message: err.Error()}
+			return &ce.CustomError{Title: "Error serializing secret", Message: err.Error(), Code: shared.ErrExtractData}
 		}
 		if e := hfjson.Print(payload); e != nil {
-			return &ce.CustomError{Title: "Unable to render secret's payload", Message: e.Error()}
+			return &ce.CustomError{Title: "Unable to render secret's payload", Message: e.Error(), Code: shared.ErrExtractData}
 		}
 		return nil
 	}
@@ -53,7 +53,7 @@ func (c *Client) allSecrets(path string) *ce.CustomError {
 func (c *Client) singleFieldFromSecret(path string) *ce.CustomError {
 	value, err := c.vc.ReadSecretField(path, SecretField, SecretVersion)
 	if err != nil {
-		return &ce.CustomError{Title: "Error reading secret", Message: err.Error()}
+		return classifyReadError(err)
 	}
 
 	if shared.QuietOutput {

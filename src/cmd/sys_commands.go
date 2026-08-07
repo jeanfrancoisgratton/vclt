@@ -6,12 +6,8 @@
 package cmd
 
 import (
-	"fmt"
-	"os"
-
 	"vclt/sys"
 
-	hftx "github.com/jeanfrancoisgratton/helperFunctions/v5/terminalfx"
 	"github.com/spf13/cobra"
 )
 
@@ -29,12 +25,10 @@ var sysEnableKVCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		c, err := sys.NewClient()
 		if err != nil {
-			fmt.Println(hftx.SkullBonesSign(err.Error()))
-			os.Exit(1)
+			err.Die()
 		}
 		if sysErr := c.EnableKVengine(args[0]); sysErr != nil {
-			fmt.Println(hftx.SkullBonesSign(sysErr.Error()))
-			os.Exit(1)
+			sysErr.Die()
 		}
 	},
 }
@@ -47,12 +41,10 @@ var sysDisableKVCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		c, err := sys.NewClient()
 		if err != nil {
-			fmt.Println(hftx.SkullBonesSign(err.Error()))
-			os.Exit(1)
+			err.Die()
 		}
 		if sysErr := c.DisableKVengine(args[0]); sysErr != nil {
-			fmt.Println(hftx.SkullBonesSign(sysErr.Error()))
-			os.Exit(1)
+			sysErr.Die()
 		}
 	},
 }
@@ -64,12 +56,10 @@ var listMountsCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		c, err := sys.NewClient()
 		if err != nil {
-			fmt.Println(hftx.SkullBonesSign(err.Error()))
-			os.Exit(1)
+			err.Die()
 		}
 		if _, sysErr := c.ListMounts(true); sysErr != nil {
-			fmt.Println(hftx.SkullBonesSign(sysErr.Error()))
-			os.Exit(1)
+			sysErr.Die()
 		}
 	},
 }
