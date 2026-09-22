@@ -16,6 +16,18 @@ import (
 	"vclt/shared"
 )
 
+// writeSecretFile writes a secret's rendered content to SecretOutputFile with
+// owner-only permissions, since the file may contain sensitive material.
+func writeSecretFile(content []byte) *ce.CustomError {
+	if err := os.WriteFile(SecretOutputFile, content, 0600); err != nil {
+		return &ce.CustomError{Title: shared.ErrorMessages[shared.ErrWriteFile].Msg, Message: err.Error(), Code: shared.ErrWriteFile}
+	}
+	if !shared.QuietOutput {
+		fmt.Printf("Secret written to %s\n", SecretOutputFile)
+	}
+	return nil
+}
+
 func outputData(data map[string]interface{}, suppress bool) *ce.CustomError {
 	if SecretField != "" {
 		val, found := data[SecretField]

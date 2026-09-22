@@ -37,6 +37,14 @@ func (c *Client) allSecrets(path string) *ce.CustomError {
 		return classifyReadError(sErr)
 	}
 
+	if SecretOutputFile != "" {
+		payload, err := json.MarshalIndent(secret.Data, "", "  ")
+		if err != nil {
+			return &ce.CustomError{Title: "Error serializing secret", Message: err.Error(), Code: shared.ErrExtractData}
+		}
+		return writeSecretFile(payload)
+	}
+
 	if shared.OutputFormat == "json" {
 		payload, err := json.MarshalIndent(secret.Data, "", "  ")
 		if err != nil {
@@ -54,6 +62,10 @@ func (c *Client) singleFieldFromSecret(path string) *ce.CustomError {
 	value, err := c.vc.ReadSecretField(path, SecretField, SecretVersion)
 	if err != nil {
 		return classifyReadError(err)
+	}
+
+	if SecretOutputFile != "" {
+		return writeSecretFile([]byte(fmt.Sprintf("%v\n", value)))
 	}
 
 	if shared.QuietOutput {

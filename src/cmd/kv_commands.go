@@ -138,6 +138,7 @@ func init() {
 	kvCmd.PersistentFlags().IntVarP(&kv.SecretVersion, "version", "v", 0, "Secret version (0 = latest available)")
 	kvReadCmd.PersistentFlags().StringVarP(&kv.SecretField, "field", "f", "", "Specific field to manage")
 	kvReadCmd.PersistentFlags().StringVarP(&shared.OutputFormat, "output", "o", "text", "Output format: text|json")
+	kvReadCmd.PersistentFlags().StringVar(&kv.SecretOutputFile, "file", "", "Write the secret to FILE (mode 0600) instead of stdout")
 	kvRmCmd.PersistentFlags().StringVarP(&kv.SecretField, "field", "f", "", "Specific field to manage")
 	kvLsCmd.PersistentFlags().BoolVarP(&kv.ExtendedSecretsList, "extended", "x", false, "Show extended info")
 	kvBackupCmd.PersistentFlags().BoolVarP(&kv.Cleartext, "cleartext", "c", false, "Backup cleartext (default: encrypted)")
