@@ -2,7 +2,7 @@
 # Packager: Package builder <builder@famillegratton.net>
 
 pkgname=vclt
-pkgver=2.4.3
+pkgver=2.5.0
 pkgrel=1
 pkgdesc="Hashicorp Vault client"
 arch=('x86_64')
@@ -35,12 +35,18 @@ build() {
   export GOPATH="${srcdir}/gopath"
   export GOMODCACHE="${GOPATH}/pkg/mod"
 
-  /opt/go/bin/go build -trimpath -mod=readonly -modcacherw -ldflags="-s -w -buildid=" -o "${_binaryname}" .
-}
-
-check() {
-  cd "${srcdir}/${_builddir}"
+  # makepkg only runs check() when invoked with --check, which the packaging
+  # Makefile never passes, so vet/test are run inline here instead to
+  # guarantee they always run. makepkg runs build() under bash's default
+  # errexit-on-uncaught-error behavior for the script as a whole, so both of
+  # these fast-fail; go test exits 0 for packages with no test files and
+  # only fails on an actual test failure.
+  /opt/go/bin/go vet -modcacherw ./...
   /opt/go/bin/go test -modcacherw ./...
+
+  builddate="$(date +%Y.%m.%d)"
+
+  /opt/go/bin/go build -trimpath -mod=readonly -modcacherw -ldflags="-s -w -buildid= -X vclt/cmd.buildVersion=${pkgver} -X vclt/cmd.buildDate=${builddate}" -o "${_binaryname}" .
 }
 
 package() {

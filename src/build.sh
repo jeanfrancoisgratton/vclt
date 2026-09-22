@@ -53,5 +53,14 @@ if [ "$CHECK_PERMS" -eq 1 ]; then
     ensure_permissions "$OUTPUT" "devops" "775"
 fi
 
+# set -eu is not enabled here, so fast-fail explicitly; go test exits 0 for
+# packages with no test files and only fails on an actual test failure.
+go vet ./... || exit 1
+go test ./... || exit 1
+
+SCRIPT_DIR="$(CDPATH='' cd -- "$(dirname -- "$0")" && pwd)"
+VCLTVERSION="$(sed -n 's/.*"versionnumber": *"\([^"]*\)".*/\1/p' "$SCRIPT_DIR/../vclt.json")"
+BUILDDATE="$(date +%Y.%m.%d)"
+
 echo "Building ${OUTPUT}/${FULLNAME}"
-go build -o ${OUTPUT}/${FULLNAME} .
+CGO_ENABLED=0 go build -trimpath -ldflags="-s -w -buildid= -X vclt/cmd.buildVersion=$VCLTVERSION -X vclt/cmd.buildDate=$BUILDDATE" -o ${OUTPUT}/${FULLNAME} .

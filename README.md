@@ -183,13 +183,14 @@ vclt kv read <KV_ENGINE> <SECRET_PATH>
 vclt kv get  <KV_ENGINE> <SECRET_PATH>
 ```
 
-Reads a secret from the KV v2 engine. Without `--field`, all key/value pairs in the secret are printed. With `--field`, only the value of the specified field is printed — useful for scripting.
+Reads a secret from the KV v2 engine. Without `--field`, all key/value pairs in the secret are printed. With `--field`, only the value of the specified field is printed — useful for scripting. With `--file`, the secret is written to a file (mode `0600`) instead of the terminal, so it never touches stdout or shell history.
 
 | Flag | Short | Default | Description |
 |---|---|---|---|
 | `--field` | `-f` | — | Print only the value of the named field. |
 | `--version` | `-v` | `0` | Read a specific version. `0` resolves to the latest available non-destroyed version. |
 | `--output` | `-o` | `text` | Output format: `text` or `json`. |
+| `--file` | — | — | Write the secret to the given file instead of stdout. With `--field`, the field's raw value is written; without it, the whole secret is written as JSON. |
 
 **Examples:**
 ```sh
@@ -197,6 +198,8 @@ vclt kv read mysecrets db/credentials
 vclt kv read mysecrets db/credentials -f password
 vclt kv read mysecrets db/credentials -v 3
 vclt kv read mysecrets db/credentials -o json
+vclt kv read mysecrets db/credentials -f password --file db-password.txt
+vclt kv read mysecrets db/credentials --file db-credentials.json
 ```
 
 **Token required:** Yes  
@@ -832,7 +835,7 @@ Summary table for quick reference. All secret operations assume a KV v2 engine.
 
 ### Requirements
 
-- Go **1.26.4** or later (see `go.mod`)
+- Go **1.27.1** or later (see `go.mod` / `goversion` in `vclt.json`)
 - Network access to the Go module proxy (or a pre-populated module cache)
 
 ### Dependencies
@@ -841,12 +844,13 @@ Direct dependencies are managed via `go.mod`:
 
 | Module | Version |
 |---|---|
-| `github.com/jeanfrancoisgratton/customError/v3` | v3.0.0 |
-| `github.com/jeanfrancoisgratton/helperFunctions/v5` | v5.3.0 |
+| `github.com/hashicorp/hcl` | v1.0.1-vault-7 |
+| `github.com/jeanfrancoisgratton/customError/v3` | v3.1.0 |
+| `github.com/jeanfrancoisgratton/helperFunctions/v5` | v5.3.2 |
 | `github.com/jeanfrancoisgratton/vaultlib/v2` | v2.0.0 |
-| `github.com/jedib0t/go-pretty/v6` | v6.8.2 |
+| `github.com/jedib0t/go-pretty/v6` | v6.8.3 |
 | `github.com/spf13/cobra` | v1.10.2 |
-| `golang.org/x/term` | v0.44.0 |
+| `golang.org/x/term` | v0.45.0 |
 
 ### Quick build
 
@@ -858,7 +862,7 @@ go build -o vclt .
 
 ### Using `build.sh`
 
-The `build.sh` script at the repo root adds branch-aware output naming and optional permission checks on the target directory. The default output path is `/opt/bin`.
+The `build.sh` script at `src/build.sh` adds branch-aware output naming, optional permission checks on the target directory, and injects the version/build date into the binary via `-ldflags -X`, reading the version from `vclt.json` at the repo root (see [`vclt version`](#version)). It also runs `go vet ./...` and `go test ./...` before building, so a build fails fast on a vet or test regression. The default output path is `/opt/bin`.
 
 ```sh
 # Build to the default output path (/opt/bin)
@@ -876,12 +880,24 @@ When the current Git branch is `master`, `main`, or `develop`, the binary is nam
 
 ### Static build (CGO disabled)
 
-All packaging targets build with CGO disabled for maximum portability:
+All packaging targets build with CGO disabled for maximum portability, and inject the version/date the same way `build.sh` does:
 
 ```sh
 cd src
-CGO_ENABLED=0 go build -trimpath -ldflags="-s -w -buildid=" -o vclt .
+VERSION=$(sed -n 's/.*"versionnumber": *"\([^"]*\)".*/\1/p' ../vclt.json)
+BUILDDATE=$(date +%Y.%m.%d)
+CGO_ENABLED=0 go build -trimpath -ldflags="-s -w -buildid= -X vclt/cmd.buildVersion=$VERSION -X vclt/cmd.buildDate=$BUILDDATE" -o vclt .
 ```
+
+### Bumping the version
+
+`version-bump.sh` at the repo root updates `vclt.json` and every `__*/` packaging file's version field in one shot, and resets each distro's independent release counter to 1 (release numbers otherwise drift independently — see [Binary Package Building](#binary-package-building)). It refuses to run against a dirty tree for the files it touches, so a bump is always a trivial `git checkout` away from being undone.
+
+```sh
+./version-bump.sh 2.5.0
+```
+
+`src/cmd/root.go` needs no manual edit — it picks up the version via `-ldflags -X` at build time, from whichever packaging file is authoritative for that build.
 
 ---
 
@@ -900,7 +916,9 @@ go test -cover ./...   # with statement coverage
 
 ## Binary Package Building
 
-Packaging stubs for Alpine (APK), Arch Linux (PKGBUILD), Debian (DEB), and Red Hat/RHEL/Fedora (RPM) are provided under `__alpine/`, `__archlinux/`, `__debian/`, and `__redhat/` respectively.
+Packaging stubs for Alpine (APK), Arch Linux (PKGBUILD), Debian (DEB), Red Hat/RHEL/Fedora (RPM), and Windows (MSI) are provided under `__alpine/`, `__archlinux/`, `__debian/`, `__redhat/`, and `__windows/` respectively. Every format is driven by a `Makefile` in its own directory, each reading its package metadata (name, version, description, ...) from its own distro-native file (`APKBUILD`, `PKGBUILD`, `control`, `vclt.spec`) except Windows, which has no such native file and reads `vclt.json` at the repo root directly instead. Every `Makefile` supports at least `make build`, `make release` (build + upload to Nexus), `make clean`, and `make info` (prints the values it resolved).
+
+`vclt.json` at the repo root is the shared manifest for the project (software/binary name, Go version, current version, default release number, description, maintainer, URL, Windows manufacturer, ...). Use `./version-bump.sh <new-version>` to bump the version across `vclt.json` and every distro's packaging file in one shot — see [Bumping the version](#bumping-the-version).
 
 All package formats are built inside dedicated Docker containers. The following container images are required:
 
@@ -910,6 +928,7 @@ All package formats are built inside dedicated Docker containers. The following 
 | `archbuilder` | Arch Linux PKGBUILD |
 | `debbuilder` | Debian/Ubuntu DEB |
 | `rpmbuilder` | Red Hat / Fedora RPM |
+| `winbuilder` | Windows MSI (cross-compiled, packaged with msitools' `wixl`) |
 
 > **Note:** The Docker build contexts for these containers are not provided in this repository and are not intended for distribution outside of the author's own environment. The containers are assumed to be available locally.
 
@@ -955,21 +974,43 @@ The changelog can also be updated standalone via `__redhat/updateChangelog.sh`. 
 
 ### Debian
 
+Package metadata (name/version/arch) is read straight from `control`, and `copyright` is installed to `/usr/share/doc/vclt/copyright` (mode `0644`) alongside the DEBIAN control scripts.
+
 ```sh
 cd __debian
-./1.install-build-deps.sh   # install Go and build toolchain inside the debbuilder container
-./2.build_binary.sh         # compile and package the .deb
-./3.restore_repo.sh         # restore the local apt repository
+./install_build_deps.sh     # install Go and build toolchain inside the debbuilder container
+make build                  # go vet + go test, then compile and assemble the .deb
+make release                # build, upload to Nexus (aptLocal), then clean
+./restore_repos.sh          # restore control/preinst/prerm/postinst/postrm, remove build leftovers
 ```
 
 ### Alpine
 
-The `__alpine/APKBUILD` follows the standard `abuild` workflow. It copies the `src/` tree into the build directory, disables CGO, and builds a statically linked binary installed to `/opt/bin/vclt`. Post-install hooks register bash and zsh completions automatically.
+The `__alpine/APKBUILD` follows the standard `abuild` workflow: it copies the `src/` tree into the build directory, disables CGO, runs `go vet`/`go test`, and builds a statically linked binary installed to `/opt/bin/vclt`. `__alpine/Makefile` wraps it:
+
+```sh
+cd __alpine
+make build     # abuild -r
+make release   # build, then upload to Nexus (apkLocal)
+```
 
 ### Arch Linux
 
 ```sh
 cd __archlinux
-./1.install-build-deps.sh   # install Go inside the archbuilder container
-./2.build-package.sh        # run makepkg and produce the .pkg.tar.zst
+./1.install-build-deps.sh   # install base-devel inside the archbuilder container
+make build                  # makepkg --force --syncdeps --noconfirm (runs go vet/go test inline)
+make release                # build, refresh the pacman DB, upload package + DB to Nexus (archLocal)
 ```
+
+### Windows
+
+`__windows/Makefile` cross-compiles `vclt.exe` (`GOOS=windows GOARCH=amd64`, `CGO_ENABLED=0`) inside the `winbuilder` container, then packages it into a real `.msi` with msitools' `wixl` from the WiX source `__windows/vclt.wxs`. All metadata comes from `vclt.json`.
+
+```sh
+cd __windows
+make build     # cross-compile + wixl -> vclt.msi
+make release   # build, then upload to Nexus (winLocal)
+```
+
+By default the installer places `vclt.exe` at `C:\utils`; override with `make build INSTALLDIR=...`. `vclt.wxs`'s `UpgradeCode` and the `MainExecutable` component's `Guid` are vclt's permanent Windows Installer identity — never regenerate them on a future edit, or upgrades stop being recognized as upgrades and installs go side-by-side instead of replacing each other.

@@ -1,0 +1,22 @@
+{
+  "softwarename": "vclt",
+  "binaryname": "vclt",
+  "goversion": "1.27.1",
+  "versionnumber": "2.5.0",
+  "defaultreleasenumber": "1",
+  "description": "Hashicorp Vault client",
+  "maintainer": "J.F. Gratton <jean-francois@famillegratton.net>",
+  "packager": "Package builder <builder@famillegratton.net>",
+  "section": "CI/CD utils",
+  "dependencies": "",
+  "url": "https://git.famillegratton.net:3000/devops/vclt.git",
+  "manufacturer": "famillegratton.net",
+  "stubs": {
+    "alpine": true,
+    "debian": true,
+    "redhat": true,
+    "archlinux": true,
+    "windows": true,
+    "skeleton": true
+  }
+}

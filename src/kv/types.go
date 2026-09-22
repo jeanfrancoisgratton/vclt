@@ -8,5 +8,6 @@ package kv
 var SecretVersion int
 var SecretField string
 var SecretMountPath string
+var SecretOutputFile string
 var ExtendedSecretsList bool
 var Cleartext = false

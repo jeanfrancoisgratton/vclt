@@ -21,11 +21,15 @@ var rootCmd = &cobra.Command{
 	Short: "Hashicorp Vault client",
 }
 
+// buildVersion and buildDate are set via -ldflags -X at package-build time.
+var buildVersion = "dev"
+var buildDate = "unknown"
+
 var versionCmd = &cobra.Command{
 	Use:   "version",
 	Short: "Shows the software version",
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println(hftx.White("vclt 2.4.3 (2026.08.07), Go version = v" + strings.TrimPrefix(runtime.Version(), "go")))
+		fmt.Println(hftx.White("vclt v" + buildVersion + " (" + buildDate + "), Go version = v" + strings.TrimPrefix(runtime.Version(), "go") + " (" + runtime.GOARCH + ")"))
 	},
 }
 
