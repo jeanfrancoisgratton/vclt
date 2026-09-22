@@ -1,6 +1,6 @@
 | Release | Date       | Comments                                                             |
 |---------|------------|----------------------------------------------------------------------|
-| 2.5.1   | 2026.09.22 | `kv write` can now read a secret from a file and inject it in Vault |
+| 2.6.0   | 2026.09.22 | `kv write` can now read a secret from a file and inject it in Vault |
 | 2.5.0   | 2026.09.22 | `kv read` can now write secret to a file |
 | 2.4.3   | 2026.08.07 | Errors now go to stderr, not stdout                                  | 
 | 2.4.2   | 2026.08.06 | Minor TUI fix in `kv write`                                          | 

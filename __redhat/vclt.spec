@@ -2,7 +2,7 @@
 %define _build_id_links none
 %define _name vclt
 %define _prefix /opt
-%define _version 2.5.1
+%define _version 2.6.0
 %define _rel 1
 %define _binaryname vclt
 
