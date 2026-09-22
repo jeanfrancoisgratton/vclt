@@ -2,10 +2,8 @@
 %define _build_id_links none
 %define _name vclt
 %define _prefix /opt
-%define _bash_completionsdir /usr/share/bash-completion/completions
-%define _zsh_completionsdir  /usr/share/zsh/site-functions
-%define _version 2.4.3
-%define _rel 2
+%define _version 2.5.0
+%define _rel 1
 %define _binaryname vclt
 
 Name:       vclt
@@ -32,7 +30,12 @@ Hashicorp Vault client
 %build
 cd src
 /opt/go/bin/go mod download
-PATH=$PATH:/opt/go/bin CGO_ENABLED=0 /opt/go/bin/go build -trimpath -ldflags="-s -w -buildid=" -o %{_builddir}/%{_binaryname} .
+# rpmbuild runs %build under set -e, so both of these fast-fail the package
+# build; go test exits 0 for packages with no test files and only fails on
+# an actual test failure.
+CGO_ENABLED=0 /opt/go/bin/go vet ./...
+CGO_ENABLED=0 /opt/go/bin/go test ./...
+PATH=$PATH:/opt/go/bin CGO_ENABLED=0 /opt/go/bin/go build -trimpath -ldflags="-s -w -buildid= -X vclt/cmd.buildVersion=%{_version} -X vclt/cmd.buildDate=%(date +%%Y.%%m.%%d)" -o %{_builddir}/%{_binaryname} .
 
 %clean
 rm -rf $RPM_BUILD_ROOT

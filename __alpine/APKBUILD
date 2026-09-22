@@ -1,7 +1,7 @@
 # Maintainer: J.F. Gratton <jean-francois@famillegratton.net>
 # Packager: APK/DEB/RPM package builder <builder@famillegratton.net>
 pkgname=vclt
-pkgver=2.4.3
+pkgver=2.5.0
 pkgrel=1
 pkgdir=/data/packages
 builddir="$startdir/src/BUILD"
@@ -24,8 +24,16 @@ build() {
 
 	/opt/go/bin/go env | egrep 'GOFLAGS|CGO_ENABLED|GOOS|GOARCH' || true
 
+	# abuild runs build() with set -e, so both of these fast-fail the package
+	# build; go test exits 0 for packages with no test files and only fails
+	# on an actual test failure.
+	/opt/go/bin/go vet ./...
+	/opt/go/bin/go test ./...
+
+	builddate="$(date +%Y.%m.%d)"
+
 	# Static, non-PIE, internal linker
-	CGO_ENABLED=0 /opt/go/bin/go build -trimpath -ldflags="-s -w -buildid= -linkmode=internal" -o "$binaryname" .
+	CGO_ENABLED=0 /opt/go/bin/go build -trimpath -ldflags="-s -w -buildid= -linkmode=internal -X vclt/cmd.buildVersion=$pkgver -X vclt/cmd.buildDate=$builddate" -o "$binaryname" .
 }
 
 package() {
