@@ -42,11 +42,12 @@ func TestVersionCommandOutput(t *testing.T) {
 	}
 }
 
-// TestKvReadFileFlagHasNoShorthandCollision guards the fix applied when
-// --file was added to `kv read`: it must NOT take -f, since -f is already
-// bound to --field on the same command. Regressing this would make one of
-// the two flags silently shadow the other.
-func TestKvReadFileFlagHasNoShorthandCollision(t *testing.T) {
+// TestKvReadOutFlagHasNoShorthandCollision guards the fix applied when the
+// file-output flag was added to `kv read` (originally --file, renamed to
+// --out): it must NOT take -f, since -f is already bound to --field on the
+// same command. Regressing this would make one of the two flags silently
+// shadow the other.
+func TestKvReadOutFlagHasNoShorthandCollision(t *testing.T) {
 	fieldFlag := kvReadCmd.PersistentFlags().ShorthandLookup("f")
 	if fieldFlag == nil {
 		t.Fatal("expected -f to be registered as a shorthand on kv read")
@@ -55,11 +56,26 @@ func TestKvReadFileFlagHasNoShorthandCollision(t *testing.T) {
 		t.Errorf("-f is bound to %q, want it bound to \"field\"", fieldFlag.Name)
 	}
 
-	fileFlag := kvReadCmd.PersistentFlags().Lookup("file")
-	if fileFlag == nil {
-		t.Fatal("expected --file to be registered on kv read")
+	outFlag := kvReadCmd.PersistentFlags().Lookup("out")
+	if outFlag == nil {
+		t.Fatal("expected --out to be registered on kv read")
 	}
-	if fileFlag.Shorthand != "" {
-		t.Errorf("--file has shorthand -%s, want no shorthand (it would collide with -f/--field)", fileFlag.Shorthand)
+	if outFlag.Shorthand != "" {
+		t.Errorf("--out has shorthand -%s, want no shorthand (it would collide with -f/--field)", outFlag.Shorthand)
+	}
+}
+
+// TestKvWriteInFlagRegistered checks that `kv write` has an --in flag
+// (the file-input counterpart to `kv read`'s --out), also with no
+// shorthand, for the same reason as --out above -- kvWriteCmd doesn't
+// currently bind -i to anything else, but pinning "no shorthand" keeps the
+// two file flags symmetric and leaves -i free for future use.
+func TestKvWriteInFlagRegistered(t *testing.T) {
+	inFlag := kvWriteCmd.PersistentFlags().Lookup("in")
+	if inFlag == nil {
+		t.Fatal("expected --in to be registered on kv write")
+	}
+	if inFlag.Shorthand != "" {
+		t.Errorf("--in has shorthand -%s, want no shorthand", inFlag.Shorthand)
 	}
 }

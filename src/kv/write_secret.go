@@ -15,6 +15,14 @@ import (
 )
 
 func (c *Client) Write(path, key, value string) (*vlr.WriteResult, *ce.CustomError) {
+	if SecretInputFile != "" {
+		fileValue, ferr := readSecretValueFromFile()
+		if ferr != nil {
+			return nil, ferr
+		}
+		value = fileValue
+	}
+
 	if wRes, kvWriteError := c.vc.WriteSecretField(path, key, value); kvWriteError != nil {
 		return wRes, &ce.CustomError{Title: "Error writing secret", Message: kvWriteError.Error()}
 	} else {

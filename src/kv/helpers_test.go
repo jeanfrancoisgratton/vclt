@@ -129,3 +129,57 @@ func TestWriteSecretFileError(t *testing.T) {
 		t.Errorf("error code = %d, want %d (ErrWriteFile)", err.Code, shared.ErrWriteFile)
 	}
 }
+
+// TestReadSecretValueFromFile covers the trailing-newline trimming (plain
+// \n and CRLF) that makes a value round-trip cleanly through
+// `kv read --field ... --out` and back through `kv write --in`, plus the
+// case of a value with no trailing newline at all (e.g. produced by
+// `printf` rather than `echo`).
+func TestReadSecretValueFromFile(t *testing.T) {
+	cases := []struct {
+		name    string
+		content string
+		want    string
+	}{
+		{name: "trailing LF stripped", content: "s3cr3t\n", want: "s3cr3t"},
+		{name: "trailing CRLF stripped", content: "s3cr3t\r\n", want: "s3cr3t"},
+		{name: "no trailing newline kept as-is", content: "s3cr3t", want: "s3cr3t"},
+		{name: "only the final newline is stripped", content: "line1\nline2\n", want: "line1\nline2"},
+	}
+
+	old := SecretInputFile
+	t.Cleanup(func() { SecretInputFile = old })
+
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			dir := t.TempDir()
+			SecretInputFile = filepath.Join(dir, "value.txt")
+			if err := os.WriteFile(SecretInputFile, []byte(tc.content), 0600); err != nil {
+				t.Fatal(err)
+			}
+
+			got, err := readSecretValueFromFile()
+			if err != nil {
+				t.Fatalf("readSecretValueFromFile failed: %v", err)
+			}
+			if got != tc.want {
+				t.Errorf("readSecretValueFromFile() = %q, want %q", got, tc.want)
+			}
+		})
+	}
+}
+
+func TestReadSecretValueFromFileMissing(t *testing.T) {
+	old := SecretInputFile
+	t.Cleanup(func() { SecretInputFile = old })
+
+	SecretInputFile = filepath.Join(t.TempDir(), "does-not-exist.txt")
+
+	_, err := readSecretValueFromFile()
+	if err == nil {
+		t.Fatal("expected an error reading a nonexistent file, got nil")
+	}
+	if err.Code != shared.ErrReadFile {
+		t.Errorf("error code = %d, want %d (ErrReadFile)", err.Code, shared.ErrReadFile)
+	}
+}

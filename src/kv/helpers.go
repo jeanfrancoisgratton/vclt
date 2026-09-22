@@ -28,6 +28,22 @@ func writeSecretFile(content []byte) *ce.CustomError {
 	return nil
 }
 
+// readSecretValueFromFile reads a secret's value from SecretInputFile, used
+// by `kv write --in FILE` as an alternative to passing VALUE positionally.
+// A single trailing newline (or CRLF) is stripped, mirroring the newline
+// writeSecretFile appends when a single field is written to a file, so a
+// value round-trips cleanly through `kv read --field ... --out` and back
+// through `kv write --in`.
+func readSecretValueFromFile() (string, *ce.CustomError) {
+	data, err := os.ReadFile(SecretInputFile)
+	if err != nil {
+		return "", &ce.CustomError{Title: shared.ErrorMessages[shared.ErrReadFile].Msg, Message: err.Error(), Code: shared.ErrReadFile}
+	}
+	value := strings.TrimSuffix(string(data), "\n")
+	value = strings.TrimSuffix(value, "\r")
+	return value, nil
+}
+
 func outputData(data map[string]interface{}, suppress bool) *ce.CustomError {
 	if SecretField != "" {
 		val, found := data[SecretField]

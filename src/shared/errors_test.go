@@ -12,7 +12,7 @@ import (
 // const block and forgetting to add its entry in ErrorMessages: it walks
 // every code from the first to the last and checks the map has it.
 func TestErrorMessagesComplete(t *testing.T) {
-	for code := ErrVaultAuthTokenMissing; code <= ErrWriteFile; code++ {
+	for code := ErrVaultAuthTokenMissing; code <= ErrReadFile; code++ {
 		info, ok := ErrorMessages[code]
 		if !ok {
 			t.Errorf("error code %d has no entry in ErrorMessages", code)

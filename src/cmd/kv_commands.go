@@ -36,16 +36,32 @@ var kvReadCmd = &cobra.Command{
 }
 
 var kvWriteCmd = &cobra.Command{
-	Use:     "write KV_ENGINE SECRET_PATH KEY VALUE",
+	Use:     "write KV_ENGINE SECRET_PATH KEY [VALUE]",
 	Aliases: []string{"put"},
 	Short:   "Write the KEY:VALUE pair SECRET in the 'SECRET_PATH' of the 'KV_ENGINE' secret engine",
-	Args:    cobra.ExactArgs(4),
+	Long: `Write the KEY:VALUE pair SECRET in the 'SECRET_PATH' of the 'KV_ENGINE' secret engine.
+
+VALUE is read from the --in FILE instead of the command line when --in is given,
+in which case the VALUE argument must be omitted.`,
+	// VALUE is positional unless --in is set, in which case it must be
+	// omitted (the value comes from the file instead) to avoid ambiguity
+	// about which one wins.
+	Args: func(cmd *cobra.Command, args []string) error {
+		if kv.SecretInputFile != "" {
+			return cobra.ExactArgs(3)(cmd, args)
+		}
+		return cobra.ExactArgs(4)(cmd, args)
+	},
 	Run: func(cmd *cobra.Command, args []string) {
 		c, err := kv.NewClient(args[0])
 		if err != nil {
 			err.Die()
 		}
-		if _, kvErr := c.Write(args[1], args[2], args[3]); kvErr != nil {
+		value := ""
+		if kv.SecretInputFile == "" {
+			value = args[3]
+		}
+		if _, kvErr := c.Write(args[1], args[2], value); kvErr != nil {
 			kvErr.Die()
 		}
 	},
@@ -137,8 +153,9 @@ func init() {
 	//secretsCmd.PersistentFlags().StringVarP(&kv.SecretMountPath, "mount", "m", "", "KV v2 mount path (required)")
 	kvCmd.PersistentFlags().IntVarP(&kv.SecretVersion, "version", "v", 0, "Secret version (0 = latest available)")
 	kvReadCmd.PersistentFlags().StringVarP(&kv.SecretField, "field", "f", "", "Specific field to manage")
-	kvReadCmd.PersistentFlags().StringVarP(&shared.OutputFormat, "output", "o", "text", "Output format: text|json")
-	kvReadCmd.PersistentFlags().StringVar(&kv.SecretOutputFile, "file", "", "Write the secret to FILE (mode 0600) instead of stdout")
+	kvReadCmd.PersistentFlags().StringVarP(&shared.OutputFormat, "outputformat", "o", "text", "Output format: text|json")
+	kvReadCmd.PersistentFlags().StringVar(&kv.SecretOutputFile, "out", "", "Write the secret to FILE (mode 0600) instead of stdout")
+	kvWriteCmd.PersistentFlags().StringVar(&kv.SecretInputFile, "in", "", "Read the secret VALUE from FILE instead of the command line")
 	kvRmCmd.PersistentFlags().StringVarP(&kv.SecretField, "field", "f", "", "Specific field to manage")
 	kvLsCmd.PersistentFlags().BoolVarP(&kv.ExtendedSecretsList, "extended", "x", false, "Show extended info")
 	kvBackupCmd.PersistentFlags().BoolVarP(&kv.Cleartext, "cleartext", "c", false, "Backup cleartext (default: encrypted)")

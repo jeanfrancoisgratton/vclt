@@ -73,7 +73,7 @@ These flags are available on every command and subcommand.
 | `--quiet` | `-q` | `false` | Suppress human-readable output (useful in scripts). |
 | `--debug` | `-d` | `false` | Enable debug mode. |
 
-> **Note:** `--output` / `-o` (`text` or `json`) is **not** a global flag. It is available only on the commands that support JSON output: `kv read`, `token lookup`, and `token self`.
+> **Note:** `-o` (`text` or `json`) is **not** a global flag. It is available only on the commands that support JSON output: `kv read` (as `--outputformat`), `token lookup`, and `token self` (as `--output` on the latter two).
 
 ---
 
@@ -183,14 +183,14 @@ vclt kv read <KV_ENGINE> <SECRET_PATH>
 vclt kv get  <KV_ENGINE> <SECRET_PATH>
 ```
 
-Reads a secret from the KV v2 engine. Without `--field`, all key/value pairs in the secret are printed. With `--field`, only the value of the specified field is printed — useful for scripting. With `--file`, the secret is written to a file (mode `0600`) instead of the terminal, so it never touches stdout or shell history.
+Reads a secret from the KV v2 engine. Without `--field`, all key/value pairs in the secret are printed. With `--field`, only the value of the specified field is printed — useful for scripting. With `--out`, the secret is written to a file (mode `0600`) instead of the terminal, so it never touches stdout or shell history.
 
 | Flag | Short | Default | Description |
 |---|---|---|---|
 | `--field` | `-f` | — | Print only the value of the named field. |
 | `--version` | `-v` | `0` | Read a specific version. `0` resolves to the latest available non-destroyed version. |
-| `--output` | `-o` | `text` | Output format: `text` or `json`. |
-| `--file` | — | — | Write the secret to the given file instead of stdout. With `--field`, the field's raw value is written; without it, the whole secret is written as JSON. |
+| `--outputformat` | `-o` | `text` | Output format: `text` or `json`. |
+| `--out` | — | — | Write the secret to the given file instead of stdout. With `--field`, the field's raw value is written; without it, the whole secret is written as JSON. |
 
 **Examples:**
 ```sh
@@ -198,8 +198,8 @@ vclt kv read mysecrets db/credentials
 vclt kv read mysecrets db/credentials -f password
 vclt kv read mysecrets db/credentials -v 3
 vclt kv read mysecrets db/credentials -o json
-vclt kv read mysecrets db/credentials -f password --file db-password.txt
-vclt kv read mysecrets db/credentials --file db-credentials.json
+vclt kv read mysecrets db/credentials -f password --out db-password.txt
+vclt kv read mysecrets db/credentials --out db-credentials.json
 ```
 
 **Token required:** Yes  
@@ -215,15 +215,22 @@ path "<KV_ENGINE>/data/<SECRET_PATH>" {
 ### kv write
 
 ```
-vclt kv write <KV_ENGINE> <SECRET_PATH> <KEY> <VALUE>
-vclt kv put   <KV_ENGINE> <SECRET_PATH> <KEY> <VALUE>
+vclt kv write <KV_ENGINE> <SECRET_PATH> <KEY> [VALUE]
+vclt kv put   <KV_ENGINE> <SECRET_PATH> <KEY> [VALUE]
 ```
 
 Writes a single key/value field to the secret at the given path. If the secret already exists, a new version is created (KV v2 versioning). If the path does not yet exist, it is created.
 
-**Example:**
+VALUE is normally given on the command line. With `--in`, it is instead read from a file — the VALUE argument must then be omitted (only 3 positional arguments). A single trailing newline (or CRLF) is stripped from the file's content, so a value written to a file by `kv read --field ... --out` round-trips cleanly back through `kv write --in`.
+
+| Flag | Short | Default | Description |
+|---|---|---|---|
+| `--in` | — | — | Read VALUE from the given file instead of the command line. |
+
+**Examples:**
 ```sh
 vclt kv write mysecrets db/credentials password s3cr3t
+vclt kv write mysecrets db/credentials password --in db-password.txt
 ```
 
 **Token required:** Yes  

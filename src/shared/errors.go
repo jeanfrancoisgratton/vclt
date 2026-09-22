@@ -24,6 +24,7 @@ const (
 	ErrVaultSealed
 	ErrVaultInvalidAuth
 	ErrWriteFile
+	ErrReadFile
 )
 
 // The map format is :
@@ -40,4 +41,5 @@ var ErrorMessages = map[int]ErrorInfoStruct{
 	ErrVaultSealed:               {"ERR_VAULTSEALED", "Vault is sealed"},
 	ErrVaultInvalidAuth:          {"ERR_VAULT_INVALIDAUTH", "Vault auth token is invalid"},
 	ErrWriteFile:                 {"ERR_WRITEFILE", "Error writing secret to file"},
+	ErrReadFile:                  {"ERR_READFILE", "Error reading secret from file"},
 }
