@@ -55,6 +55,13 @@ install -Dpm 0755 %{_builddir}/%{_binaryname} %{buildroot}%{_bindir}/%{_binaryna
 %{_bindir}/%{_binaryname}
 
 %changelog
+* Tue Sep 22 2026 Binary package builder <builder@famillegratton.net> 2.5.0-1
+- Merge branch 'develop'
+- feat: added tests to most functions
+- feature: kv read can now write secrets to file
+- go version bump, dynamic version numbering
+- chore: update changelog for 2.4.3-2
+
 * Sun Aug 16 2026 Binary package builder <builder@famillegratton.net> 2.4.3-2
 - Merge branch 'develop'
 - RPMBUILDER: record the RPM changelog on develop instead of main
