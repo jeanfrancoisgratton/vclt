@@ -55,6 +55,11 @@ install -Dpm 0755 %{_builddir}/%{_binaryname} %{buildroot}%{_bindir}/%{_binaryna
 %{_bindir}/%{_binaryname}
 
 %changelog
+* Sun Sep 27 2026 Binary package builder <builder@famillegratton.net> 2.7.0-1
+- feature: new batch kv write functionaility
+- chore: version bump
+- chore: update changelog for 2.6.0-1
+
 * Tue Sep 22 2026 Binary package builder <builder@famillegratton.net> 2.6.0-1
 - chore: version bump
 - chore: update changelog for 2.5.1-1
