@@ -6,6 +6,8 @@
 package cmd
 
 import (
+	"fmt"
+
 	"vclt/shared"
 
 	"vclt/kv"
@@ -42,12 +44,24 @@ var kvWriteCmd = &cobra.Command{
 	Long: `Write the KEY:VALUE pair SECRET in the 'SECRET_PATH' of the 'KV_ENGINE' secret engine.
 
 VALUE is read from the --in FILE instead of the command line when --in is given,
-in which case the VALUE argument must be omitted.`,
-	// VALUE is positional unless --in is set, in which case it must be
-	// omitted (the value comes from the file instead) to avoid ambiguity
-	// about which one wins.
+in which case the VALUE argument must be omitted:
+  vclt kv write KV_ENGINE SECRET_PATH KEY --in FILE
+
+With --batch, KEY and VALUE are both omitted in favor of a single BATCH_FILE
+argument holding one KEY/VALUE field per line, all written in a single Vault
+API call (one new KV version, preserving any other fields already on the
+secret):
+  vclt kv write --batch KV_ENGINE SECRET_PATH BATCH_FILE`,
+	// VALUE is positional unless --in or --batch is set, in which case it
+	// must be omitted (the value(s) come from a file instead) to avoid
+	// ambiguity about which one wins. --batch and --in cannot be combined:
+	// they disagree about what the 3rd positional argument means (KEY vs.
+	// BATCH_FILE).
 	Args: func(cmd *cobra.Command, args []string) error {
-		if kv.SecretInputFile != "" {
+		if kv.BatchMode && kv.SecretInputFile != "" {
+			return fmt.Errorf("--batch and --in cannot be used together")
+		}
+		if kv.BatchMode || kv.SecretInputFile != "" {
 			return cobra.ExactArgs(3)(cmd, args)
 		}
 		return cobra.ExactArgs(4)(cmd, args)
@@ -56,6 +70,12 @@ in which case the VALUE argument must be omitted.`,
 		c, err := kv.NewClient(args[0])
 		if err != nil {
 			err.Die()
+		}
+		if kv.BatchMode {
+			if kvErr := c.WriteBatch(args[1], args[2]); kvErr != nil {
+				kvErr.Die()
+			}
+			return
 		}
 		value := ""
 		if kv.SecretInputFile == "" {
@@ -156,6 +176,7 @@ func init() {
 	kvReadCmd.PersistentFlags().StringVarP(&shared.OutputFormat, "outputformat", "o", "text", "Output format: text|json")
 	kvReadCmd.PersistentFlags().StringVar(&kv.SecretOutputFile, "out", "", "Write the secret to FILE (mode 0600) instead of stdout")
 	kvWriteCmd.PersistentFlags().StringVar(&kv.SecretInputFile, "in", "", "Read the secret VALUE from FILE instead of the command line")
+	kvWriteCmd.PersistentFlags().BoolVar(&kv.BatchMode, "batch", false, "Write multiple KEY/VALUE fields from a batch file in one call (usage: write --batch KV_ENGINE SECRET_PATH BATCH_FILE)")
 	kvRmCmd.PersistentFlags().StringVarP(&kv.SecretField, "field", "f", "", "Specific field to manage")
 	kvLsCmd.PersistentFlags().BoolVarP(&kv.ExtendedSecretsList, "extended", "x", false, "Show extended info")
 	kvBackupCmd.PersistentFlags().BoolVarP(&kv.Cleartext, "cleartext", "c", false, "Backup cleartext (default: encrypted)")

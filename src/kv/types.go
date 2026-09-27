@@ -10,5 +10,6 @@ var SecretField string
 var SecretMountPath string
 var SecretOutputFile string
 var SecretInputFile string
+var BatchMode bool
 var ExtendedSecretsList bool
 var Cleartext = false

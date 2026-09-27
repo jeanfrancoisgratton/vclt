@@ -10,6 +10,8 @@ import (
 	"os"
 	"strings"
 	"testing"
+
+	"vclt/kv"
 )
 
 // TestVersionCommandOutput checks that `vclt version` prints the
@@ -77,5 +79,70 @@ func TestKvWriteInFlagRegistered(t *testing.T) {
 	}
 	if inFlag.Shorthand != "" {
 		t.Errorf("--in has shorthand -%s, want no shorthand", inFlag.Shorthand)
+	}
+}
+
+// TestKvWriteBatchFlagRegistered checks that `kv write` has a --batch
+// boolean flag with no shorthand.
+func TestKvWriteBatchFlagRegistered(t *testing.T) {
+	batchFlag := kvWriteCmd.PersistentFlags().Lookup("batch")
+	if batchFlag == nil {
+		t.Fatal("expected --batch to be registered on kv write")
+	}
+	if batchFlag.Shorthand != "" {
+		t.Errorf("--batch has shorthand -%s, want no shorthand", batchFlag.Shorthand)
+	}
+	if batchFlag.Value.Type() != "bool" {
+		t.Errorf("--batch is type %s, want bool", batchFlag.Value.Type())
+	}
+}
+
+// TestKvWriteArgsValidation exercises kvWriteCmd's dynamic-arity Args
+// function directly: VALUE is a 4th positional arg normally, dropped to 3
+// when --in or --batch is set (the value(s) then come from a file instead),
+// and --in + --batch together must be rejected outright since they disagree
+// about what the 3rd positional argument means.
+func TestKvWriteArgsValidation(t *testing.T) {
+	reset := func() {
+		kv.SecretInputFile = ""
+		kv.BatchMode = false
+	}
+	t.Cleanup(reset)
+
+	fourArgs := []string{"engine", "path", "key", "value"}
+	threeArgs := []string{"engine", "path", "key-or-file"}
+
+	cases := []struct {
+		name    string
+		in      bool
+		batch   bool
+		args    []string
+		wantErr bool
+	}{
+		{name: "plain write needs 4 args", args: fourArgs},
+		{name: "plain write rejects 3 args", args: threeArgs, wantErr: true},
+		{name: "--in needs 3 args", in: true, args: threeArgs},
+		{name: "--in rejects 4 args", in: true, args: fourArgs, wantErr: true},
+		{name: "--batch needs 3 args", batch: true, args: threeArgs},
+		{name: "--batch rejects 4 args", batch: true, args: fourArgs, wantErr: true},
+		{name: "--in and --batch together are always rejected", in: true, batch: true, args: threeArgs, wantErr: true},
+	}
+
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			reset()
+			if tc.in {
+				kv.SecretInputFile = "some-file"
+			}
+			kv.BatchMode = tc.batch
+
+			err := kvWriteCmd.Args(kvWriteCmd, tc.args)
+			if tc.wantErr && err == nil {
+				t.Error("expected an error, got nil")
+			}
+			if !tc.wantErr && err != nil {
+				t.Errorf("unexpected error: %v", err)
+			}
+		})
 	}
 }

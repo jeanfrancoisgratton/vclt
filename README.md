@@ -217,20 +217,34 @@ path "<KV_ENGINE>/data/<SECRET_PATH>" {
 ```
 vclt kv write <KV_ENGINE> <SECRET_PATH> <KEY> [VALUE]
 vclt kv put   <KV_ENGINE> <SECRET_PATH> <KEY> [VALUE]
+vclt kv write --batch <KV_ENGINE> <SECRET_PATH> <BATCH_FILE>
 ```
 
 Writes a single key/value field to the secret at the given path. If the secret already exists, a new version is created (KV v2 versioning). If the path does not yet exist, it is created.
 
-VALUE is normally given on the command line. With `--in`, it is instead read from a file — the VALUE argument must then be omitted (only 3 positional arguments). A single trailing newline (or CRLF) is stripped from the file's content, so a value written to a file by `kv read --field ... --out` round-trips cleanly back through `kv write --in`.
+VALUE is normally given on the command line. With `--in`, it is instead read from a file — the VALUE argument must then be omitted (only 3 positional arguments: `KV_ENGINE SECRET_PATH KEY`). A single trailing newline (or CRLF) is stripped from the file's content, so a value written to a file by `kv read --field ... --out` round-trips cleanly back through `kv write --in`.
+
+With `--batch`, KEY and VALUE are both replaced by a single `BATCH_FILE` argument (3 positional arguments: `KV_ENGINE SECRET_PATH BATCH_FILE`) holding one field per line. Every field in the file is written in a **single** Vault API call — one new KV version, instead of one version per field — and any field already on the secret but not listed in the batch file is left untouched (the current secret is read first, the batch file's fields are overlaid on top, and the merged result is written back). `--batch` and `--in` cannot be combined.
+
+**Batch file format:** one field per line, `KEY` then `VALUE` split at the first `=` or whitespace character, whichever comes first — since the split only happens once, VALUE can itself contain further spaces or `=` characters with no quoting needed. Wrap VALUE in double quotes only to preserve meaningful leading/trailing whitespace. Blank lines and lines starting with `#` are ignored.
+
+```
+# example batch file
+username admin
+password=s3cr3t with spaces
+connection-string=user=admin;host=db1
+```
 
 | Flag | Short | Default | Description |
 |---|---|---|---|
 | `--in` | — | — | Read VALUE from the given file instead of the command line. |
+| `--batch` | — | `false` | Write every field in BATCH_FILE in one call instead of a single KEY/VALUE pair. |
 
 **Examples:**
 ```sh
 vclt kv write mysecrets db/credentials password s3cr3t
 vclt kv write mysecrets db/credentials password --in db-password.txt
+vclt kv write --batch mysecrets db/credentials db-credentials.batch
 ```
 
 **Token required:** Yes  

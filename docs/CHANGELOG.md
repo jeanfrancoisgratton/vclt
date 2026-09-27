@@ -1,5 +1,6 @@
 | Release | Date       | Comments                                                             |
 |---------|------------|----------------------------------------------------------------------|
+| 2.7.0   | 2026.09.27 | `kv write --batch` writes multiple KEY/VALUE fields from a file in a single call |
 | 2.6.0   | 2026.09.22 | `kv write` can now read a secret from a file and inject it in Vault |
 | 2.5.0   | 2026.09.22 | `kv read` can now write secret to a file |
 | 2.4.3   | 2026.08.07 | Errors now go to stderr, not stdout                                  | 
