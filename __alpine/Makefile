@@ -34,7 +34,7 @@ build:
 	abuild -r
 
 release: build
-	/opt/bin/nxtools upload $(NEXUSREPO) $(APK)
+	/opt/bin/nxtools upload -d ${NEXUSDIR} $(NEXUSREPO) $(APK)
 
 clean:
 	abuild clean cleanpkg cleancache cleanoldpkg
