@@ -15,6 +15,9 @@ var adminCmd = &cobra.Command{
 	Use:   "admin",
 	Short: "server admin subcommands",
 	Long:  `Allowed commands are { setrootkeys | seal | unseal }`,
+	Example: `  vclt admin setrootkeys
+  vclt admin seal
+  vclt admin unseal`,
 }
 
 var adminSetKeysCmd = &cobra.Command{
@@ -22,6 +25,9 @@ var adminSetKeysCmd = &cobra.Command{
 	Short: "Store the necessary root keys needed to unseal a Vault in secure storage",
 	Long: `It will create a root keys file in $HOME/.config/JFG/vclt.
 If no filename is provided, $HOME/.config/JFG/vclt/rootkeys.json will be created`,
+	Example: `  vclt admin setrootkeys
+  vclt admin setrootkeys myvault-rootkeys.json
+  vclt admin setrootkeys --offline`,
 	Run: func(cmd *cobra.Command, args []string) {
 		rkfile := "rootkeys.json"
 		if len(args) > 0 {
@@ -34,8 +40,9 @@ If no filename is provided, $HOME/.config/JFG/vclt/rootkeys.json will be created
 }
 
 var adminSealCmd = &cobra.Command{
-	Use:   "seal",
-	Short: "Seal your Hashicorp Vault",
+	Use:     "seal",
+	Short:   "Seal your Hashicorp Vault",
+	Example: `  vclt admin seal`,
 	Run: func(cmd *cobra.Command, args []string) {
 		c, err := admin.NewClient()
 		if err != nil {
@@ -52,6 +59,8 @@ var adminUnsealCmd = &cobra.Command{
 	Short: "Unseal your Hashicorp Vault",
 	Long: `It will use the root keys file stored in $HOME/.config/JFG/vclt.
 If none is provided, $HOME/.config/JFG/vclt/rootkeys.json will be used`,
+	Example: `  vclt admin unseal
+  vclt admin unseal myvault-rootkeys.json`,
 	Run: func(cmd *cobra.Command, args []string) {
 		rkfile := "rootkeys.json"
 		if len(args) > 0 {

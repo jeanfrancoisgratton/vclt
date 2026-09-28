@@ -15,6 +15,9 @@ var sysCmd = &cobra.Command{
 	Use:   "sys",
 	Short: "system management subcommands",
 	Long:  `Allowed commands are { kvenable | kvdisable | listmounts }`,
+	Example: `  vclt sys kvenable secret
+  vclt sys kvdisable secret -y
+  vclt sys listmounts`,
 }
 
 var sysEnableKVCmd = &cobra.Command{
@@ -22,6 +25,8 @@ var sysEnableKVCmd = &cobra.Command{
 	Aliases: []string{"enablekv"},
 	Short:   "Enable a KV secret engine",
 	Args:    cobra.ExactArgs(1),
+	Example: `  vclt sys kvenable secret
+  vclt sys enablekv secret -V 2 -D "application secrets"`,
 	Run: func(cmd *cobra.Command, args []string) {
 		c, err := sys.NewClient()
 		if err != nil {
@@ -38,6 +43,8 @@ var sysDisableKVCmd = &cobra.Command{
 	Aliases: []string{"disablekv"},
 	Short:   "Disable a KV secret engine",
 	Args:    cobra.ExactArgs(1),
+	Example: `  vclt sys kvdisable secret
+  vclt sys disablekv secret -y`,
 	Run: func(cmd *cobra.Command, args []string) {
 		c, err := sys.NewClient()
 		if err != nil {
@@ -53,6 +60,8 @@ var listMountsCmd = &cobra.Command{
 	Use:     "listmounts",
 	Aliases: []string{"mounts"},
 	Short:   "Lists all mounts (secret engines)",
+	Example: `  vclt sys listmounts
+  vclt sys mounts`,
 	Run: func(cmd *cobra.Command, args []string) {
 		c, err := sys.NewClient()
 		if err != nil {
