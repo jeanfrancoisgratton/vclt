@@ -11,5 +11,6 @@ var SecretMountPath string
 var SecretOutputFile string
 var SecretInputFile string
 var BatchMode bool
+var JSONMode bool
 var ExtendedSecretsList bool
 var Cleartext = false
