@@ -16,6 +16,10 @@ var policiesCmd = &cobra.Command{
 	Aliases: []string{"policies"},
 	Short:   "policies management subcommands",
 	Long:    `Allowed commands are { read | write | list | delete | sample }`,
+	Example: `  vclt policy read myapp-policy
+  vclt policy write myapp-policy myapp-policy.hcl
+  vclt policy list
+  vclt policy rm myapp-policy`,
 }
 
 var policiesReadCmd = &cobra.Command{
@@ -23,6 +27,8 @@ var policiesReadCmd = &cobra.Command{
 	Aliases: []string{"get"},
 	Short:   "Read the POLICY_NAME policies",
 	Args:    cobra.ExactArgs(1),
+	Example: `  vclt policy read myapp-policy
+  vclt policy get myapp-policy`,
 	Run: func(cmd *cobra.Command, args []string) {
 		c, err := policies.NewClient()
 		if err != nil {
@@ -39,6 +45,8 @@ var policiesWriteCmd = &cobra.Command{
 	Aliases: []string{"put"},
 	Short:   "Write the POLICY_NAME policies from the POLICY_FILE file",
 	Args:    cobra.ExactArgs(2),
+	Example: `  vclt policy write myapp-policy myapp-policy.hcl
+  vclt policy put myapp-policy myapp-policy.json`,
 	Run: func(cmd *cobra.Command, args []string) {
 		c, err := policies.NewClient()
 		if err != nil {
@@ -55,6 +63,8 @@ var policiesLsCmd = &cobra.Command{
 	Aliases: []string{"ls", "show"},
 	Short:   "List the policies",
 	Args:    cobra.ExactArgs(0),
+	Example: `  vclt policy list
+  vclt policy ls`,
 	Run: func(cmd *cobra.Command, args []string) {
 		c, err := policies.NewClient()
 		if err != nil {
@@ -71,6 +81,8 @@ var policiesRmCmd = &cobra.Command{
 	Aliases: []string{"delete"},
 	Short:   "Delete one or many policies",
 	Args:    cobra.MinimumNArgs(1),
+	Example: `  vclt policy rm myapp-policy
+  vclt policy delete myapp-policy old-policy another-policy`,
 	Run: func(cmd *cobra.Command, args []string) {
 		c, err := policies.NewClient()
 		if err != nil {
@@ -88,6 +100,8 @@ var policiesGenerateCmd = &cobra.Command{
 	Short:   "Generate a sample policy file",
 	Long: `Generate a sample policy file in the FILENAME file that can be used as the basis for a new policy.
 This is quite useful to understand how to write a policy in JSON or HCL format. It will also do a syntax check on the file before submitting it to Vault.`,
+	Example: `  vclt policy generate sample-policy.hcl
+  vclt policy gen sample-policy.json`,
 	Args: cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		if polErr := policies.GenerateSamplePolicy(args[0]); polErr != nil {

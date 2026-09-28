@@ -19,6 +19,11 @@ var kvCmd = &cobra.Command{
 	Use:   "kv",
 	Short: "kv secret management subcommands",
 	Long:  `Allowed commands are { read | write | list | delete | destroy | backup | restore }`,
+	Example: `  vclt kv read secret myapp/config
+  vclt kv write secret myapp/config username admin
+  vclt kv list secret
+  vclt kv rm secret myapp/config
+  vclt kv backup secret myapp-backup.json`,
 }
 
 var kvReadCmd = &cobra.Command{
@@ -26,6 +31,12 @@ var kvReadCmd = &cobra.Command{
 	Aliases: []string{"get"},
 	Short:   "Read the 'SECRET_PATH' secret from the 'KV_ENGINE' secret engine",
 	Args:    cobra.ExactArgs(2),
+	Example: `  vclt kv read secret myapp/config
+  vclt kv get secret myapp/config
+  vclt kv read secret myapp/config -f username
+  vclt kv read secret myapp/config -o json
+  vclt kv read secret myapp/config -o json --out config.json
+  vclt kv read secret myapp/config -v 3`,
 	Run: func(cmd *cobra.Command, args []string) {
 		c, err := kv.NewClient(args[0])
 		if err != nil {
@@ -51,17 +62,39 @@ With --batch, KEY and VALUE are both omitted in favor of a single BATCH_FILE
 argument holding one KEY/VALUE field per line, all written in a single Vault
 API call (one new KV version, preserving any other fields already on the
 secret):
-  vclt kv write --batch KV_ENGINE SECRET_PATH BATCH_FILE`,
-	// VALUE is positional unless --in or --batch is set, in which case it
-	// must be omitted (the value(s) come from a file instead) to avoid
-	// ambiguity about which one wins. --batch and --in cannot be combined:
-	// they disagree about what the 3rd positional argument means (KEY vs.
-	// BATCH_FILE).
+  vclt kv write --batch KV_ENGINE SECRET_PATH BATCH_FILE
+
+With --json, KEY and VALUE are both omitted in favor of a single JSON_FILE
+argument holding a flat JSON object of fields, written the same way --batch
+writes its fields (one new KV version, preserving any other fields already on
+the secret). JSON_FILE has the same shape 'kv read -o json' prints, so a
+secret round-trips out via --out and back in via --json:
+  vclt kv write --json KV_ENGINE SECRET_PATH JSON_FILE`,
+	Example: `  vclt kv write secret myapp/config username admin
+  vclt kv put secret myapp/config username admin
+  vclt kv write secret myapp/config password --in password.txt
+  vclt kv write --batch secret myapp/config fields.txt
+  vclt kv write --json secret myapp/config secret.json`,
+	// VALUE is positional unless --in, --batch, or --json is set, in which
+	// case it must be omitted (the value(s) come from a file instead) to
+	// avoid ambiguity about which one wins. --batch, --json, and --in cannot
+	// be combined with each other: they disagree about what the 3rd
+	// positional argument means (KEY vs. BATCH_FILE vs. JSON_FILE).
 	Args: func(cmd *cobra.Command, args []string) error {
-		if kv.BatchMode && kv.SecretInputFile != "" {
-			return fmt.Errorf("--batch and --in cannot be used together")
+		modes := 0
+		if kv.BatchMode {
+			modes++
 		}
-		if kv.BatchMode || kv.SecretInputFile != "" {
+		if kv.JSONMode {
+			modes++
+		}
+		if kv.SecretInputFile != "" {
+			modes++
+		}
+		if modes > 1 {
+			return fmt.Errorf("--batch, --json, and --in cannot be used together")
+		}
+		if modes == 1 {
 			return cobra.ExactArgs(3)(cmd, args)
 		}
 		return cobra.ExactArgs(4)(cmd, args)
@@ -73,6 +106,12 @@ secret):
 		}
 		if kv.BatchMode {
 			if kvErr := c.WriteBatch(args[1], args[2]); kvErr != nil {
+				kvErr.Die()
+			}
+			return
+		}
+		if kv.JSONMode {
+			if kvErr := c.WriteJSON(args[1], args[2]); kvErr != nil {
 				kvErr.Die()
 			}
 			return
@@ -92,6 +131,8 @@ var kvLsCmd = &cobra.Command{
 	Aliases: []string{"ls", "show"},
 	Short:   "List the kv in the 'KV_ENGINE' secret engine",
 	Args:    cobra.ExactArgs(1),
+	Example: `  vclt kv list secret
+  vclt kv ls secret -x`,
 	Run: func(cmd *cobra.Command, args []string) {
 		c, err := kv.NewClient(args[0])
 		if err != nil {
@@ -108,6 +149,8 @@ var kvRmCmd = &cobra.Command{
 	Aliases: []string{"delete"},
 	Short:   "Delete a secret or a field in a secret",
 	Args:    cobra.ExactArgs(2),
+	Example: `  vclt kv rm secret myapp/config
+  vclt kv delete secret myapp/config -f password`,
 	Run: func(cmd *cobra.Command, args []string) {
 		c, err := kv.NewClient(args[0])
 		if err != nil {
@@ -123,6 +166,8 @@ var kvDestroyCmd = &cobra.Command{
 	Use:   "destroy KV_ENGINE SECRET_PATH",
 	Short: "Destroy a secret",
 	Args:  cobra.ExactArgs(2),
+	Example: `  vclt kv destroy secret myapp/config
+  vclt kv destroy secret myapp/config -v 2`,
 	Run: func(cmd *cobra.Command, args []string) {
 		c, err := kv.NewClient(args[0])
 		if err != nil {
@@ -139,6 +184,8 @@ var kvBackupCmd = &cobra.Command{
 	Aliases: []string{"dump"},
 	Short:   "Backup a kv engine",
 	Args:    cobra.ExactArgs(2),
+	Example: `  vclt kv backup secret myapp-backup.json
+  vclt kv dump secret myapp-backup.json -c`,
 	Run: func(cmd *cobra.Command, args []string) {
 		c, err := kv.NewClient(args[0])
 		if err != nil {
@@ -155,6 +202,8 @@ var kvRestoreCmd = &cobra.Command{
 	Aliases: []string{"import"},
 	Short:   "Restore a kv engine",
 	Args:    cobra.ExactArgs(2),
+	Example: `  vclt kv restore secret myapp-backup.json
+  vclt kv import secret myapp-backup.json -c`,
 	Run: func(cmd *cobra.Command, args []string) {
 		c, err := kv.NewClient(args[0])
 		if err != nil {
@@ -177,6 +226,7 @@ func init() {
 	kvReadCmd.PersistentFlags().StringVar(&kv.SecretOutputFile, "out", "", "Write the secret to FILE (mode 0600) instead of stdout")
 	kvWriteCmd.PersistentFlags().StringVar(&kv.SecretInputFile, "in", "", "Read the secret VALUE from FILE instead of the command line")
 	kvWriteCmd.PersistentFlags().BoolVar(&kv.BatchMode, "batch", false, "Write multiple KEY/VALUE fields from a batch file in one call (usage: write --batch KV_ENGINE SECRET_PATH BATCH_FILE)")
+	kvWriteCmd.PersistentFlags().BoolVar(&kv.JSONMode, "json", false, "Write multiple fields from a flat JSON file in one call (usage: write --json KV_ENGINE SECRET_PATH JSON_FILE)")
 	kvRmCmd.PersistentFlags().StringVarP(&kv.SecretField, "field", "f", "", "Specific field to manage")
 	kvLsCmd.PersistentFlags().BoolVarP(&kv.ExtendedSecretsList, "extended", "x", false, "Show extended info")
 	kvBackupCmd.PersistentFlags().BoolVarP(&kv.Cleartext, "cleartext", "c", false, "Backup cleartext (default: encrypted)")

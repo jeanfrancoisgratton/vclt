@@ -14,7 +14,6 @@ import (
 
 	ce "github.com/jeanfrancoisgratton/customError/v3"
 	hftx "github.com/jeanfrancoisgratton/helperFunctions/v5/terminalfx"
-	vlr "github.com/jeanfrancoisgratton/vaultlib/v2/kv"
 )
 
 // WriteBatch writes every KEY/VALUE field parsed from batchFile to the
@@ -35,29 +34,13 @@ func (c *Client) WriteBatch(path, batchFile string) *ce.CustomError {
 		return &ce.CustomError{Title: "Empty batch file", Message: fmt.Sprintf("%s contains no KEY/VALUE fields", batchFile), Code: shared.ErrReadFile}
 	}
 
-	merged := map[string]interface{}{}
-	if current, rerr := c.vc.ReadSecret(path, vlr.ReadOptions{FallbackToLatestAvailable: true}); rerr != nil {
-		// A not-yet-existing secret is expected and not fatal: WriteBatch
-		// must be able to create a brand-new secret from scratch, same as a
-		// single `kv write` on a path that doesn't exist yet. Any other
-		// failure (sealed, unauthorized, unavailable, ...) is real and must
-		// not be silently papered over by proceeding as if the secret were
-		// simply empty.
-		if ceErr := classifyReadError(rerr); ceErr.Code != shared.ErrInvalidPath {
-			return ceErr
-		}
-	} else if current != nil {
-		for k, v := range current.Data {
-			merged[k] = v
-		}
-	}
-
+	asInterface := make(map[string]interface{}, len(fields))
 	for k, v := range fields {
-		merged[k] = v
+		asInterface[k] = v
 	}
 
-	if _, kvErr := c.vc.WriteSecret(path, merged, vlr.WriteOptions{}); kvErr != nil {
-		return &ce.CustomError{Title: "Error writing batch secret", Message: kvErr.Error()}
+	if kvErr := c.mergeAndWrite(path, asInterface); kvErr != nil {
+		return kvErr
 	}
 
 	if !shared.QuietOutput {

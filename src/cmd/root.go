@@ -19,6 +19,9 @@ import (
 var rootCmd = &cobra.Command{
 	Use:   "vclt",
 	Short: "Hashicorp Vault client",
+	Example: `  vclt --address https://vault.example.com:8200 --token s.xxxxxxxx kv read secret myapp/config
+  export VAULT_ADDR=https://vault.example.com:8200 VAULT_TOKEN=s.xxxxxxxx
+  vclt kv list secret`,
 }
 
 // buildVersion and buildDate are set via -ldflags -X at package-build time.
@@ -26,8 +29,9 @@ var buildVersion = "dev"
 var buildDate = "unknown"
 
 var versionCmd = &cobra.Command{
-	Use:   "version",
-	Short: "Shows the software version",
+	Use:     "version",
+	Short:   "Shows the software version",
+	Example: `  vclt version`,
 	Run: func(cmd *cobra.Command, args []string) {
 		fmt.Println(hftx.White("vclt v" + buildVersion + " (" + buildDate + "), Go version = v" + strings.TrimPrefix(runtime.Version(), "go") + " (" + runtime.GOARCH + ")"))
 	},

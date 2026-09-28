@@ -97,15 +97,31 @@ func TestKvWriteBatchFlagRegistered(t *testing.T) {
 	}
 }
 
+// TestKvWriteJSONFlagRegistered checks that `kv write` has a --json
+// boolean flag with no shorthand.
+func TestKvWriteJSONFlagRegistered(t *testing.T) {
+	jsonFlag := kvWriteCmd.PersistentFlags().Lookup("json")
+	if jsonFlag == nil {
+		t.Fatal("expected --json to be registered on kv write")
+	}
+	if jsonFlag.Shorthand != "" {
+		t.Errorf("--json has shorthand -%s, want no shorthand", jsonFlag.Shorthand)
+	}
+	if jsonFlag.Value.Type() != "bool" {
+		t.Errorf("--json is type %s, want bool", jsonFlag.Value.Type())
+	}
+}
+
 // TestKvWriteArgsValidation exercises kvWriteCmd's dynamic-arity Args
 // function directly: VALUE is a 4th positional arg normally, dropped to 3
-// when --in or --batch is set (the value(s) then come from a file instead),
-// and --in + --batch together must be rejected outright since they disagree
-// about what the 3rd positional argument means.
+// when --in, --batch, or --json is set (the value(s) then come from a file
+// instead), and any two of --in/--batch/--json together must be rejected
+// outright since they disagree about what the 3rd positional argument means.
 func TestKvWriteArgsValidation(t *testing.T) {
 	reset := func() {
 		kv.SecretInputFile = ""
 		kv.BatchMode = false
+		kv.JSONMode = false
 	}
 	t.Cleanup(reset)
 
@@ -116,6 +132,7 @@ func TestKvWriteArgsValidation(t *testing.T) {
 		name    string
 		in      bool
 		batch   bool
+		json    bool
 		args    []string
 		wantErr bool
 	}{
@@ -125,7 +142,11 @@ func TestKvWriteArgsValidation(t *testing.T) {
 		{name: "--in rejects 4 args", in: true, args: fourArgs, wantErr: true},
 		{name: "--batch needs 3 args", batch: true, args: threeArgs},
 		{name: "--batch rejects 4 args", batch: true, args: fourArgs, wantErr: true},
+		{name: "--json needs 3 args", json: true, args: threeArgs},
+		{name: "--json rejects 4 args", json: true, args: fourArgs, wantErr: true},
 		{name: "--in and --batch together are always rejected", in: true, batch: true, args: threeArgs, wantErr: true},
+		{name: "--in and --json together are always rejected", in: true, json: true, args: threeArgs, wantErr: true},
+		{name: "--batch and --json together are always rejected", batch: true, json: true, args: threeArgs, wantErr: true},
 	}
 
 	for _, tc := range cases {
@@ -135,6 +156,7 @@ func TestKvWriteArgsValidation(t *testing.T) {
 				kv.SecretInputFile = "some-file"
 			}
 			kv.BatchMode = tc.batch
+			kv.JSONMode = tc.json
 
 			err := kvWriteCmd.Args(kvWriteCmd, tc.args)
 			if tc.wantErr && err == nil {

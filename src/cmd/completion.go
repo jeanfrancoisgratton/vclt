@@ -29,11 +29,15 @@ Zsh:
   # Or, for current session:
   $ source <(vclt completion zsh)
 `,
+	Example: `  vclt completion bash
+  vclt completion zsh`,
 }
 
 var completionBashCmd = &cobra.Command{
 	Use:   "bash",
 	Short: "Generate a Bash completion script",
+	Example: `  source <(vclt completion bash)
+  vclt completion bash | sudo tee /etc/bash_completion.d/vclt > /dev/null`,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		// V2 is recommended; writes to stdout
 		return rootCmd.GenBashCompletionV2(os.Stdout, true)
@@ -43,6 +47,8 @@ var completionBashCmd = &cobra.Command{
 var completionZshCmd = &cobra.Command{
 	Use:   "zsh",
 	Short: "Generate a Zsh completion script",
+	Example: `  vclt completion zsh > ~/.zsh/vclt
+  source <(vclt completion zsh)`,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		// Ensure the script is zsh-compatible
 		return rootCmd.GenZshCompletion(os.Stdout)

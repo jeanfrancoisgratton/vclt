@@ -13,8 +13,38 @@ import (
 
 	ce "github.com/jeanfrancoisgratton/customError/v3"
 	hftx "github.com/jeanfrancoisgratton/helperFunctions/v5/terminalfx"
+	vlr "github.com/jeanfrancoisgratton/vaultlib/v2/kv"
 	"vclt/shared"
 )
+
+// mergeAndWrite reads the current secret at path (if any), overlays fields on
+// top of it, and writes the merged result back in a single Vault API call --
+// the same upsert-fields-leave-the-rest-alone behavior shared by `kv write
+// --batch` and `kv write --json`, producing exactly one new KV v2 version
+// instead of one per field. A not-yet-existing secret is expected and not
+// fatal: this must be able to create a brand-new secret from scratch, same as
+// a single `kv write` on a path that doesn't exist yet.
+func (c *Client) mergeAndWrite(path string, fields map[string]interface{}) *ce.CustomError {
+	merged := map[string]interface{}{}
+	if current, rerr := c.vc.ReadSecret(path, vlr.ReadOptions{FallbackToLatestAvailable: true}); rerr != nil {
+		if ceErr := classifyReadError(rerr); ceErr.Code != shared.ErrInvalidPath {
+			return ceErr
+		}
+	} else if current != nil {
+		for k, v := range current.Data {
+			merged[k] = v
+		}
+	}
+
+	for k, v := range fields {
+		merged[k] = v
+	}
+
+	if _, kvErr := c.vc.WriteSecret(path, merged, vlr.WriteOptions{}); kvErr != nil {
+		return &ce.CustomError{Title: "Error writing secret", Message: kvErr.Error()}
+	}
+	return nil
+}
 
 // writeSecretFile writes a secret's rendered content to SecretOutputFile with
 // owner-only permissions, since the file may contain sensitive material.

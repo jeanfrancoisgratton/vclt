@@ -17,6 +17,11 @@ var tokensCmd = &cobra.Command{
 	Aliases: []string{"tokens"},
 	Short:   "tokens management subcommands",
 	Long:    `Allowed commands are { create | revoke | renew | lookup | self | accessors }`,
+	Example: `  vclt token create myapp-token -P myapp-policy
+  vclt token revoke myapp-token
+  vclt token renew myapp-token
+  vclt token lookup myapp-token
+  vclt token self`,
 }
 
 var tokenCreateCmd = &cobra.Command{
@@ -25,6 +30,9 @@ var tokenCreateCmd = &cobra.Command{
 	Short:   "Create a token with the appropriate config policies with flags",
 	Long: `By default, tokens are created as orphaned and renewable.
 If no policies are specified the token will be bound to the default policy`,
+	Example: `  vclt token create myapp-token
+  vclt token create myapp-token -P myapp-policy,default -T 8h
+  vclt token create myapp-token -o=false -r=false -f token.json`,
 	Args: cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		c, err := tokens.NewClient()
@@ -42,6 +50,8 @@ var tokenRevokeCmd = &cobra.Command{
 	Aliases: []string{"remove", "delete"},
 	Short:   "Permanently revoke a token and its children (if any)",
 	Args:    cobra.ExactArgs(1),
+	Example: `  vclt token revoke myapp-token
+  vclt token delete myapp-token`,
 	Run: func(cmd *cobra.Command, args []string) {
 		c, err := tokens.NewClient()
 		if err != nil {
@@ -56,7 +66,9 @@ var tokenRevokeCmd = &cobra.Command{
 var tokenRenewCmd = &cobra.Command{
 	Use:   "renew TOKEN_NAME",
 	Short: "Renew the token TOKEN_NAME. The -d flag sets the new lease duration",
-	Args:  cobra.ExactArgs(1),
+	Example: `  vclt token renew myapp-token
+  vclt token renew myapp-token -d 3600`,
+	Args: cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		c, err := tokens.NewClient()
 		if err != nil {
@@ -71,7 +83,10 @@ var tokenRenewCmd = &cobra.Command{
 var tokenLookupCmd = &cobra.Command{
 	Use:   "lookup TOKEN_NAME",
 	Short: "Displays the info about the named token",
-	Args:  cobra.ExactArgs(1),
+	Example: `  vclt token lookup myapp-token
+  vclt token lookup myapp-token -o json
+  vclt token lookup myapp-token -f token-info.json`,
+	Args: cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		c, err := tokens.NewClient()
 		if err != nil {
@@ -86,6 +101,8 @@ var tokenLookupCmd = &cobra.Command{
 var tokenLookupSelfCmd = &cobra.Command{
 	Use:   "self",
 	Short: "Displays the info about the token currently in use",
+	Example: `  vclt token self
+  vclt token self -o json`,
 	Run: func(cmd *cobra.Command, args []string) {
 		c, err := tokens.NewClient()
 		if err != nil {
@@ -98,8 +115,9 @@ var tokenLookupSelfCmd = &cobra.Command{
 }
 
 var tokenListAccessorsCmd = &cobra.Command{
-	Use:   "accessors",
-	Short: "List all token accessors",
+	Use:     "accessors",
+	Short:   "List all token accessors",
+	Example: `  vclt token accessors`,
 	Run: func(cmd *cobra.Command, args []string) {
 		c, err := tokens.NewClient()
 		if err != nil {
