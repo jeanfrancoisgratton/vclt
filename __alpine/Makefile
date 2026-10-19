@@ -20,7 +20,7 @@ ARCH      := $(shell . ./$(APKBUILD); echo $$arch)
 BINARY    := $(shell . ./$(APKBUILD); echo $$binaryname)
 
 NEXUSREPO := alpine
-NEXUSDIR  := nexus/main
+NEXUSDIR := nexus/main
 
 # abuild -r drops the package at:
 #   /data/packages/<name>/<arch>/<name>-<version>-r<pkgrel>.apk
@@ -34,7 +34,7 @@ build:
 	abuild -r
 
 release: build
-	/opt/bin/nxtools upload $(NEXUSREPO) $(APK)
+	/opt/bin/nxtools upload -d ${NEXUSDIR} $(NEXUSREPO) $(APK)
 
 clean:
 	abuild clean cleanpkg cleancache cleanoldpkg
