@@ -55,6 +55,11 @@ install -Dpm 0755 %{_builddir}/%{_binaryname} %{buildroot}%{_bindir}/%{_binaryna
 %{_bindir}/%{_binaryname}
 
 %changelog
+* Mon Oct 26 2026 Binary package builder <builder@famillegratton.net> 2.9.1-1
+- Merge branch 'develop'
+- enhancement: fixed backup/restore
+- chore: update changelog for 2.9.0-1
+
 * Mon Oct 26 2026 Binary package builder <builder@famillegratton.net> 2.9.0-1
 - Merge branch 'develop'
 - Merge remote-tracking branch 'refs/remotes/origin/develop' into develop
