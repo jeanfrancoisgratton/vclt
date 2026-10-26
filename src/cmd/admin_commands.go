@@ -18,6 +18,13 @@ var adminCmd = &cobra.Command{
 	Example: `  vclt admin setrootkeys
   vclt admin seal
   vclt admin unseal`,
+	// See the matching comment on kvCmd in kv_commands.go: Run makes this
+	// command runnable so Args (NoArgs) actually gets evaluated instead of
+	// Cobra silently treating a stray subcommand as "show help", exit 0.
+	Run: func(cmd *cobra.Command, args []string) {
+		_ = cmd.Help()
+	},
+	Args: cobra.NoArgs,
 }
 
 var adminSetKeysCmd = &cobra.Command{

@@ -15,11 +15,19 @@ var policiesCmd = &cobra.Command{
 	Use:     "policy",
 	Aliases: []string{"policies"},
 	Short:   "policies management subcommands",
-	Long:    `Allowed commands are { read | write | list | delete | sample }`,
+	Long:    `Allowed commands are { read | write | list | delete | sample | backup | restore }`,
 	Example: `  vclt policy read myapp-policy
   vclt policy write myapp-policy myapp-policy.hcl
   vclt policy list
-  vclt policy rm myapp-policy`,
+  vclt policy rm myapp-policy
+  vclt policy backup policies-backup.json`,
+	// See the matching comment on kvCmd in kv_commands.go: Run makes this
+	// command runnable so Args (NoArgs) actually gets evaluated instead of
+	// Cobra silently treating a stray subcommand as "show help", exit 0.
+	Run: func(cmd *cobra.Command, args []string) {
+		_ = cmd.Help()
+	},
+	Args: cobra.NoArgs,
 }
 
 var policiesReadCmd = &cobra.Command{
@@ -110,8 +118,56 @@ This is quite useful to understand how to write a policy in JSON or HCL format. 
 	},
 }
 
+var policiesBackupCmd = &cobra.Command{
+	Use:     "backup BACKUP_FILE[.json|.hcl]",
+	Aliases: []string{"dump"},
+	Short:   "Backup all ACL policies",
+	Long: `Dumps every ACL policy on the server to BACKUP_FILE in a single call. The
+format is selected by extension: .hcl writes HCL, anything else writes JSON.
+By default the resulting file is encoded (via helperFunctions/v5 file
+encoding) so policy rules are not left in plaintext on disk; pass
+--cleartext to keep the raw JSON/HCL instead.`,
+	Args: cobra.ExactArgs(1),
+	Example: `  vclt policy backup policies-backup.json
+  vclt policy backup policies-backup.hcl
+  vclt policy dump policies-backup.json -c`,
+	Run: func(cmd *cobra.Command, args []string) {
+		c, err := policies.NewClient()
+		if err != nil {
+			err.Die()
+		}
+		if polErr := c.Backup(args[0]); polErr != nil {
+			polErr.Die()
+		}
+	},
+}
+
+var policiesRestoreCmd = &cobra.Command{
+	Use:     "restore BACKUP_FILE[.json|.hcl]",
+	Aliases: []string{"import"},
+	Short:   "Restore all ACL policies from a backup file",
+	Long: `Restores every ACL policy found in BACKUP_FILE, a file produced by
+'policy backup'. The format is selected by extension, same as backup. By
+default the file is assumed to be encoded; pass --cleartext if the backup
+was taken with -c.`,
+	Args: cobra.ExactArgs(1),
+	Example: `  vclt policy restore policies-backup.json
+  vclt policy import policies-backup.hcl`,
+	Run: func(cmd *cobra.Command, args []string) {
+		c, err := policies.NewClient()
+		if err != nil {
+			err.Die()
+		}
+		if polErr := c.Restore(args[0]); polErr != nil {
+			polErr.Die()
+		}
+	},
+}
+
 func init() {
 	rootCmd.AddCommand(policiesCmd)
-	policiesCmd.AddCommand(policiesReadCmd, policiesWriteCmd, policiesLsCmd, policiesRmCmd, policiesGenerateCmd)
+	policiesCmd.AddCommand(policiesReadCmd, policiesWriteCmd, policiesLsCmd, policiesRmCmd, policiesGenerateCmd, policiesBackupCmd, policiesRestoreCmd)
 
+	policiesBackupCmd.PersistentFlags().BoolVarP(&policies.Cleartext, "cleartext", "c", false, "Backup cleartext (default: encoded)")
+	policiesRestoreCmd.PersistentFlags().BoolVarP(&policies.Cleartext, "cleartext", "c", false, "Restore cleartext (default: encoded)")
 }
