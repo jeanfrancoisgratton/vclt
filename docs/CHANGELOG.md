@@ -1,5 +1,6 @@
 | Release | Date       | Comments                                                             |
 |---------|------------|----------------------------------------------------------------------|
+| 2.9.1   | 2026.10.26 | **Breaking:** `policy backup`/`policy restore` now default to a single named policy (`policy backup POLICY_NAME FILE`); the v2.9.0 all-policies-in-one-file behavior moved behind `--all`. `policy backup --all` also now skips Vault's built-in/virtual policies (e.g. `root`, which `ListPolicies` reports but has no stored rules to read back) instead of aborting the whole backup. `show` moved from a `policy list` alias to a `policy read`/`get` alias. |
 | 2.9.0   | 2026.10.26 | Added `policy backup`/`policy restore`, dumping and restoring every ACL policy in a single JSON or HCL file; fixed `kv write --batch`/`--json` failing on a path whose latest version was soft-deleted or destroyed; a typo'd subcommand (e.g. `kv bogus`) now correctly exits non-zero instead of silently exiting 0 |
 | 2.8.0   | 2026.09.27 | `kv write --json` writes a whole secret from a flat JSON file in a single call; every command's `--help` now includes runnable examples |
 | 2.7.0   | 2026.09.27 | `kv write --batch` writes multiple KEY/VALUE fields from a file in a single call |

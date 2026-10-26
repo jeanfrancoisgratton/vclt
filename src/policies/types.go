@@ -9,3 +9,7 @@ package policies
 // plain JSON/HCL (true) or in encoded form (false, the default) -- same
 // flag and same default as kv.Cleartext.
 var Cleartext = false
+
+// AllPolicies selects BackupAll/RestoreAll (every policy, one bundle file)
+// over the default Backup/Restore (a single named policy).
+var AllPolicies = false

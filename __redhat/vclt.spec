@@ -2,7 +2,7 @@
 %define _build_id_links none
 %define _name vclt
 %define _prefix /opt
-%define _version 2.9.0
+%define _version 2.9.1
 %define _rel 1
 %define _binaryname vclt
 
@@ -55,6 +55,13 @@ install -Dpm 0755 %{_builddir}/%{_binaryname} %{buildroot}%{_bindir}/%{_binaryna
 %{_bindir}/%{_binaryname}
 
 %changelog
+* Mon Oct 26 2026 Binary package builder <builder@famillegratton.net> 2.9.0-1
+- Merge branch 'develop'
+- Merge remote-tracking branch 'refs/remotes/origin/develop' into develop
+- feature: added policy backup and restore commands
+- chore (ALPINE): fixed makefile
+- chore: update changelog for 2.8.0-1
+
 * Sun Sep 27 2026 Binary package builder <builder@famillegratton.net> 2.8.0-1
 - Merge branch 'develop'
 - feat: secret write now support JSON files

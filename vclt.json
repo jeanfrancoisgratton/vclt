@@ -2,7 +2,7 @@
   "softwarename": "vclt",
   "binaryname": "vclt",
   "goversion": "1.27.3",
-  "versionnumber": "2.9.0",
+  "versionnumber": "2.9.1",
   "defaultreleasenumber": "1",
   "description": "Hashicorp Vault client",
   "maintainer": "J.F. Gratton <jean-francois@famillegratton.net>",
