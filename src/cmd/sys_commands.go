@@ -18,6 +18,13 @@ var sysCmd = &cobra.Command{
 	Example: `  vclt sys kvenable secret
   vclt sys kvdisable secret -y
   vclt sys listmounts`,
+	// See the matching comment on kvCmd in kv_commands.go: Run makes this
+	// command runnable so Args (NoArgs) actually gets evaluated instead of
+	// Cobra silently treating a stray subcommand as "show help", exit 0.
+	Run: func(cmd *cobra.Command, args []string) {
+		_ = cmd.Help()
+	},
+	Args: cobra.NoArgs,
 }
 
 var sysEnableKVCmd = &cobra.Command{

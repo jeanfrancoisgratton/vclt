@@ -26,6 +26,8 @@ A stripped-down, opinionated Hashicorp Vault client for KV v2 secret management,
   - [policy write](#policy-write)
   - [policy rm](#policy-rm)
   - [policy generate](#policy-generate)
+  - [policy backup](#policy-backup)
+  - [policy restore](#policy-restore)
   - [sys listmounts](#sys-listmounts)
   - [sys kvenable](#sys-kvenable)
   - [sys kvdisable](#sys-kvdisable)
@@ -53,7 +55,7 @@ A stripped-down, opinionated Hashicorp Vault client for KV v2 secret management,
 | Group | Purpose |
 |---|---|
 | `kv` | KV v2 secret management: read, write, list, delete, destroy, backup, restore |
-| `policy` | ACL policy management: read, write, list, delete, plus sample-policy generation |
+| `policy` | ACL policy management: read, write, list, delete, backup, restore, plus sample-policy generation |
 | `sys` | System operations: list mounts, enable/disable KV engines |
 | `token` | Token management: create, revoke, renew, lookup, list accessors |
 | `admin` | Server administration: seal, unseal, root-key storage |
@@ -514,6 +516,67 @@ vclt policy generate mypolicy.json     # writes JSON sample
 
 ---
 
+### policy backup
+
+```
+vclt policy backup <BACKUP_FILE[.json|.hcl]>
+vclt policy dump   <BACKUP_FILE[.json|.hcl]>
+```
+
+Dumps every ACL policy on the server to a single backup file in one call. Unlike a single policy file (see [Policy File Format](#policy-file-format)), each policy's rules are captured exactly as Vault returned them — whatever format they happen to be stored in — and are not re-validated or reformatted; only the *container* format is chosen here. The format is selected by extension: `.hcl` writes HCL, anything else writes JSON. By default the resulting file is **encoded** (via `helperFunctions/v5` file encoding) so policy rules are not left in plaintext on disk; pass `--cleartext` to keep the raw JSON/HCL instead.
+
+| Flag | Short | Default | Description |
+|---|---|---|---|
+| `--cleartext` | `-c` | `false` | Write the backup in cleartext JSON/HCL instead of encoded form. |
+
+**Examples:**
+```sh
+vclt policy backup policies-backup.json
+vclt policy backup policies-backup.hcl
+vclt policy backup policies-backup.json -c
+```
+
+**Token required:** Yes  
+**Policy required:**
+```hcl
+path "sys/policies/acl" {
+  capabilities = ["list"]
+}
+path "sys/policies/acl/*" {
+  capabilities = ["read"]
+}
+```
+
+---
+
+### policy restore
+
+```
+vclt policy restore <BACKUP_FILE[.json|.hcl]>
+vclt policy import  <BACKUP_FILE[.json|.hcl]>
+```
+
+Restores every ACL policy found in a backup file produced by `policy backup`. The format is selected by extension, same as backup. Each policy's rules are written back exactly as captured — not re-validated — since they already passed Vault's own acceptance the first time they were written. By default the file is assumed to be encoded; pass `--cleartext` if the backup was taken with `-c`.
+
+| Flag | Short | Default | Description |
+|---|---|---|---|
+| `--cleartext` | `-c` | `false` | Read the backup as cleartext JSON/HCL instead of encoded form. |
+
+**Example:**
+```sh
+vclt policy restore policies-backup.json
+```
+
+**Token required:** Yes  
+**Policy required:**
+```hcl
+path "sys/policies/acl/*" {
+  capabilities = ["create", "update"]
+}
+```
+
+---
+
 ### sys listmounts
 
 ```
@@ -856,6 +919,8 @@ Summary table for quick reference. All secret operations assume a KV v2 engine.
 | `policy read` | `sys/policies/acl/<name>` | `read` |
 | `policy write` | `sys/policies/acl/<name>` | `create`, `update` |
 | `policy rm` | `sys/policies/acl/<name>` | `delete` |
+| `policy backup` | `sys/policies/acl`, `sys/policies/acl/*` | `list`, `read` |
+| `policy restore` | `sys/policies/acl/*` | `create`, `update` |
 | `sys listmounts` | `sys/mounts` | `read` |
 | `sys kvenable` | `sys/mounts/<engine>` | `create`, `update` |
 | `sys kvdisable` | `sys/mounts/<engine>` | `delete` |

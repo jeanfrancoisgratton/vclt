@@ -32,6 +32,7 @@ func TestClassifyReadError(t *testing.T) {
 		{"invalid token", "invalid Vault token", shared.ErrVaultInvalidAuth},
 		{"permission denied", "permission denied", shared.ErrVaultInvalidAuth},
 		{"missing path", "secret does not exist", shared.ErrInvalidPath},
+		{"invalid format (soft-deleted/destroyed latest version)", "read secret failed: secret format is invalid", shared.ErrInvalidPath},
 		{"unrecognized", "something else entirely broke", shared.ErrReadSecret},
 	}
 

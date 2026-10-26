@@ -1,5 +1,6 @@
 | Release | Date       | Comments                                                             |
 |---------|------------|----------------------------------------------------------------------|
+| 2.9.0   | 2026.10.26 | Added `policy backup`/`policy restore`, dumping and restoring every ACL policy in a single JSON or HCL file; fixed `kv write --batch`/`--json` failing on a path whose latest version was soft-deleted or destroyed; a typo'd subcommand (e.g. `kv bogus`) now correctly exits non-zero instead of silently exiting 0 |
 | 2.8.0   | 2026.09.27 | `kv write --json` writes a whole secret from a flat JSON file in a single call; every command's `--help` now includes runnable examples |
 | 2.7.0   | 2026.09.27 | `kv write --batch` writes multiple KEY/VALUE fields from a file in a single call |
 | 2.6.0   | 2026.09.22 | `kv write` can now read a secret from a file and inject it in Vault |

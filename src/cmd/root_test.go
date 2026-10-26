@@ -168,3 +168,46 @@ func TestKvWriteArgsValidation(t *testing.T) {
 		})
 	}
 }
+
+// TestGroupCommandRejectsUnknownSubcommand guards a Cobra pitfall: a command
+// with no Run/RunE of its own is "not runnable", and Cobra's execute() skips
+// Args validation entirely for those, returning flag.ErrHelp -- which the
+// top-level Execute() treats as "just show help", exiting 0. That silently
+// swallowed a typo'd subcommand (e.g. `vclt kv bogus`) as if it had
+// succeeded, which is exactly the failure mode a calling shell script can't
+// detect via $?. Each group command below was given a Run (so it's runnable)
+// specifically so its NoArgs Args validator actually gets evaluated: a
+// genuine bare invocation (no args) must still exit 0 (help), but a stray/
+// unmatched token must now be a real, non-zero-exit error.
+func TestGroupCommandRejectsUnknownSubcommand(t *testing.T) {
+	// Cobra's Execute()/ExecuteC() always run starting from the true root
+	// regardless of which command in the tree Execute() is called on, using
+	// the root's own SetArgs -- so driving this through rootCmd (rather than
+	// e.g. kvCmd directly) is required for SetArgs to actually take effect.
+	groupNames := []string{"kv", "policy", "sys", "token", "admin", "completion"}
+
+	run := func(t *testing.T, args []string) error {
+		var buf bytes.Buffer
+		rootCmd.SetOut(&buf)
+		rootCmd.SetErr(&buf)
+		t.Cleanup(func() {
+			rootCmd.SetOut(nil)
+			rootCmd.SetErr(nil)
+			rootCmd.SetArgs(nil)
+		})
+		rootCmd.SetArgs(args)
+		return rootCmd.Execute()
+	}
+
+	for _, name := range groupNames {
+		t.Run(name, func(t *testing.T) {
+			if err := run(t, []string{name, "bogus-subcommand"}); err == nil {
+				t.Error("expected an error for an unmatched subcommand, got nil (would exit 0)")
+			}
+
+			if err := run(t, []string{name}); err != nil {
+				t.Errorf("expected a bare invocation (no args) to still just show help, got error: %v", err)
+			}
+		})
+	}
+}

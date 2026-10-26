@@ -134,6 +134,15 @@ func classifyReadError(err error) *ce.CustomError {
 		code = shared.ErrVaultInvalidAuth
 	case strings.Contains(msg, "does not exist"):
 		code = shared.ErrInvalidPath
+	// vaultlib's ReadSecret returns this exact wording when a path's latest
+	// version has no live data (soft-deleted or destroyed) -- HTTP 200 with
+	// data.data == null, not a 404. vaultlib's own internal read-modify-write
+	// helper for single-field writes (readCurrentData) already treats that
+	// the same as "not found"; mergeAndWrite needs the same treatment so
+	// `kv write --batch`/`--json` can write to such a path same as a plain
+	// `kv write KEY VALUE` already can.
+	case strings.Contains(msg, "secret format is invalid"):
+		code = shared.ErrInvalidPath
 	default:
 		code = shared.ErrReadSecret
 	}

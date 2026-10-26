@@ -24,6 +24,20 @@ var kvCmd = &cobra.Command{
   vclt kv list secret
   vclt kv rm secret myapp/config
   vclt kv backup secret myapp-backup.json`,
+	// Cobra's unknown-subcommand detection only kicks in automatically at the
+	// true root command; a group command like this one otherwise treats an
+	// unmatched subcommand (e.g. a typo) as a stray positional argument. A
+	// command with no Run/RunE of its own is "not runnable", and Cobra skips
+	// Args validation entirely for those, returning flag.ErrHelp instead --
+	// which the top-level Execute() treats as "show help", exit 0, silently
+	// swallowing what should have been an error. Run makes this command
+	// runnable so Args (NoArgs, below) actually gets evaluated: with no
+	// subcommand this prints help same as before; with a stray token it now
+	// correctly errors instead of exiting 0.
+	Run: func(cmd *cobra.Command, args []string) {
+		_ = cmd.Help()
+	},
+	Args: cobra.NoArgs,
 }
 
 var kvReadCmd = &cobra.Command{
