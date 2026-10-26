@@ -20,7 +20,8 @@ var policiesCmd = &cobra.Command{
   vclt policy write myapp-policy myapp-policy.hcl
   vclt policy list
   vclt policy rm myapp-policy
-  vclt policy backup policies-backup.json`,
+  vclt policy backup myapp-policy myapp-policy-backup.json
+  vclt policy backup --all policies-backup.json`,
 	// See the matching comment on kvCmd in kv_commands.go: Run makes this
 	// command runnable so Args (NoArgs) actually gets evaluated instead of
 	// Cobra silently treating a stray subcommand as "show help", exit 0.
@@ -32,7 +33,7 @@ var policiesCmd = &cobra.Command{
 
 var policiesReadCmd = &cobra.Command{
 	Use:     "read POLICY_NAME",
-	Aliases: []string{"get"},
+	Aliases: []string{"get", "show"},
 	Short:   "Read the POLICY_NAME policies",
 	Args:    cobra.ExactArgs(1),
 	Example: `  vclt policy read myapp-policy
@@ -68,7 +69,7 @@ var policiesWriteCmd = &cobra.Command{
 
 var policiesLsCmd = &cobra.Command{
 	Use:     "list",
-	Aliases: []string{"ls", "show"},
+	Aliases: []string{"ls"},
 	Short:   "List the policies",
 	Args:    cobra.ExactArgs(0),
 	Example: `  vclt policy list
@@ -119,46 +120,87 @@ This is quite useful to understand how to write a policy in JSON or HCL format. 
 }
 
 var policiesBackupCmd = &cobra.Command{
-	Use:     "backup BACKUP_FILE[.json|.hcl]",
+	Use:     "backup POLICY_NAME BACKUP_FILE[.json|.hcl]",
 	Aliases: []string{"dump"},
-	Short:   "Backup all ACL policies",
-	Long: `Dumps every ACL policy on the server to BACKUP_FILE in a single call. The
-format is selected by extension: .hcl writes HCL, anything else writes JSON.
+	Short:   "Backup one ACL policy, or every policy with --all",
+	Long: `Dumps POLICY_NAME's rules to BACKUP_FILE, exactly as Vault returned them.
+
+With --all, POLICY_NAME is omitted in favor of a single BACKUP_FILE argument
+holding every ACL policy on the server in one call. The bundle's own format
+is selected by BACKUP_FILE's extension: .hcl writes HCL, anything else
+writes JSON (a single policy's own file has no such choice to make, since
+its rules are dumped verbatim in whatever format Vault already stores them
+in). Vault's built-in, virtual policies (e.g. "root") have no stored rules
+to dump and are skipped rather than failing the whole backup.
+
 By default the resulting file is encoded (via helperFunctions/v5 file
 encoding) so policy rules are not left in plaintext on disk; pass
 --cleartext to keep the raw JSON/HCL instead.`,
-	Args: cobra.ExactArgs(1),
-	Example: `  vclt policy backup policies-backup.json
-  vclt policy backup policies-backup.hcl
-  vclt policy dump policies-backup.json -c`,
+	Args: func(cmd *cobra.Command, args []string) error {
+		if policies.AllPolicies {
+			return cobra.ExactArgs(1)(cmd, args)
+		}
+		return cobra.ExactArgs(2)(cmd, args)
+	},
+	Example: `  vclt policy backup myapp-policy myapp-policy-backup.json
+  vclt policy backup --all policies-backup.json
+  vclt policy backup --all policies-backup.hcl
+  vclt policy dump --all policies-backup.json -c`,
 	Run: func(cmd *cobra.Command, args []string) {
 		c, err := policies.NewClient()
 		if err != nil {
 			err.Die()
 		}
-		if polErr := c.Backup(args[0]); polErr != nil {
+		if policies.AllPolicies {
+			if polErr := c.BackupAll(args[0]); polErr != nil {
+				polErr.Die()
+			}
+			return
+		}
+		if polErr := c.Backup(args[0], args[1]); polErr != nil {
 			polErr.Die()
 		}
 	},
 }
 
 var policiesRestoreCmd = &cobra.Command{
-	Use:     "restore BACKUP_FILE[.json|.hcl]",
+	Use:     "restore POLICY_NAME BACKUP_FILE[.json|.hcl]",
 	Aliases: []string{"import"},
-	Short:   "Restore all ACL policies from a backup file",
-	Long: `Restores every ACL policy found in BACKUP_FILE, a file produced by
-'policy backup'. The format is selected by extension, same as backup. By
-default the file is assumed to be encoded; pass --cleartext if the backup
-was taken with -c.`,
-	Args: cobra.ExactArgs(1),
-	Example: `  vclt policy restore policies-backup.json
-  vclt policy import policies-backup.hcl`,
+	Short:   "Restore one ACL policy, or every policy with --all",
+	Long: `Recreates POLICY_NAME from BACKUP_FILE, a file produced by 'policy backup'.
+This is validated the same way 'policy write' validates its file before
+submitting it to Vault.
+
+With --all, POLICY_NAME is omitted in favor of a single BACKUP_FILE argument
+holding every ACL policy from a bundle produced by 'policy backup --all'.
+Unlike the single-policy case, a bundle's policies are restored exactly as
+captured, not re-validated, since they already passed Vault's own
+acceptance the first time they were written. The format is selected by
+extension, same as backup.
+
+By default the file is assumed to be encoded; pass --cleartext if the
+backup was taken with -c.`,
+	Args: func(cmd *cobra.Command, args []string) error {
+		if policies.AllPolicies {
+			return cobra.ExactArgs(1)(cmd, args)
+		}
+		return cobra.ExactArgs(2)(cmd, args)
+	},
+	Example: `  vclt policy restore myapp-policy myapp-policy-backup.json
+  vclt policy restore --all policies-backup.json
+  vclt policy import --all policies-backup.hcl`,
 	Run: func(cmd *cobra.Command, args []string) {
 		c, err := policies.NewClient()
 		if err != nil {
 			err.Die()
 		}
-		if polErr := c.Restore(args[0]); polErr != nil {
+		if policies.AllPolicies {
+			if polErr := c.RestoreAll(args[0]); polErr != nil {
+				polErr.Die()
+			}
+			return
+		}
+		if polErr := c.Restore(args[0], args[1]); polErr != nil {
 			polErr.Die()
 		}
 	},
@@ -170,4 +212,9 @@ func init() {
 
 	policiesBackupCmd.PersistentFlags().BoolVarP(&policies.Cleartext, "cleartext", "c", false, "Backup cleartext (default: encoded)")
 	policiesRestoreCmd.PersistentFlags().BoolVarP(&policies.Cleartext, "cleartext", "c", false, "Restore cleartext (default: encoded)")
+	// No shorthand: -a is already bound to the global --address flag, which
+	// every command (including this one) inherits as a persistent flag --
+	// reusing -a here would collide with it.
+	policiesBackupCmd.PersistentFlags().BoolVar(&policies.AllPolicies, "all", false, "Backup every policy in one file instead of a single named policy")
+	policiesRestoreCmd.PersistentFlags().BoolVar(&policies.AllPolicies, "all", false, "Restore every policy from one file instead of a single named policy")
 }

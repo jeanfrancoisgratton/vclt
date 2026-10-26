@@ -36,21 +36,57 @@ type policyEntry struct {
 	Rules string `json:"rules"`
 }
 
-// Backup dumps every ACL policy on the server to path, in JSON or HCL
-// depending on path's extension (.hcl -> HCL, anything else -> JSON). By
+// Backup dumps a single named ACL policy's rules to path, exactly as Vault
+// returned them (HCL or JSON text, whichever format that policy happens to
+// be stored in -- Backup does not reinterpret or reformat it, and path's
+// own extension is purely advisory here, unlike BackupAll's bundle). By
 // default the file is written encoded (helperFunctions/v5), matching
-// kv.Backup; pass --cleartext (Cleartext = true) to keep it as plain
-// JSON/HCL instead.
-func (c *Client) Backup(path string) *ce.CustomError {
+// kv.Backup; pass --cleartext (Cleartext = true) to keep it as plain text
+// instead.
+func (c *Client) Backup(policyName, path string) *ce.CustomError {
+	policy, rerr := c.vc.ReadPolicy(policyName)
+	if rerr != nil {
+		return &ce.CustomError{Title: "Error reading the policy", Message: rerr.Error()}
+	}
+
+	if werr := writePolicyBackupFile(path, []byte(policy.Rules)); werr != nil {
+		return werr
+	}
+
+	if !shared.QuietOutput {
+		fmt.Printf("%s %s to %s\n", hftx.EnabledSign("Successfully dumped"), hftx.Green(policyName), hftx.Green(path))
+	}
+	return nil
+}
+
+// BackupAll dumps every ACL policy on the server to path in a single file,
+// in JSON or HCL depending on path's extension (.hcl -> HCL, anything else
+// -> JSON). By default the file is written encoded (helperFunctions/v5),
+// matching kv.Backup; pass --cleartext (Cleartext = true) to keep it as
+// plain JSON/HCL instead.
+//
+// Vault ships a handful of built-in policies (e.g. "root") that ListPolicies
+// reports but that have no stored ACL document behind them -- they're
+// virtual, not real policies with rules to dump. ReadPolicy on one of these
+// fails with a recognizable "does not exist" error; BackupAll treats that
+// specific case as "nothing to back up here" and skips it rather than
+// aborting the whole backup, since every other possible read failure
+// (sealed, unauthorized, network, ...) remains a real, fatal error.
+func (c *Client) BackupAll(path string) *ce.CustomError {
 	names, err := c.List(false)
 	if err != nil {
 		return err
 	}
 
 	bundle := policyBundle{Policy: make(map[string]policyEntry, len(names))}
+	var skipped []string
 	for _, name := range names {
 		policy, rerr := c.vc.ReadPolicy(name)
 		if rerr != nil {
+			if isBuiltinPolicyReadError(rerr) {
+				skipped = append(skipped, name)
+				continue
+			}
 			return &ce.CustomError{Title: "Error reading the policy", Message: rerr.Error()}
 		}
 		bundle.Policy[name] = policyEntry{Rules: policy.Rules}
@@ -73,12 +109,25 @@ func (c *Client) Backup(path string) *ce.CustomError {
 
 	if !shared.QuietOutput {
 		suffix := "ies"
-		if len(names) == 1 {
+		if len(bundle.Policy) == 1 {
 			suffix = "y"
 		}
-		fmt.Printf("%s %d polic%s to %s\n", hftx.EnabledSign("Successfully dumped"), len(names), suffix, hftx.Green(path))
+		fmt.Printf("%s %d polic%s to %s\n", hftx.EnabledSign("Successfully dumped"), len(bundle.Policy), suffix, hftx.Green(path))
+		if len(skipped) > 0 {
+			fmt.Println(hftx.InfoSign(fmt.Sprintf("skipped built-in polic%s with no stored rules: %s",
+				suffix, strings.Join(skipped, ", "))))
+		}
 	}
 	return nil
+}
+
+// isBuiltinPolicyReadError reports whether err is the specific failure
+// vaultlib's ReadPolicy returns for one of Vault's built-in, virtual
+// policies (e.g. "root"): "read policy failed: policy %q does not exist".
+// BackupAll uses this to tell "nothing to dump here" apart from a genuine
+// read failure.
+func isBuiltinPolicyReadError(err error) bool {
+	return strings.Contains(err.Error(), "does not exist")
 }
 
 // writePolicyBackupFile writes payload to path, either directly (cleartext)

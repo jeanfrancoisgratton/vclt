@@ -412,7 +412,6 @@ path "<KV_ENGINE>/data/*" {
 ```
 vclt policy list
 vclt policy ls
-vclt policy show
 ```
 
 Lists all ACL policies defined on the server. `policies` is accepted as an alias for the `policy` group on every subcommand.
@@ -432,6 +431,7 @@ path "sys/policies/acl" {
 ```
 vclt policy read <POLICY_NAME>
 vclt policy get  <POLICY_NAME>
+vclt policy show <POLICY_NAME>
 ```
 
 Displays the rules of the named ACL policy.
@@ -519,31 +519,40 @@ vclt policy generate mypolicy.json     # writes JSON sample
 ### policy backup
 
 ```
-vclt policy backup <BACKUP_FILE[.json|.hcl]>
-vclt policy dump   <BACKUP_FILE[.json|.hcl]>
+vclt policy backup <POLICY_NAME> <BACKUP_FILE>
+vclt policy dump   <POLICY_NAME> <BACKUP_FILE>
+vclt policy backup --all <BACKUP_FILE[.json|.hcl]>
 ```
 
-Dumps every ACL policy on the server to a single backup file in one call. Unlike a single policy file (see [Policy File Format](#policy-file-format)), each policy's rules are captured exactly as Vault returned them — whatever format they happen to be stored in — and are not re-validated or reformatted; only the *container* format is chosen here. The format is selected by extension: `.hcl` writes HCL, anything else writes JSON. By default the resulting file is **encoded** (via `helperFunctions/v5` file encoding) so policy rules are not left in plaintext on disk; pass `--cleartext` to keep the raw JSON/HCL instead.
+Dumps a single named policy's rules to `BACKUP_FILE`, exactly as Vault returned them — `BACKUP_FILE`'s own extension is purely advisory here, since the content is written verbatim in whatever format that policy is already stored in (HCL or JSON).
+
+With `--all`, `POLICY_NAME` is omitted in favor of dumping every ACL policy on the server to a single bundle file in one call. Unlike a single policy file (see [Policy File Format](#policy-file-format)), each policy's rules are captured exactly as Vault returned them and are not re-validated or reformatted; only the *bundle's own* format is chosen, by `BACKUP_FILE`'s extension: `.hcl` writes HCL, anything else writes JSON. Vault's built-in, virtual policies (e.g. `root`, which is listed by `policy list` but has no stored rules of its own) are skipped rather than failing the whole backup.
+
+By default the resulting file is **encoded** (via `helperFunctions/v5` file encoding) so policy rules are not left in plaintext on disk; pass `--cleartext` to keep the raw JSON/HCL instead.
 
 | Flag | Short | Default | Description |
 |---|---|---|---|
-| `--cleartext` | `-c` | `false` | Write the backup in cleartext JSON/HCL instead of encoded form. |
+| `--all` | — | `false` | Back up every policy into one bundle file instead of a single named policy. |
+| `--cleartext` | `-c` | `false` | Write the backup in cleartext instead of encoded form. |
 
 **Examples:**
 ```sh
-vclt policy backup policies-backup.json
-vclt policy backup policies-backup.hcl
-vclt policy backup policies-backup.json -c
+vclt policy backup myapp-policy myapp-policy-backup.json
+vclt policy backup --all policies-backup.json
+vclt policy backup --all policies-backup.hcl
+vclt policy backup --all policies-backup.json -c
 ```
 
 **Token required:** Yes  
 **Policy required:**
 ```hcl
+# Single policy
+path "sys/policies/acl/<POLICY_NAME>" {
+  capabilities = ["read"]
+}
+# --all additionally requires:
 path "sys/policies/acl" {
   capabilities = ["list"]
-}
-path "sys/policies/acl/*" {
-  capabilities = ["read"]
 }
 ```
 
@@ -552,25 +561,32 @@ path "sys/policies/acl/*" {
 ### policy restore
 
 ```
-vclt policy restore <BACKUP_FILE[.json|.hcl]>
-vclt policy import  <BACKUP_FILE[.json|.hcl]>
+vclt policy restore <POLICY_NAME> <BACKUP_FILE>
+vclt policy import  <POLICY_NAME> <BACKUP_FILE>
+vclt policy restore --all <BACKUP_FILE[.json|.hcl]>
 ```
 
-Restores every ACL policy found in a backup file produced by `policy backup`. The format is selected by extension, same as backup. Each policy's rules are written back exactly as captured — not re-validated — since they already passed Vault's own acceptance the first time they were written. By default the file is assumed to be encoded; pass `--cleartext` if the backup was taken with `-c`.
+Recreates a single named policy from a file produced by `policy backup`. This is validated the same way `policy write` validates its file (see [Policy File Format](#policy-file-format)) before it's submitted to Vault.
+
+With `--all`, `POLICY_NAME` is omitted in favor of restoring every policy from a bundle file produced by `policy backup --all`. The format is selected by extension, same as backup. Unlike the single-policy case, a bundle's policies are written back exactly as captured — **not** re-validated — since they already passed Vault's own acceptance the first time they were written.
+
+By default the file is assumed to be encoded; pass `--cleartext` if the backup was taken with `-c`.
 
 | Flag | Short | Default | Description |
 |---|---|---|---|
-| `--cleartext` | `-c` | `false` | Read the backup as cleartext JSON/HCL instead of encoded form. |
+| `--all` | — | `false` | Restore every policy from one bundle file instead of a single named policy. |
+| `--cleartext` | `-c` | `false` | Read the backup as cleartext instead of encoded form. |
 
-**Example:**
+**Examples:**
 ```sh
-vclt policy restore policies-backup.json
+vclt policy restore myapp-policy myapp-policy-backup.json
+vclt policy restore --all policies-backup.json
 ```
 
 **Token required:** Yes  
 **Policy required:**
 ```hcl
-path "sys/policies/acl/*" {
+path "sys/policies/acl/<POLICY_NAME>" {
   capabilities = ["create", "update"]
 }
 ```
@@ -919,8 +935,10 @@ Summary table for quick reference. All secret operations assume a KV v2 engine.
 | `policy read` | `sys/policies/acl/<name>` | `read` |
 | `policy write` | `sys/policies/acl/<name>` | `create`, `update` |
 | `policy rm` | `sys/policies/acl/<name>` | `delete` |
-| `policy backup` | `sys/policies/acl`, `sys/policies/acl/*` | `list`, `read` |
-| `policy restore` | `sys/policies/acl/*` | `create`, `update` |
+| `policy backup` | `sys/policies/acl/<name>` | `read` |
+| `policy backup --all` | `sys/policies/acl`, `sys/policies/acl/*` | `list`, `read` |
+| `policy restore` | `sys/policies/acl/<name>` | `create`, `update` |
+| `policy restore --all` | `sys/policies/acl/*` | `create`, `update` |
 | `sys listmounts` | `sys/mounts` | `read` |
 | `sys kvenable` | `sys/mounts/<engine>` | `create`, `update` |
 | `sys kvdisable` | `sys/mounts/<engine>` | `delete` |

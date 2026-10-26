@@ -6,12 +6,38 @@ package policies
 
 import (
 	"encoding/json"
+	"errors"
 	"os"
 	"path/filepath"
 	"testing"
 
 	"github.com/hashicorp/hcl"
 )
+
+// TestIsBuiltinPolicyReadError pins down the error-message-substring check
+// BackupAll uses to tell Vault's built-in, virtual policies (e.g. "root",
+// which ListPolicies reports but ReadPolicy can't read back) apart from a
+// genuine read failure that should still abort the backup.
+func TestIsBuiltinPolicyReadError(t *testing.T) {
+	cases := []struct {
+		name string
+		err  error
+		want bool
+	}{
+		{"root policy (observed vaultlib wording)", errors.New(`read policy failed: policy "root" does not exist`), true},
+		{"sealed", errors.New("vault is sealed or unavailable"), false},
+		{"unauthorized", errors.New("permission denied"), false},
+		{"unrelated error", errors.New("something else entirely broke"), false},
+	}
+
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			if got := isBuiltinPolicyReadError(tc.err); got != tc.want {
+				t.Errorf("isBuiltinPolicyReadError(%q) = %v, want %v", tc.err, got, tc.want)
+			}
+		})
+	}
+}
 
 // TestMarshalBundleHCLRoundTrip exercises marshalBundleHCL (the one place a
 // policy backup's HCL form has to be hand-rendered, since hashicorp/hcl v1
